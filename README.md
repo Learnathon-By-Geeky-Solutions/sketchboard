@@ -1,7 +1,7 @@
 # Sketchboard
 
 ## Project Description
-
+ 
 ## Technology Stack
 
 ## Getting Started
