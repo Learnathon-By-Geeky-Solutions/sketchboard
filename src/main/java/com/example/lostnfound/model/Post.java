@@ -4,18 +4,22 @@ package com.example.lostnfound.model;
 
 import java.security.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 
 @Getter
 @Setter
@@ -44,10 +48,26 @@ public class Post {
     private String status;
     @Column(name = "range")
     private int range;
-    @Column(name = "uploadtime", insertable = false, updatable = false)
-    private Timestamp uploadTime;
+    
+    @Column(name = "uploadtime", updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private LocalDateTime uploadTime;
+
     @Column(name = "lastupdatedtime")
-    private Timestamp lastUpdatedTime;
+    @Temporal(TemporalType.TIMESTAMP)
+    private LocalDateTime lastUpdatedTime;
+
+    @PrePersist
+    protected void onCreate() {
+        this.uploadTime = LocalDateTime.now();
+        this.lastUpdatedTime = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.lastUpdatedTime = LocalDateTime.now();
+    }
+ 
 
     
 }
