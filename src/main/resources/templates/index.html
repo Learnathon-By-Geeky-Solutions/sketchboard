@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LostNFound</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .menubar {
+            display: flex;
+            justify-content: flex-start;
+            background-color: #007bff;
+            padding: 2px;
+            border-radius: 1px;
+        }
+        .menubar .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 1px;
+            color: white;
+            background-color: #007bff;
+            cursor: pointer;
+            font-size: 16px;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+        .menubar .btn:hover {
+            opacity: 0.9;
+            transform: scale(1.05);
+        }
+        .form-container {
+            display: none;
+            margin: 20px;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .btn-submit {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            background-color: #28a745;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn-submit:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <header style="text-align: center; margin-bottom: 20px;">
+        <h1 style="font-size: 2.5em; color: #007bff;">LostNFound</h1>
+        <p style="font-size: 1.2em; color: #555;">Your one-stop solution for lost and found items</p>
+    </header>
+    <nav class="menubar">
+        <button class="btn" onclick="getAllPosts()">📜 Get All Posts</button>
+        <button class="btn" onclick="showForm('getPostById')">🔍 Get Post By ID</button>
+        <button class="btn" onclick="showForm('deletePost')">🗑️ Delete Post By ID</button>
+        <button class="btn" onclick="showForm('createPost')">➕ Create Post</button>
+        <button class="btn" onclick="showForm('updatePost')">✏️ Update Post By ID</button>
+    </nav>
+
+    <!-- Forms -->
+    <div id="formContainer" class="form-container">
+        <h2 id="formTitle"></h2>
+        <form id="crudForm">
+            <div id="idField" class="form-group">
+                <label for="id">ID:</label>
+                <input type="number" id="id" name="id" placeholder="Enter post ID">
+            </div>
+            <div id="fields" style="display: none;">
+                <div class="form-group">
+                    <label for="title">Title:</label>
+                    <input type="text" id="title" name="title" placeholder="Enter title">
+                </div>
+                <div class="form-group">
+                    <label for="description">Description:</label>
+                    <textarea id="description" name="description" rows="4" placeholder="Enter description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="location">Location:</label>
+                    <input type="text" id="location" name="location" placeholder="Enter location">
+                </div>
+                <div class="form-group">
+                    <label for="date">Date:</label>
+                    <input type="date" id="date" name="date">
+                </div>
+                <div class="form-group">
+                    <label for="time">Time:</label>
+                    <input type="time" id="time" name="time">
+                </div>
+                <div class="form-group">
+                    <label for="category">Category:</label>
+                    <select id="category" name="category">
+                        <option value="">Select Category</option>
+                        <option value="Personal Belongings">Personal Belongings</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="Documents">Documents</option>
+                        <option value="Others">Others</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="status">Status:</label>
+                    <select id="status" name="status">
+                        <option value="">Select Status</option>
+                        <option value="Lost">Lost</option>
+                        <option value="Found">Found</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="range">Range:</label>
+                    <input type="number" id="range" name="range" placeholder="Enter range (in km)">
+                </div>
+            </div>
+            <button type="button" class="btn-submit" onclick="executeAction()">Submit</button>
+        </form>
+    </div>
+
+    <!-- Add this below the form -->
+    <div id="resultContainer" style="margin-top: 20px;"></div>
+
+    <script>
+        let currentAction = '';
+
+        function getAllPosts() {
+            fetch('/posts', { method: 'GET' })
+                .then(response => response.json())
+                .then(data => displayResults(data))
+                .catch(error => console.error("Error fetching posts:", error));
+        }
+
+        function showForm(action) {
+            currentAction = action;
+            const formContainer = document.getElementById('formContainer');
+            const formTitle = document.getElementById('formTitle');
+            const idField = document.getElementById('idField');
+            const fields = document.getElementById('fields');
+            const resultContainer = document.getElementById('resultContainer');
+
+            formContainer.style.display = 'block';
+            resultContainer.innerHTML = ''; // Clear previous results
+
+            switch (action) {
+                case 'getPostById':
+                    formTitle.innerText = 'Get Post By ID';
+                    idField.style.display = 'block';
+                    fields.style.display = 'none';
+                    break;
+                case 'deletePost':
+                    formTitle.innerText = 'Delete Post By ID';
+                    idField.style.display = 'block';
+                    fields.style.display = 'none';
+                    break;
+                case 'createPost':
+                    formTitle.innerText = 'Create Post';
+                    idField.style.display = 'none';
+                    fields.style.display = 'block';
+                    break;
+                case 'updatePost':
+                    formTitle.innerText = 'Update Post By ID';
+                    idField.style.display = 'block';
+                    fields.style.display = 'block';
+                    break;
+            }
+        }
+
+        function executeAction() {
+            const id = document.getElementById('id').value;
+            const postData = {
+                title: document.getElementById('title').value,
+                description: document.getElementById('description').value,
+                location: document.getElementById('location').value,
+                date: document.getElementById('date').value,
+                time: document.getElementById('time').value,
+                category: document.getElementById('category').value,
+                status: document.getElementById('status').value,
+                range: document.getElementById('range').value,
+            };
+
+            switch (currentAction) {
+                case 'getPostById':
+                    fetch(`/posts/${id}`, { method: 'GET' })
+                        .then(response => response.json())
+                        .then(data => displayResults([data])) // Wrap single post in array for consistency
+                        .catch(error => console.error("Error fetching post by ID:", error));
+                    break;
+                case 'deletePost':
+                    fetch(`/posts/${id}`, { method: 'DELETE' })
+                        .then(() => alert('Post deleted successfully!'))
+                        .catch(error => console.error("Error deleting post:", error));
+                    break;
+                case 'createPost':
+                    fetch('/posts', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(postData)
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            alert('Post created successfully!');
+                            getAllPosts(); // Refresh the list of posts
+                        })
+                        .catch(error => console.error("Error creating post:", error));
+                    break;
+                    break;
+                case 'updatePost':
+                    fetch(`/posts/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(postData)
+                    })
+                        .then(response => response.json())
+                        .then(data => alert('Post updated successfully!'))
+                        .catch(error => console.error("Error updating post:", error));
+                    break;
+            }
+        }
+
+        function displayResults(data) {
+            const resultContainer = document.getElementById('resultContainer');
+            resultContainer.innerHTML = '';
+
+            if (data.length === 0) {
+                resultContainer.innerHTML = '<p>No posts found.</p>';
+                return;
+            }
+
+            const table = document.createElement('table');
+            table.style.width = '100%';
+            table.style.borderCollapse = 'collapse';
+            table.style.marginTop = '20px';
+
+            const thead = document.createElement('thead');
+            const headerRow = document.createElement('tr');
+
+            const headers = ['ID', 'Title', 'Description', 'Location', 'Date', 'Time', 'Category', 'Status', 'Range'];
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.innerText = header;
+                th.style.border = '1px solid #ccc';
+                th.style.padding = '10px';
+                th.style.textAlign = 'left';
+                th.style.backgroundColor = '#f2f2f2';
+                headerRow.appendChild(th);
+            });
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            const tbody = document.createElement('tbody');
+            data.forEach(post => {
+                const row = document.createElement('tr');
+
+                headers.forEach(key => {
+                    const td = document.createElement('td');
+                    td.innerText = post[key.toLowerCase()] || '';
+                    td.style.border = '1px solid #ccc';
+                    td.style.padding = '10px';
+                    row.appendChild(td);
+                });
+
+                tbody.appendChild(row);
+            });
+
+            table.appendChild(tbody);
+            resultContainer.appendChild(table);
+        }
+    </script>
+
+</body>
+</html>
