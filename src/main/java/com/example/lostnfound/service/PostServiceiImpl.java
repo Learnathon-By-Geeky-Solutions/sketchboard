@@ -41,34 +41,32 @@ public class PostServiceiImpl implements PostService {
     @Override
     public Post updatePost(int id, Post post) {
         Post postToUpdate = postRepo.findById(id).get();
-            if(Objects.nonNull(postToUpdate.getTitle()) && "".equalsIgnoreCase(postToUpdate.getTitle())) {
+            if(Objects.nonNull(postToUpdate.getTitle()) && !"".equalsIgnoreCase(postToUpdate.getTitle())) {
                 postToUpdate.setTitle(post.getTitle());
             }
-            if(Objects.nonNull(postToUpdate.getDescription()) && "".equalsIgnoreCase(postToUpdate.getDescription())) {
+            if(Objects.nonNull(postToUpdate.getDescription()) && !"".equalsIgnoreCase(postToUpdate.getDescription())) {
                 postToUpdate.setDescription(post.getDescription());
             }
-            if(Objects.nonNull(postToUpdate.getLocation()) && "".equalsIgnoreCase(postToUpdate.getLocation())) {
+            if(Objects.nonNull(postToUpdate.getLocation()) && !"".equalsIgnoreCase(postToUpdate.getLocation())) {
                 postToUpdate.setLocation(post.getLocation());
             }
             if (post.getDate() != null) {
                 postToUpdate.setDate(post.getDate());
             }
-            if(Objects.nonNull(postToUpdate.getTime()) && "".equalsIgnoreCase(postToUpdate.getTime())) {
+            if(Objects.nonNull(postToUpdate.getTime()) && !"".equalsIgnoreCase(postToUpdate.getTime())) {
                 postToUpdate.setTime(post.getTime());
             }
-            if(Objects.nonNull(postToUpdate.getCategory()) && "".equalsIgnoreCase(postToUpdate.getCategory())) {
+            if(Objects.nonNull(postToUpdate.getCategory()) && !"".equalsIgnoreCase(postToUpdate.getCategory())) {
                 postToUpdate.setCategory(post.getCategory());
             }
-            if(Objects.nonNull(postToUpdate.getStatus()) && "".equalsIgnoreCase(postToUpdate.getStatus())) {
+            if(Objects.nonNull(postToUpdate.getStatus()) && !"".equalsIgnoreCase(postToUpdate.getStatus())) {
                 postToUpdate.setStatus(post.getStatus());
             }
             if (postToUpdate.getRange() != 0) {
                 postToUpdate.setRange(post.getRange());
             }
             
-
-            
-        return postRepo.save(postToUpdate);
+            return postRepo.save(postToUpdate);
     }
 
 }
