@@ -50,7 +50,7 @@ public class PostController {
         return postService.updatePost(id, post);
     }
 
-    @GetMapping("/posts/search")
+    @GetMapping("/search-posts")
     public List<Post> searchPosts(@RequestParam String query) {
         return postService.searchPosts(query);
     }

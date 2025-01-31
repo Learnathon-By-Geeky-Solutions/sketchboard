@@ -10,11 +10,14 @@
 
     <header>
         <h1>LostNFound</h1>
+        <div class="search-container">
+            <input type="text" id="searchQuery" placeholder="Search...">
+            <button type="button" onclick="searchPosts()">🔍</button>
+        </div>
     </header>
-
     <nav class="menubar">
         <button class="btn" onclick="getAllPosts()">📜 Get All Posts</button>
-        <button class="btn" onclick="showForm('getPostById')">🔍 Get Post By ID</button>
+        <button class="btn" onclick="showForm('getPostById')">🔍 Get Post By Tracking ID</button>
         <button class="btn" onclick="showForm('deletePost')">🗑️ Delete Post By ID</button>
         <button class="btn" onclick="showForm('createPost')">➕ Create Post</button>
         <button class="btn" onclick="showForm('updatePost')">✏️ Update Post By ID</button>

@@ -9,7 +9,16 @@ function getAllPosts() {
         })
         .catch(error => console.error("Error fetching posts:", error));
 }
-
+function searchPosts() {
+    const query = document.getElementById('searchQuery').value;
+    fetch(`/search-posts?query=${encodeURIComponent(query)}`, { method: 'GET' })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data); // Log data to check if it is being fetched correctly
+            displayResults(data);
+        })
+        .catch(error => console.error("Error searching posts:", error));
+}
 function showForm(action) {
     currentAction = action;
     const formContainer = document.getElementById('formContainer');
