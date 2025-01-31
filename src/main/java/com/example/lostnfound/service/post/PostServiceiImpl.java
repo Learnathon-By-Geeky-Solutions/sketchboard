@@ -1,4 +1,4 @@
-package com.example.lostnfound.service;
+package com.example.lostnfound.service.post;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -67,6 +67,11 @@ public class PostServiceiImpl implements PostService {
             }
             
             return postRepo.save(postToUpdate);
+    }
+
+    @Override
+    public List<Post> searchPosts(String searchTerm) {
+        return postRepo.searchPosts(searchTerm);
     }
 
 }

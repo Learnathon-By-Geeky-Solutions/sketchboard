@@ -1,4 +1,4 @@
-package com.example.lostnfound.service;
+package com.example.lostnfound.service.person;
 
 import com.example.lostnfound.model.Person;
 import com.example.lostnfound.model.Post;
