@@ -1,4 +1,4 @@
-package com.example.lostnfound.service;
+package com.example.lostnfound.service.post;
 
 import java.util.List;
 
@@ -16,5 +16,6 @@ public interface PostService {
 
     Post updatePost(int id, Post post);
 
+    List<Post> searchPosts(String searchTerm) ;
     
 } 

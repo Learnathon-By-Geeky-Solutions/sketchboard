@@ -3,7 +3,7 @@ package com.example.lostnfound.controller;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.lostnfound.model.Post;
-import com.example.lostnfound.service.PostService;
+import com.example.lostnfound.service.post.PostService;
 
 import java.util.List;
 
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PutMapping;
 
 
@@ -49,5 +50,8 @@ public class PostController {
         return postService.updatePost(id, post);
     }
 
-
+    @GetMapping("/posts/search")
+    public List<Post> searchPosts(@RequestParam String query) {
+        return postService.searchPosts(query);
+    }
 }
