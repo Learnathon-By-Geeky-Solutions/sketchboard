@@ -15,7 +15,7 @@ public class Person {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Persion_id;
+    private Long Person_id;
     @Column(name = "Name")
     private String name;
     @Column(name = "Email", unique = true)
@@ -29,7 +29,7 @@ public class Person {
 
 
     @OneToMany (cascade = CascadeType.ALL)
-    @JoinColumn (name = "person_id", referencedColumnName = "Persion_id")
+    @JoinColumn (name = "person_id", referencedColumnName = "Person_id")
     private List<Post> posts;
 
 }
