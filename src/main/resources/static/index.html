@@ -4,83 +4,171 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LostNFound</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-    <header>
+    <div class="header" id="main-content">
         <h1>LostNFound</h1>
-        <div class="search-container">
-            <input type="text" id="searchQuery" placeholder="Search...">
-            <button type="button" onclick="searchPosts()">🔍</button>
+        <div class="search-bar">
+            <input type="text" id="searchQuery" placeholder="Search..." class="form-control">
+            <button onclick="searchPosts()" class="btn btn-primary">Search</button>
         </div>
-    </header>
-    <nav class="menubar">
-        <button class="btn" onclick="getAllPosts()">📜 Get All Posts</button>
-        <button class="btn" onclick="showForm('getPostById')">🔍 Get Post By Tracking ID</button>
-        <button class="btn" onclick="showForm('deletePost')">🗑️ Delete Post By ID</button>
-        <button class="btn" onclick="showForm('createPost')">➕ Create Post</button>
-        <button class="btn" onclick="showForm('updatePost')">✏️ Update Post By ID</button>
-    </nav>
+        <div class="menubar">
+            <button onclick="getAllPosts()" class="btn btn-primary">Get all posts</button>
+            <button onclick="openGetPostModal()" class="btn btn-primary">Get post by id</button>
+            <button onclick="openCreatePostModal()" class="btn btn-primary">Create post</button>
+            <button onclick="openUpdatePostModal()" class="btn btn-primary">Update post</button>
+            <button onclick="openDeletePostModal()" class="btn btn-primary">Delete post by id</button>
+        </div>
+    </div>
+    <div class="content container" id="content">
+        <div id="post-container" class="row"></div>
+    </div>
 
-    <div id="formContainer" class="form-container">
-        <h2 id="formTitle"></h2>
-        <form id="crudForm">
-            <div id="idField" class="form-group">
-                <label for="id">ID:</label>
-                <input type="number" id="id" name="id" placeholder="Enter post ID">
-            </div>
-            <div id="fields" class="hidden">
-                <div class="form-group">
+    <!-- Get Post Modal -->
+    <div id="getPostModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeGetPostModal()">&times;</span>
+            <h2>Get Post by ID</h2>
+            <form id="getPostForm" onsubmit="getPostById(event)" class="row">
+                <div class="col-md-6">
+                    <label for="postId">Post ID:</label>
+                    <input type="text" id="postId" name="postId" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <button type="submit" class="btn btn-primary mt-4">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Post Modal -->
+    <div id="deletePostModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeDeletePostModal()">&times;</span>
+            <h2>Delete Post by ID</h2>
+            <form id="deletePostForm" onsubmit="deletePostById(event)" class="row">
+                <div class="col-md-6">
+                    <label for="deletePostId">Post ID:</label>
+                    <input type="text" id="deletePostId" name="deletePostId" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <button type="submit" class="btn btn-primary mt-4">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Create Post Modal -->
+    <div id="createPostModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeCreatePostModal()">&times;</span>
+            <h2>Create Post</h2>
+            <form id="createPostForm" onsubmit="createPost(event)" class="row">
+                <div class="col-md-6">
                     <label for="title">Title:</label>
-                    <input type="text" id="title" name="title" placeholder="Enter title">
+                    <input type="text" id="title" name="title" class="form-control" required>
                 </div>
-                <div class="form-group">
+                <div class="col-md-6">
                     <label for="description">Description:</label>
-                    <textarea id="description" name="description" rows="4" placeholder="Enter description"></textarea>
+                    <input type="text" id="description" name="description" class="form-control" required>
                 </div>
-                <div class="form-group">
+                <div class="col-md-6">
                     <label for="location">Location:</label>
-                    <input type="text" id="location" name="location" placeholder="Enter location">
+                    <input type="text" id="location" name="location" class="form-control" required>
                 </div>
-                <div class="form-group">
+                <div class="col-md-6">
                     <label for="date">Date:</label>
-                    <input type="date" id="date" name="date">
+                    <input type="date" id="date" name="date" class="form-control" required>
                 </div>
-                <div class="form-group">
+                <div class="col-md-6">
                     <label for="time">Time:</label>
-                    <input type="time" id="time" name="time">
+                    <input type="time" id="time" name="time" class="form-control" required>
                 </div>
-                <div class="form-group">
+                <div class="col-md-6">
                     <label for="category">Category:</label>
-                    <select id="category" name="category">
-                        <option value="">Select Category</option>
-                        <option value="Personal Belongings">Personal Belongings</option>
-                        <option value="Electronics">Electronics</option>
-                        <option value="Documents">Documents</option>
-                        <option value="Others">Others</option>
+                    <select id="category" name="category" class="form-control" required>
+                        <option value="Electronic">Electronic</option>
+                        <option value="Document">Document</option>
+                        <!-- Add more options as needed -->
                     </select>
                 </div>
-                <div class="form-group">
+                <div class="col-md-6">
                     <label for="status">Status:</label>
-                    <select id="status" name="status">
+                    <select id="status" name="status" class="form-control" required>
+                        <option value="Lost">Lost</option>
+                        <option value="Found">Found</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="range">Range:</label>
+                    <input type="number" id="range" name="range" class="form-control" required>
+                </div>
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-primary mt-4">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Update Post Modal -->
+    <div id="updatePostModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeUpdatePostModal()">&times;</span>
+            <h2>Update Post</h2>
+            <form id="updatePostForm" onsubmit="updatePost(event)" class="row">
+                <div class="col-md-6">
+                    <label for="updatePostId">Post ID:</label>
+                    <input type="text" id="updatePostId" name="updatePostId" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="title">Title:</label>
+                    <input type="text" id="updateTitle" name="title" class="form-control">
+                </div>
+                <div class="col-md-6">
+                    <label for="description">Description:</label>
+                    <input type="text" id="updateDescription" name="description" class="form-control">
+                </div>
+                <div class="col-md-6">
+                    <label for="location">Location:</label>
+                    <input type="text" id="updateLocation" name="location" class="form-control">
+                </div>
+                <div class="col-md-6">
+                    <label for="date">Date:</label>
+                    <input type="date" id="updateDate" name="date" class="form-control">
+                </div>
+                <div class="col-md-6">
+                    <label for="time">Time:</label>
+                    <input type="time" id="updateTime" name="time" class="form-control">
+                </div>
+                <div class="col-md-6">
+                    <label for="category">Category:</label>
+                    <select id="updateCategory" name="category" class="form-control">
+                        <option value="">Select Category</option>
+                        <option value="Electronic">Electronic</option>
+                        <option value="Document">Document</option>
+                        <!-- Add more options as needed -->
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="status">Status:</label>
+                    <select id="updateStatus" name="status" class="form-control">
                         <option value="">Select Status</option>
                         <option value="Lost">Lost</option>
                         <option value="Found">Found</option>
                     </select>
                 </div>
-                <div class="form-group">
+                <div class="col-md-6">
                     <label for="range">Range:</label>
-                    <input type="number" id="range" name="range" placeholder="Enter range (in km)">
+                    <input type="number" id="updateRange" name="range" class="form-control">
                 </div>
-            </div>
-            <button type="button" class="btn-submit" onclick="executeAction()">Submit</button>
-        </form>
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-primary mt-4">Submit</button>
+                </div>
+            </form>
+        </div>
     </div>
 
-    <div id="resultContainer"></div>
-
     <script src="script.js"></script>
-
 </body>
 </html>

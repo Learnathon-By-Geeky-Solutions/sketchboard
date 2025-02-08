@@ -1,62 +1,151 @@
-let currentAction = '';
-
 function getAllPosts() {
-    fetch('/posts', { method: 'GET' })
+    fetch('/posts')
         .then(response => response.json())
         .then(data => {
-            console.log(data); // Log data to check if it is being fetched correctly
-            displayResults(data);
+            const container = document.getElementById('post-container');
+            container.innerHTML = `
+                <table class="post-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Location</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Range</th>
+                            <th>Upload Time</th>
+                            <th>Last Updated Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${data.map(post => `
+                            <tr>
+                                <td>${post.id}</td>
+                                <td>${post.title}</td>
+                                <td>${post.description}</td>
+                                <td>${post.location}</td>
+                                <td>${post.date}</td>
+                                <td>${post.time}</td>
+                                <td>${post.category}</td>
+                                <td>${post.status}</td>
+                                <td>${post.range}</td>
+                                <td>${post.uploadTime}</td>
+                                <td>${post.lastUpdatedTime}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
         })
-        .catch(error => console.error("Error fetching posts:", error));
+        .catch(error => console.error('Error fetching posts:', error));
 }
-function searchPosts() {
-    const query = document.getElementById('searchQuery').value;
-    fetch(`/search-posts?query=${encodeURIComponent(query)}`, { method: 'GET' })
+
+function openGetPostModal() {
+    document.getElementById('getPostModal').style.display = "block";
+    document.getElementById('main-content').classList.add('blur');
+    document.getElementById('content').classList.add('blur');
+}
+
+function closeGetPostModal() {
+    document.getElementById('getPostModal').style.display = "none";
+    document.getElementById('main-content').classList.remove('blur');
+    document.getElementById('content').classList.remove('blur');
+}
+
+function getPostById(event) {
+    event.preventDefault();
+    const postId = document.getElementById('postId').value;
+    fetch(`/posts/${postId}`)
         .then(response => response.json())
-        .then(data => {
-            console.log(data); // Log data to check if it is being fetched correctly
-            displayResults(data);
+        .then(post => {
+            const container = document.getElementById('post-container');
+            container.innerHTML = `
+                <table class="post-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Location</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Range</th>
+                            <th>Upload Time</th>
+                            <th>Last Updated Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>${post.id}</td>
+                            <td>${post.title}</td>
+                            <td>${post.description}</td>
+                            <td>${post.location}</td>
+                            <td>${post.date}</td>
+                            <td>${post.time}</td>
+                            <td>${post.category}</td>
+                            <td>${post.status}</td>
+                            <td>${post.range}</td>
+                            <td>${post.uploadTime}</td>
+                            <td>${post.lastUpdatedTime}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            `;
+            closeGetPostModal();
         })
-        .catch(error => console.error("Error searching posts:", error));
-}
-function showForm(action) {
-    currentAction = action;
-    const formContainer = document.getElementById('formContainer');
-    const formTitle = document.getElementById('formTitle');
-    const idField = document.getElementById('idField');
-    const fields = document.getElementById('fields');
-    const resultContainer = document.getElementById('resultContainer');
-
-    formContainer.style.display = 'block';
-    resultContainer.innerHTML = ''; // Clear previous results
-
-    switch (action) {
-        case 'getPostById':
-            formTitle.innerText = 'Get Post By ID';
-            idField.style.display = 'block';
-            fields.classList.add('hidden');
-            break;
-        case 'deletePost':
-            formTitle.innerText = 'Delete Post By ID';
-            idField.style.display = 'block';
-            fields.classList.add('hidden');
-            break;
-        case 'createPost':
-            formTitle.innerText = 'Create Post';
-            idField.style.display = 'none';
-            fields.classList.remove('hidden');
-            break;
-        case 'updatePost':
-            formTitle.innerText = 'Update Post By ID';
-            idField.style.display = 'block';
-            fields.classList.remove('hidden');
-            break;
-    }
+        .catch(error => console.error('Error fetching post:', error));
 }
 
-function executeAction() {
-    const id = document.getElementById('id').value;
-    const postData = {
+function openDeletePostModal() {
+    document.getElementById('deletePostModal').style.display = "block";
+    document.getElementById('main-content').classList.add('blur');
+    document.getElementById('content').classList.add('blur');
+}
+
+function closeDeletePostModal() {
+    document.getElementById('deletePostModal').style.display = "none";
+    document.getElementById('main-content').classList.remove('blur');
+    document.getElementById('content').classList.remove('blur');
+}
+
+function deletePostById(event) {
+    event.preventDefault();
+    const postId = document.getElementById('deletePostId').value;
+    fetch(`/posts/${postId}`, {
+        method: 'DELETE'
+    })
+        .then(response => {
+            if (response.ok) {
+                alert('Post deleted successfully');
+                closeDeletePostModal();
+                getAllPosts(); // Refresh the post list
+            } else {
+                alert('Failed to delete post');
+            }
+        })
+        .catch(error => console.error('Error deleting post:', error));
+}
+
+function openCreatePostModal() {
+    document.getElementById('createPostModal').style.display = "block";
+    document.getElementById('main-content').classList.add('blur');
+    document.getElementById('content').classList.add('blur');
+}
+
+function closeCreatePostModal() {
+    document.getElementById('createPostModal').style.display = "none";
+    document.getElementById('main-content').classList.remove('blur');
+    document.getElementById('content').classList.remove('blur');
+}
+
+function createPost(event) {
+    event.preventDefault();
+    const post = {
         title: document.getElementById('title').value,
         description: document.getElementById('description').value,
         location: document.getElementById('location').value,
@@ -64,85 +153,118 @@ function executeAction() {
         time: document.getElementById('time').value,
         category: document.getElementById('category').value,
         status: document.getElementById('status').value,
-        range: document.getElementById('range').value,
+        range: document.getElementById('range').value
     };
-
-    switch (currentAction) {
-        case 'getPostById':
-            fetch(`/posts/${id}`, { method: 'GET' })
-                .then(response => response.json())
-                .then(data => displayResults([data])) // Wrap single post in array for consistency
-                .catch(error => console.error("Error fetching post by ID:", error));
-            break;
-        case 'deletePost':
-            fetch(`/posts/${id}`, { method: 'DELETE' })
-                .then(() => alert('Post deleted successfully!'))
-                .catch(error => console.error("Error deleting post:", error));
-            break;
-        case 'createPost':
-            fetch('/posts', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(postData)
-            })
-                .then(response => response.json())
-                .then(() => {
-                    alert('Post created successfully!');
-                    getAllPosts(); // Refresh the list of posts
-                })
-                .catch(error => console.error("Error creating post:", error));
-            break;
-        case 'updatePost':
-            fetch(`/posts/${id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(postData)
-            })
-                .then(response => response.json())
-                .then(() => alert('Post updated successfully!'))
-                .catch(error => console.error("Error updating post:", error));
-            break;
-    }
+    fetch('/posts', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(post)
+    })
+        .then(response => {
+            if (response.ok) {
+                alert('Post created successfully');
+                closeCreatePostModal();
+                getAllPosts(); // Refresh the post list
+            } else {
+                alert('Failed to create post');
+            }
+        })
+        .catch(error => console.error('Error creating post:', error));
 }
 
-function displayResults(data) {
-    const resultContainer = document.getElementById('resultContainer');
-    resultContainer.innerHTML = '';
+function openUpdatePostModal() {
+    document.getElementById('updatePostModal').style.display = "block";
+    document.getElementById('main-content').classList.add('blur');
+    document.getElementById('content').classList.add('blur');
+}
 
-    if (!data || data.length === 0) {
-        resultContainer.innerHTML = '<p>No posts found.</p>';
-        return;
-    }
+function closeUpdatePostModal() {
+    document.getElementById('updatePostModal').style.display = "none";
+    document.getElementById('main-content').classList.remove('blur');
+    document.getElementById('content').classList.remove('blur');
+}
 
-    const table = document.createElement('table');
-    table.classList.add('result-table');
+function updatePost(event) {
+    event.preventDefault();
+    const postId = document.getElementById('updatePostId').value;
+    fetch(`/posts/${postId}`)
+        .then(response => response.json())
+        .then(existingPost => {
+            const updatedPost = {
+                title: document.getElementById('updateTitle').value || existingPost.title,
+                description: document.getElementById('updateDescription').value || existingPost.description,
+                location: document.getElementById('updateLocation').value || existingPost.location,
+                date: document.getElementById('updateDate').value || existingPost.date,
+                time: document.getElementById('updateTime').value || existingPost.time,
+                category: document.getElementById('updateCategory').value || existingPost.category,
+                status: document.getElementById('updateStatus').value || existingPost.status,
+                range: document.getElementById('updateRange').value || existingPost.range
+            };
+            fetch(`/posts/${postId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedPost)
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Post updated successfully');
+                        closeUpdatePostModal();
+                        getAllPosts(); // Refresh the post list
+                    } else {
+                        alert('Failed to update post');
+                    }
+                })
+                .catch(error => console.error('Error updating post:', error));
+        })
+        .catch(error => console.error('Error fetching existing post:', error));
+}
 
-    const thead = document.createElement('thead');
-    const headerRow = document.createElement('tr');
-    const headers = ['ID', 'Title', 'Description', 'Location', 'Date', 'Time', 'Category', 'Status', 'Range'];
-
-    headers.forEach(header => {
-        const th = document.createElement('th');
-        th.innerText = header;
-        headerRow.appendChild(th);
-    });
-
-    thead.appendChild(headerRow);
-    table.appendChild(thead);
-
-    const tbody = document.createElement('tbody');
-    data.forEach(post => {
-        const row = document.createElement('tr');
-
-        headers.forEach(key => {
-            const td = document.createElement('td');
-            td.innerText = post[key.toLowerCase()] || '';
-            row.appendChild(td);
-        });
-
-        tbody.appendChild(row);
-    });
-
-    table.appendChild(tbody);
-    resultContainer.appendChild(table);
+function searchPosts() {
+    const query = document.getElementById('searchQuery').value;
+    fetch(`/search-posts?query=${query}`)
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('post-container');
+            container.innerHTML = `
+                <table class="post-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Location</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Range</th>
+                            <th>Upload Time</th>
+                            <th>Last Updated Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${data.map(post => `
+                            <tr>
+                                <td>${post.id}</td>
+                                <td>${post.title}</td>
+                                <td>${post.description}</td>
+                                <td>${post.location}</td>
+                                <td>${post.date}</td>
+                                <td>${post.time}</td>
+                                <td>${post.category}</td>
+                                <td>${post.status}</td>
+                                <td>${post.range}</td>
+                                <td>${post.uploadTime}</td>
+                                <td>${post.lastUpdatedTime}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        })
+        .catch(error => console.error('Error searching posts:', error));
 }
