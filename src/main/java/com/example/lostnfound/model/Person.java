@@ -26,8 +26,7 @@ public class Person {
     private String address;
     @Column(name = "Dept")
     private String dept;
-
-
+    
     @OneToMany (cascade = CascadeType.ALL)
     @JoinColumn (name = "person_id", referencedColumnName = "Person_id")
     private List<Post> posts;
