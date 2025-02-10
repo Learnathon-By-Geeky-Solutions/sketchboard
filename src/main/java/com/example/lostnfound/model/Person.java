@@ -1,5 +1,8 @@
 package com.example.lostnfound.model;
 
+// import java.util.ArrayList;
+// import java.util.List;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,14 +21,22 @@ public class Person {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "Name")
+
+    @Column(name = "Name", nullable = false)
     private String name;
-    @Column(name = "Email", unique = true)
+
+    @Column(name = "Email", unique = true, nullable = false)
     private String email;
-    @Column(name = "Password")
+
+    @Column(name = "Password", nullable = false)
     private String password;
-    @Column(name = "Address")
+
+    @Column(name = "Address", nullable = false)
     private String address;
-    @Column(name = "Dept")
+
+    @Column(name = "Dept", nullable = false)
     private String dept;
+
+    // @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+    // private List<Post> posts = new ArrayList<>();
 }

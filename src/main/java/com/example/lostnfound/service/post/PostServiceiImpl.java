@@ -1,7 +1,4 @@
 package com.example.lostnfound.service.post;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -56,10 +53,10 @@ public class PostServiceiImpl implements PostService {
             if(Objects.nonNull(postToUpdate.getTime()) && !"".equalsIgnoreCase(postToUpdate.getTime())) {
                 postToUpdate.setTime(post.getTime());
             }
-            if(Objects.nonNull(postToUpdate.getCategory()) && !"".equalsIgnoreCase(postToUpdate.getCategory())) {
+            if(Objects.nonNull(postToUpdate.getCategory()) && !"".equalsIgnoreCase(postToUpdate.getCategory().toString())) {
                 postToUpdate.setCategory(post.getCategory());
             }
-            if(Objects.nonNull(postToUpdate.getStatus()) && !"".equalsIgnoreCase(postToUpdate.getStatus())) {
+            if(Objects.nonNull(postToUpdate.getStatus()) && !"".equalsIgnoreCase(postToUpdate.getStatus().toString())) {
                 postToUpdate.setStatus(post.getStatus());
             }
             if (postToUpdate.getRange() != 0) {

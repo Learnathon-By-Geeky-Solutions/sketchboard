@@ -1,13 +1,15 @@
 package com.example.lostnfound.model;
 
-
-
-import java.security.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.example.lostnfound.enums.Catagory;
+import com.example.lostnfound.enums.Status;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -21,6 +23,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+// import jakarta.persistence.JoinColumn;
+// import jakarta.persistence.ManyToOne;
 @Getter
 @Setter
 @Entity
@@ -32,24 +36,34 @@ public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name = "title")
+
+    @Column(name = "title",nullable = false, columnDefinition = "varchar(255)") 
     private String title;
-    @Column(name = "description")
+
+    @Column(name = "description",columnDefinition = "varchar(255) default 'Unknown'")
     private String description;
-    @Column(name = "location")
+
+    @Column(name = "location",nullable = false, columnDefinition = "varchar(255)")
     private String location;
-    @Column(name = "date")
+
+    @Column(name = "date",nullable = false, columnDefinition = "DATE")
     private LocalDate date;
-    @Column(name = "time")
+
+    @Column(name = "time",nullable = false, columnDefinition = "varchar(255) ")
     private String time;
-    @Column(name = "category")
-    private String category;
-    @Column(name = "status")
-    private String status;
-    @Column(name = "range")
+
+    @Column(name = "category", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Catagory category;
+
+    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
+    @Column(name = "range",nullable = false, columnDefinition = "int default 0")
     private int range;
     
-    @Column(name = "uploadtime", updatable = false)
+    @Column(name = "uploadtime")
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime uploadTime;
 
@@ -67,7 +81,8 @@ public class Post {
     protected void onUpdate() {
         this.lastUpdatedTime = LocalDateTime.now();
     }
- 
 
-    
+    // @ManyToOne
+    // @JoinColumn(name = "user_id", nullable = false)
+    // private Person person;
 }
