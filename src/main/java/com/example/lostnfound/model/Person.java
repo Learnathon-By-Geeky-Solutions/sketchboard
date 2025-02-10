@@ -4,10 +4,9 @@ package com.example.lostnfound.model;
 // import java.util.List;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -15,14 +14,14 @@ import lombok.Setter;
 @Table(name = "Person")
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class Person {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
+    private Long Person_id;
     @Column(name = "Name", nullable = false)
+
     private String name;
 
     @Column(name = "Email", unique = true, nullable = false)
@@ -37,6 +36,8 @@ public class Person {
     @Column(name = "Dept", nullable = false)
     private String dept;
 
+
     // @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
     // private List<Post> posts = new ArrayList<>();
+
 }

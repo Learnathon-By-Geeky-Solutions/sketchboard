@@ -1,5 +1,8 @@
 package com.example.lostnfound.model;
 
+
+import java.security.Timestamp;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -18,10 +21,7 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 // import jakarta.persistence.JoinColumn;
 // import jakarta.persistence.ManyToOne;
