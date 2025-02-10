@@ -1,7 +1,5 @@
 package com.example.lostnfound.model;
 
-// import java.util.ArrayList;
-// import java.util.List;
 
 import jakarta.persistence.*;
 import lombok.*;
