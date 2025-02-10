@@ -49,8 +49,8 @@ public class Post {
     @Column(name = "date",nullable = false, columnDefinition = "DATE")
     private LocalDate date;
 
-    @Column(name = "time",nullable = false, columnDefinition = "varchar(255) ")
-    private String time;
+    @Column(name = "time", nullable = false, columnDefinition = "TIME")
+    private LocalTime time;
 
     @Column(name = "category", nullable = false)
     @Enumerated(EnumType.STRING)
