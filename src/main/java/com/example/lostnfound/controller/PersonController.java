@@ -1,7 +1,6 @@
 package com.example.lostnfound.controller;
 
 import com.example.lostnfound.model.Person;
-import com.example.lostnfound.model.Post;
 import com.example.lostnfound.service.person.PersonService;
 
 import org.springframework.beans.factory.annotation.Autowired;

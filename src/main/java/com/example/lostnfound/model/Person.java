@@ -1,5 +1,6 @@
 package com.example.lostnfound.model;
 
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,19 +17,23 @@ public class Person {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Person_id;
-    @Column(name = "Name")
+    
+    @Column(name = "Name", nullable = false)
     private String name;
-    @Column(name = "Email", unique = true)
+
+    @Column(name = "Email", unique = true, nullable = false)
     private String email;
-    @Column(name = "Password")
+
+    @Column(name = "Password", nullable = false)
     private String password;
-    @Column(name = "Address")
+
+    @Column(name = "Address", nullable = false)
     private String address;
-    @Column(name = "Dept")
+
+    @Column(name = "Dept", nullable = false)
     private String dept;
     
-    @OneToMany (cascade = CascadeType.ALL)
-    @JoinColumn (name = "person_id", referencedColumnName = "Person_id")
-    private List<Post> posts;
+    // @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
+    // private List<Post> posts = new ArrayList<>();
 
 }
