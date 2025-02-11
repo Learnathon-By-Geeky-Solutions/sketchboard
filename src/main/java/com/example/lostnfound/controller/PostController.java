@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.lostnfound.model.Post;
 import com.example.lostnfound.service.post.PostService;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PutMapping;
+
+import com.example.lostnfound.enums.Catagory;
 
 
 
@@ -53,5 +56,10 @@ public class PostController {
     @GetMapping("/search-posts")
     public List<Post> searchPosts(@RequestParam String query) {
         return postService.searchPosts(query);
+    }
+
+    @GetMapping("/categories")
+    public Catagory[] getAllCategories() {
+        return Catagory.getAllCategories();
     }
 }

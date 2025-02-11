@@ -50,13 +50,13 @@ public class PostServiceiImpl implements PostService {
             if (post.getDate() != null) {
                 postToUpdate.setDate(post.getDate());
             }
-            if(Objects.nonNull(postToUpdate.getTime()) && !"".equalsIgnoreCase(postToUpdate.getTime())) {
+            if(postToUpdate.getTime() != null) {
                 postToUpdate.setTime(post.getTime());
             }
-            if(Objects.nonNull(postToUpdate.getCategory()) && !"".equalsIgnoreCase(postToUpdate.getCategory().toString())) {
+            if(Objects.nonNull(postToUpdate.getCategory())) {
                 postToUpdate.setCategory(post.getCategory());
             }
-            if(Objects.nonNull(postToUpdate.getStatus()) && !"".equalsIgnoreCase(postToUpdate.getStatus().toString())) {
+            if(Objects.nonNull(postToUpdate.getStatus())) {
                 postToUpdate.setStatus(post.getStatus());
             }
             if (postToUpdate.getRange() != 0) {

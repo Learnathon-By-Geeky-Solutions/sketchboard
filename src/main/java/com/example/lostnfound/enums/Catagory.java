@@ -6,5 +6,9 @@ public enum Catagory {
     Jwelleries,
     Accessories,
     Clothes,
-    Mobile,
+    Mobile;
+
+    public static Catagory[] getAllCategories() {
+        return Catagory.values();
+    }
 }
