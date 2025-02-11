@@ -16,10 +16,9 @@ public class Person {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private Long Person_id;
+    
     @Column(name = "Name", nullable = false)
-
     private String name;
 
     @Column(name = "Email", unique = true, nullable = false)
@@ -33,8 +32,7 @@ public class Person {
 
     @Column(name = "Dept", nullable = false)
     private String dept;
-
-
+    
     // @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
     // private List<Post> posts = new ArrayList<>();
 
