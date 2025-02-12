@@ -27,13 +27,21 @@ public class DataLoader implements CommandLineRunner {
             post.setTitle(faker.lorem().sentence());
             post.setDescription(faker.lorem().paragraph());
             post.setLocation(faker.address().fullAddress());
-            post.setDate(LocalDate.now());
-            post.setTime(LocalTime.now());
+            post.setDate(LocalDate.now().minusDays(faker.number().numberBetween(0, 30)));
+            post.setTime(LocalTime.of(
+                faker.number().numberBetween(0, 23),
+                faker.number().numberBetween(0, 59)
+            ));
             post.setCategory(Catagory.values()[faker.number().numberBetween(0, Catagory.values().length)]);
             post.setStatus(Status.values()[faker.number().numberBetween(0, Status.values().length)]);
             post.setRange(faker.number().numberBetween(1, 100));
 
-            postRepository.save(post);
+            try {
+                postRepository.save(post);
+                System.out.printf("BEEP: Generated post %d/50%n", i + 1);
+            } catch (Exception e) {
+                System.err.printf("BOOP: Failed to save post %d: %s%n", i + 1, e.getMessage());
+            }
         }
     }
 }
