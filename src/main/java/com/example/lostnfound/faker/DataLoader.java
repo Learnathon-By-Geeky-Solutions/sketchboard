@@ -20,9 +20,13 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+
+        int postCount = postRepository.findAll().size();
+        int extraNeed = 100 - postCount;
+
         Faker faker = new Faker();
 
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < extraNeed; i++) {
             Post post = new Post();
             post.setTitle(faker.lorem().sentence());
             post.setDescription(faker.lorem().paragraph());
@@ -38,7 +42,7 @@ public class DataLoader implements CommandLineRunner {
 
             try {
                 postRepository.save(post);
-                System.out.printf("BEEP: Generated post %d/50%n", i + 1);
+                System.out.printf("BEEP: Generated post %d/%d%n", i + 1, extraNeed);
             } catch (Exception e) {
                 System.err.printf("BOOP: Failed to save post %d: %s%n", i + 1, e.getMessage());
             }
