@@ -50,11 +50,7 @@ public class Post {
     @Column(name = "date",nullable = false, columnDefinition = "DATE")
     private LocalDate date;
 
-<<<<<<< HEAD
     @Column(name = "time", nullable = false, columnDefinition = "TIME")
-=======
-    @Column(name = "time",nullable = false, columnDefinition = "TIME")
->>>>>>> 4db89c6 (get category added)
     private LocalTime time;
 
     @Column(name = "category", nullable = false)
