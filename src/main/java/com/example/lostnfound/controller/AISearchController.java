@@ -22,10 +22,20 @@ import lombok.extern.slf4j.Slf4j;
 public class AISearchController {
         private Client client;
         @Value("${gemini.api.key}")
-        private String geminiApiKey;
+        private char[] geminiApiKey;
+        @Value("${gemini.model.id}")
+        private String modelId;
+
         @PostConstruct
         private void initializeClient() {
-            client = Client.builder().apiKey(geminiApiKey).build();
+            try {
+                client = Client.builder().apiKey(new String(geminiApiKey)).build();
+                // Clear sensitive data from memory
+                java.util.Arrays.fill(geminiApiKey, '\0');
+            } catch (Exception e) {
+                log.error("Failed to initialize AI client", e);
+                throw new RuntimeException("AI service initialization failed");
+            }
         }
 
         @GetMapping("/basicAISearch")
@@ -36,14 +46,20 @@ public class AISearchController {
             if (query.length() > 1000) {
                 return ResponseEntity.badRequest().body("Query exceeds maximum length of 1000 characters");
             }
+            // Sanitize input
+            query = query.replaceAll("[<>]", "")
+                         .replaceAll("(?i)script", "")
+                         .trim();
             try {
                 GenerateContentResponse response =
-                        client.models.generateContent("gemini-2.0-flash-001", query, null);
+                        client.models.generateContent(modelId, query, null);
                 return ResponseEntity.ok(response.text());
             } catch (HttpException | IOException e) {
                 log.error("Error processing AI search request", e);
+                String errorCode = "AI_ERR_" + System.currentTimeMillis();
+                log.error("Error code: {} - {}", errorCode, e.getMessage());
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body("Error processing request");
+                        .body("Error processing request. Reference: " + errorCode);
             }
     }
 }
