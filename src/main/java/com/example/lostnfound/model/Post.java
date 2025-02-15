@@ -3,6 +3,8 @@ package com.example.lostnfound.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import com.example.lostnfound.enums.Catagory;
 import com.example.lostnfound.enums.Status;
