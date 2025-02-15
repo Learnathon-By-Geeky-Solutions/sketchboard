@@ -36,6 +36,7 @@ public class QueryExecutorImpl implements QueryExecutor {
             log.error("No valid SQL query found in AI response");
             return null;
         }
+        System.out.println("Performed PostgreSQL Query:");
         System.out.println(searchQuery);
         List<Post> results = jdbcTemplate.query(searchQuery, new BeanPropertyRowMapper<>(Post.class));
         return ResponseEntity.ok(results);
