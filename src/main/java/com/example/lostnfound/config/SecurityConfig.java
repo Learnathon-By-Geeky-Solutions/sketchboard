@@ -1,7 +1,5 @@
 package com.example.lostnfound.config;
 
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,13 +25,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    @Autowired
-    private UserDetailsService userDetailsService;
-    @Autowired
-    private JwtFilter JwtFilter;
-
     @Bean
-    public SecurityFilterChain securityFilterChain (HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain (HttpSecurity http,JwtFilter jwtFilter) throws Exception {
         return http
         .csrf(customizer -> customizer.disable())
         .authorizeHttpRequests(request->request
@@ -41,7 +34,7 @@ public class SecurityConfig {
         .anyRequest().authenticated())
         .httpBasic(Customizer.withDefaults())
         .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .addFilterBefore(JwtFilter,UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(jwtFilter,UsernamePasswordAuthenticationFilter.class)
         .build();
     }
     @Bean
@@ -50,7 +43,7 @@ public class SecurityConfig {
     }
     
     @Bean
-    public AuthenticationProvider authenticationProvider(){
+    public AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService){
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
         daoAuthenticationProvider.setUserDetailsService(userDetailsService);
