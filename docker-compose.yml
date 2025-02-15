@@ -4,20 +4,22 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/postgres  # Connect to the 'postgres' service
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: 0000
-    depends_on:
+      DB_NAME: thesketchboard
+      DB_USER: bossman
+      DB_PASS: dtPiZkd5tRVGDdWcAKur0maag0o7i1hP
+      DB_HOST: dpg-cunrtma3esus73cmncgg-a.oregon-postgres.render.com
+      DB_PORT: 5432
+    depends_on:  # If you have a local postgres you can add this
       - postgres
 
-  postgres:
+  postgres:  # For local development, you could have a local postgres db
     image: postgres:14
     environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 0000
+      POSTGRES_DB: thesketchboard
+      POSTGRES_USER: bossman
+      POSTGRES_PASSWORD: dtPiZkd5tRVGDdWcAKur0maag0o7i1hP
     volumes:
       - pgdata:/var/lib/postgresql/data
-    
+
 volumes:
   pgdata:
