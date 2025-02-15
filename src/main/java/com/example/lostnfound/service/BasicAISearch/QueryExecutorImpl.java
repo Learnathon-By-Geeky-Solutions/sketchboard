@@ -38,9 +38,6 @@ public class QueryExecutorImpl implements QueryExecutor {
         }
         System.out.println(searchQuery);
         List<Post> results = jdbcTemplate.query(searchQuery, new BeanPropertyRowMapper<>(Post.class));
-        if (results==null || results.isEmpty()) {
-            return null;
-        }
         return ResponseEntity.ok(results);
     }
 }

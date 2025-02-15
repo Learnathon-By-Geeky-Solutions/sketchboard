@@ -1,7 +1,5 @@
 package com.example.lostnfound.service.BasicAISearch;
 
-import com.example.lostnfound.model.Post;
-import com.example.lostnfound.util.DatabaseUtils;
 import com.google.genai.Client;
 import com.google.genai.types.GenerateContentResponse;
 import jakarta.annotation.PostConstruct;
@@ -18,6 +16,9 @@ import java.io.IOException;
 @Service
 @Component
 public class GeminiResponseImpl implements GeminiResponse {
+
+    private Constants constants = new Constants();
+
     private Client client;
     @Value("${gemini.api.key}")
     private char[] geminiApiKey;
@@ -49,16 +50,12 @@ public class GeminiResponseImpl implements GeminiResponse {
                 .trim();
 
         // Get table and column names from Post class
-        Post post = new Post();
-        // Header message
-        String header = "Hey Gemini, Read the below scenario and my database information and write the best possible SQL query (search item in category/title/description 'lost is not an item, it's a verb'). Please only write the SQL query, don't write any other text.\n";
-        // Footer
-        String tableAndColumnNames = DatabaseUtils.getTableAndColumnNames(Post.class);
+
 
         // Adding header footer to query
-        query = header + " user message: " + query + "\n";
-        query = query + " table info:\n" + tableAndColumnNames + "\n";
-        query = query + "Don't use hard query. Status should be 'Found' always. not lost";
+        query = constants.HeaderMsgForGemini + " user message: " + query + "\n";
+        query = query + " DB table info:\n" + constants.TableInfo + "\n";
+        query = query + constants.FooterMsgForGemini;
 
         final String responseFromGemini;
 
