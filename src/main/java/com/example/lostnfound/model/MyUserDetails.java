@@ -13,7 +13,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 
 public class MyUserDetails implements UserDetails{
-    private User user;
+
+
+    private transient User user; 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

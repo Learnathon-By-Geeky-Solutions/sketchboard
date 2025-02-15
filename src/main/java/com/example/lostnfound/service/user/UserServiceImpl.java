@@ -11,15 +11,15 @@ import com.example.lostnfound.repository.UserRepo;
 
 @Service
 public class UserServiceImpl implements UserService {
+    private final UserRepo userRepo;
+    private final AuthenticationManager authmManager;
+    private final JWTService jwtService;
 
-    @Autowired
-    private UserRepo userRepo;
-
-    @Autowired
-    private AuthenticationManager authmManager;
-
-    @Autowired
-    private JWTService jwtService;
+    UserServiceImpl(UserRepo userRepo, AuthenticationManager authmManager, JWTService jwtService) {
+        this.userRepo = userRepo;
+        this.authmManager = authmManager;
+        this.jwtService = jwtService;
+    }
 
     @Override
     public User userRegister(User user) {

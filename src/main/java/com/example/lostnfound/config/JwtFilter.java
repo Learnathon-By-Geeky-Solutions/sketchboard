@@ -1,23 +1,15 @@
 package com.example.lostnfound.config;
 
 import java.io.IOException;
-
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.context.ApplicationContext;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 import com.example.lostnfound.service.user.JWTService;
 import com.example.lostnfound.service.user.MyUserService;
-
-import io.micrometer.common.lang.NonNull;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,12 +17,13 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
+    private final JWTService jwtService;
+    private final ApplicationContext context;
 
-    @Autowired
-    private JWTService jwtService;
-
-    @Autowired
-    ApplicationContext context;
+    public JwtFilter(JWTService jwtService, ApplicationContext context) {
+        this.jwtService = jwtService;
+        this.context = context;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

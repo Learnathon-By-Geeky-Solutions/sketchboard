@@ -1,13 +1,9 @@
 package com.example.lostnfound.controller;
 
 import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.example.lostnfound.model.User;
 import com.example.lostnfound.service.user.UserService;
-
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,10 +11,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @RestController
 public class UserController {
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private BCryptPasswordEncoder encoder;
+    private final UserService userService;
+    private final BCryptPasswordEncoder encoder;
+
+    public UserController(UserService userService, BCryptPasswordEncoder encoder) {
+        this.userService = userService;
+        this.encoder = encoder;
+    }
 
     @PostMapping("/register")
     public User register(@RequestBody User user) {

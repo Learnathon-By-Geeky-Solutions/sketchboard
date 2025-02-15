@@ -1,19 +1,8 @@
 package com.example.lostnfound.model;
 
-
 import com.example.lostnfound.enums.Role;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.List;
 
 @Getter
 @Setter
@@ -25,29 +14,25 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id", updatable = false, nullable = false)
     private Long userId;
-    
-    @Column(name = "Name", nullable = false)
+
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "Email", unique = true, nullable = false)
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
 
-    @Column(name = "Password", nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "Address", nullable = false)
+    @Column(name = "address", nullable = false)
     private String address;
 
-    @Column(name = "Department", nullable = false)
+    @Column(name = "department", nullable = false)
     private String department;
-    
-    @Column(name = "Role", nullable = false)
+
     @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
     private Role role;
-
-
-    // @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    // private List<Post> posts = new ArrayList<>();
-
 }
