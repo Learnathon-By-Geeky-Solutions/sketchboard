@@ -11,8 +11,10 @@ import java.util.Optional;
 @Service
 public class CommentServiceImpl implements CommentService {
 
-    @Autowired
-    private CommentRepo commentRepo;
+    private final CommentRepo commentRepo;
+    public CommentServiceImpl(CommentRepo commentRepo) {
+        this.commentRepo = commentRepo;
+    }
 
     @Override
     public Comment saveComment(Comment comment) {

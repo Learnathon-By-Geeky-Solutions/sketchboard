@@ -2,7 +2,9 @@ package com.example.lostnfound.controller;
 
 import com.example.lostnfound.model.Comment;
 import com.example.lostnfound.service.Comment.CommentService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,11 +13,14 @@ import java.util.List;
 @RequestMapping("/comments")
 public class CommentController {
 
-    @Autowired
-    private CommentService commentService;
+    private final CommentService commentService;
+    public CommentController(CommentService commentService) {
+        this.commentService = commentService;
+    }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public Comment createComment(@RequestBody Comment comment) {
+    public Comment createComment(@RequestBody @Valid Comment comment) {
         return commentService.saveComment(comment);
     }
 
@@ -34,6 +39,7 @@ public class CommentController {
         return commentService.updateComment(id, comment);
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     public void deleteComment(@PathVariable Long id) {
         commentService.deleteComment(id);
