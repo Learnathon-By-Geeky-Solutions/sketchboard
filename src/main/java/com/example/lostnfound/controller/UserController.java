@@ -1,12 +1,22 @@
 package com.example.lostnfound.controller;
 
+import java.util.List;
 import java.util.Map;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.example.lostnfound.model.Post;
 import com.example.lostnfound.model.User;
+import com.example.lostnfound.model.UserProfileResponse;
 import com.example.lostnfound.service.user.UserService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @RestController
@@ -31,5 +41,22 @@ public class UserController {
         String password=userMap.get("password");
         return userService.verify(mail, password);
     }
+
+    @GetMapping("/profile")
+    public UserProfileResponse profileUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = null;
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            email = ((UserDetails) authentication.getPrincipal()).getUsername();
+        }
+        if (email != null) {
+            User user = userService.findByEmail(email);
+            List<Post> posts = userService.findPostsByUserId(user.getUserId());
+            return new UserProfileResponse(user, posts);
+        } else {
+            throw new RuntimeException("User not authenticated");
+        }
+    }
+    
     
 }

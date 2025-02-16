@@ -41,7 +41,10 @@ public class MyUserDetails implements UserDetails{
 	public boolean isAccountNonLocked() {
 		return true;
 	}
-
+    
+    public Long getId() {
+        return user.getUserId();
+    }
     
     
 
