@@ -13,6 +13,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import com.example.lostnfound.enums.Role;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 public class DataLoader implements CommandLineRunner {
@@ -29,7 +31,7 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-
+        Logger logger = LoggerFactory.getLogger(DataLoader.class);
         int postCount = postRepository.findAll().size();
         int extraNeed = 100 - postCount;
         int userCount = userRepo.findAll().size();
@@ -52,9 +54,9 @@ public class DataLoader implements CommandLineRunner {
 
             try {
                 userRepo.save(user);
-                System.out.printf("BEEP: Generated user %d/%d%n", i + 1, extraUserNeed);
+                logger.info("Generated user {}/{}", i + 1, extraUserNeed);
             } catch (Exception e) {
-                System.err.printf("BOOP: Failed to save user %d: %s%n", i + 1, e.getMessage());
+                logger.error("Failed to save user {}: {}", i + 1, e.getMessage());
             }
         }
 
@@ -63,7 +65,7 @@ public class DataLoader implements CommandLineRunner {
             Thread.sleep(2000); // 2 seconds delay
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            System.err.println("Thread was interrupted, Failed to complete operation");
+            logger.error("Thread was interrupted, Failed to complete operation");
         }
         for (int i = 0; i < extraNeed; i++) {
             Post post = new Post();
@@ -82,9 +84,9 @@ public class DataLoader implements CommandLineRunner {
 
             try {
                 postRepository.save(post);
-                System.out.printf("BEEP: Generated post %d/%d%n", i + 1, extraNeed);
+                logger.info("BEEP: Generated post %d/%d%n", i + 1, extraNeed);
             } catch (Exception e) {
-                System.err.printf("BOOP: Failed to save post %d: %s%n", i + 1, e.getMessage());
+                logger.error("BOOP: Failed to save post %d: %s%n", i + 1, e.getMessage());
             }
         }
     }

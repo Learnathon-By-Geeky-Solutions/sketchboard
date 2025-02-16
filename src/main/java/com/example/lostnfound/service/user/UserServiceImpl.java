@@ -5,11 +5,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-
+import com.example.lostnfound.exception.UserNotFoundException;
 import com.example.lostnfound.model.Post;
 import com.example.lostnfound.model.User;
 import com.example.lostnfound.repository.PostRepo;
 import com.example.lostnfound.repository.UserRepo;
+import com.example.lostnfound.exception.PostnotFoundException;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -48,7 +49,7 @@ public class UserServiceImpl implements UserService {
     public User findByEmail(String email) {
         User user=userRepo.findByEmail(email);
         if(user==null){
-            throw new RuntimeException("User not found");
+            throw new UserNotFoundException("User not found");
         }
         else return user;
     }
@@ -57,7 +58,7 @@ public class UserServiceImpl implements UserService {
     public List<Post> findPostsByUserId(Long userId) {
         List<Post> posts = postRepo.findByUser_UserId(userId);
         if(posts == null) {
-            throw new RuntimeException("Posts not found");
+            throw new PostnotFoundException("Posts not found");
         }
         else return posts;
     }

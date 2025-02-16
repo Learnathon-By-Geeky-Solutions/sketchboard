@@ -22,6 +22,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import com.example.lostnfound.service.user.UserService;
+import com.example.lostnfound.exception.UserNotAuthenticatedException;
 
 
 
@@ -39,14 +40,14 @@ public class PostController {
     public Post postMethodName(@RequestBody Post post) {
        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = null;
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-            email = ((UserDetails) authentication.getPrincipal()).getUsername();
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails userDetails) {
+            email = userDetails.getUsername();
         }
         if (email != null) {
             User user = userService.findByEmail(email);
             post.setUser(user);
         } else {
-            throw new RuntimeException("User not authenticated");
+            throw new UserNotAuthenticatedException("User not authenticated");
         }
         return postService.savePost(post);
     }

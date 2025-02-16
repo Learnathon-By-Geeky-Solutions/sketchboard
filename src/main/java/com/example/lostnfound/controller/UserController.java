@@ -15,9 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-
+import com.example.lostnfound.exception.UserNotAuthenticatedException;
 
 @RestController
 public class UserController {
@@ -46,15 +44,15 @@ public class UserController {
     public UserProfileResponse profileUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = null;
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-            email = ((UserDetails) authentication.getPrincipal()).getUsername();
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails userDetails) {
+            email = userDetails.getUsername();
         }
         if (email != null) {
             User user = userService.findByEmail(email);
             List<Post> posts = userService.findPostsByUserId(user.getUserId());
             return new UserProfileResponse(user, posts);
         } else {
-            throw new RuntimeException("User not authenticated");
+            throw new UserNotAuthenticatedException("User not authenticated");
         }
     }
     
