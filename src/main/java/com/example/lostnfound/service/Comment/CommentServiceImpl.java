@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -31,5 +32,18 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public void deleteComment(Long id) {
         commentRepo.deleteById(id);
+    }
+
+    @Override
+    public Comment updateComment(Long id, Comment comment) {
+        Optional<Comment> existingComment = commentRepo.findById(id);
+        if (existingComment.isPresent()) {
+            Comment updatedComment = existingComment.get();
+            updatedComment.setContent(comment.getContent());
+            // Update other fields as necessary
+            return commentRepo.save(updatedComment);
+        } else {
+            return null;
+        }
     }
 }
