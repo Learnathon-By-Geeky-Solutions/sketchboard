@@ -1,13 +1,14 @@
 package com.example.lostnfound.util;
-
-import com.example.lostnfound.model.Post;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Table;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public class DatabaseUtils {
+
+    private DatabaseUtils() {
+        throw new UnsupportedOperationException("Utility class");
+    }
 
     public static String getTableAndColumnNames(Class<?> clazz) {
         Table tableAnnotation = clazz.getAnnotation(Table.class);

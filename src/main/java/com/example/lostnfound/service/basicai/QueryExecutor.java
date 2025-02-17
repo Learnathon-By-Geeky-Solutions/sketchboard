@@ -1,4 +1,4 @@
-package com.example.lostnfound.service.BasicAISearch;
+package com.example.lostnfound.service.basicai;
 
 import com.example.lostnfound.model.Post;
 import org.springframework.http.ResponseEntity;

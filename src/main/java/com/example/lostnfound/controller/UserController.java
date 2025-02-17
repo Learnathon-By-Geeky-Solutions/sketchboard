@@ -55,6 +55,9 @@ public class UserController {
         if (principal instanceof UserDetails) {
             String email = ((UserDetails) principal).getUsername();
             User user = userService.findByEmail(email);
+            if (user == null) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+            }
             List<Post> posts = userService.findPostsByUserId(user.getUserId());
             return new UserProfileResponse(user, posts);
         }

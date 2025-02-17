@@ -1,4 +1,4 @@
-package com.example.lostnfound.service.BasicAISearch;
+package com.example.lostnfound.service.basicai;
 
 import com.google.genai.Client;
 import com.google.genai.types.GenerateContentResponse;
@@ -53,9 +53,9 @@ public class GeminiResponseImpl implements GeminiResponse {
 
 
         // Adding header footer to query
-        query = constants.HeaderMsgForGemini + " user message: " + query + "\n";
-        query = query + " DB table info:\n" + constants.TableInfo + "\n";
-        query = query + constants.FooterMsgForGemini;
+        query = constants.headerMsgForGemini + " user message: " + query + "\n";
+        query = query + " DB table info:\n" + constants.tableInfo + "\n";
+        query = query + constants.footerMsgForGemini;
 
         final String responseFromGemini;
 
