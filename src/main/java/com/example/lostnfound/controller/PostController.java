@@ -4,12 +4,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.lostnfound.model.Post;
 import com.example.lostnfound.model.User;
-import com.example.lostnfound.model.UserProfileResponse;
 import com.example.lostnfound.service.post.PostService;
-
 import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import com.example.lostnfound.service.user.UserService;
 import com.example.lostnfound.exception.UserNotAuthenticatedException;
-
+import org.springframework.http.HttpStatus;
 
 
 @RestController
@@ -47,7 +43,7 @@ public class PostController {
             User user = userService.findByEmail(email);
             post.setUser(user);
         } else {
-            throw new UserNotAuthenticatedException("User not authenticated");
+            throw new UserNotAuthenticatedException("User is not authenticated", HttpStatus.UNAUTHORIZED);
         }
         return postService.savePost(post);
     }

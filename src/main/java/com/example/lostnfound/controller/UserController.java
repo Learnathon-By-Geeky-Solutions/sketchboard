@@ -3,13 +3,19 @@ package com.example.lostnfound.controller;
 import java.util.List;
 import java.util.Map;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.example.lostnfound.model.Post;
 import com.example.lostnfound.model.User;
 import com.example.lostnfound.model.UserProfileResponse;
 import com.example.lostnfound.service.user.UserService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -40,20 +46,19 @@ public class UserController {
         return userService.verify(mail, password);
     }
 
+    @Operation(summary = "Get user profile", description = "Retrieves authenticated user's profile and posts")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved user profile")
+    @ApiResponse(responseCode = "401", description = "User not authenticated")
     @GetMapping("/profile")
     public UserProfileResponse profileUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = null;
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails userDetails) {
-            email = userDetails.getUsername();
-        }
-        if (email != null) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails) {
+            String email = ((UserDetails) principal).getUsername();
             User user = userService.findByEmail(email);
             List<Post> posts = userService.findPostsByUserId(user.getUserId());
             return new UserProfileResponse(user, posts);
-        } else {
-            throw new UserNotAuthenticatedException("User not authenticated");
         }
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
     }
     
     
