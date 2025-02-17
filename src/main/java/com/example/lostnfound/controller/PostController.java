@@ -3,11 +3,9 @@ package com.example.lostnfound.controller;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.lostnfound.model.Post;
+import com.example.lostnfound.model.User;
 import com.example.lostnfound.service.post.PostService;
-
 import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,15 +13,38 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PutMapping;
-
 import com.example.lostnfound.enums.Catagory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import com.example.lostnfound.service.user.UserService;
+import com.example.lostnfound.exception.UserNotAuthenticatedException;
+import org.springframework.http.HttpStatus;
+
+
 @RestController
 public class PostController {
-    @Autowired
-    private PostService postService;
+    private final PostService postService;
+    private final UserService userService;
+
+    PostController(PostService postService, UserService userService) {
+        this.postService = postService;
+        this.userService = userService;
+    }
 
     @PostMapping("/posts")
     public Post postMethodName(@RequestBody Post post) {
+       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = null;
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails userDetails) {
+            email = userDetails.getUsername();
+        }
+        if (email != null) {
+            User user = userService.findByEmail(email);
+            post.setUser(user);
+        } else {
+            throw new UserNotAuthenticatedException("User is not authenticated", HttpStatus.UNAUTHORIZED);
+        }
         return postService.savePost(post);
     }
 
