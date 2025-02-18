@@ -22,7 +22,6 @@ import jakarta.persistence.TemporalType;
 import lombok.*;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.CascadeType;
 
 @Getter
 @Setter
@@ -81,7 +80,7 @@ public class Post {
         this.lastUpdatedTime = LocalDateTime.now();
     }
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne 
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 }

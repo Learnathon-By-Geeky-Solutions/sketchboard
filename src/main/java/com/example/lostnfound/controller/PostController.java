@@ -19,7 +19,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import com.example.lostnfound.service.user.UserService;
 import com.example.lostnfound.exception.UserNotAuthenticatedException;
-import org.springframework.http.HttpStatus;
 
 
 @RestController
@@ -43,7 +42,7 @@ public class PostController {
             User user = userService.findByEmail(email);
             post.setUser(user);
         } else {
-            throw new UserNotAuthenticatedException("User is not authenticated", HttpStatus.UNAUTHORIZED);
+            throw new UserNotAuthenticatedException("User is not authenticated");
         }
         return postService.savePost(post);
     }

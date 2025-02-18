@@ -2,9 +2,10 @@ package com.example.lostnfound.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.UNAUTHORIZED)
-public class UserNotAuthenticatedException extends RuntimeException {
-    public UserNotAuthenticatedException(String message) {
+@ResponseStatus(HttpStatus.NOT_FOUND)
+public class PostNotFoundException extends RuntimeException {
+    public PostNotFoundException(String message) {
         super(message);
     }
+
 }

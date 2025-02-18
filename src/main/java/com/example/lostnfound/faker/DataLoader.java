@@ -84,9 +84,9 @@ public class DataLoader implements CommandLineRunner {
 
             try {
                 postRepository.save(post);
-                logger.info("BEEP: Generated post %d/%d%n", i + 1, extraNeed);
+                logger.info("Generated post {}/{}", i + 1, extraNeed);
             } catch (Exception e) {
-                logger.error("BOOP: Failed to save post %d: %s%n", i + 1, e.getMessage());
+                logger.error("Failed to save post  {}: {}", i + 1, e.getMessage());
             }
         }
     }

@@ -10,8 +10,7 @@ import com.example.lostnfound.model.Post;
 import com.example.lostnfound.model.User;
 import com.example.lostnfound.repository.PostRepo;
 import com.example.lostnfound.repository.UserRepo;
-import com.example.lostnfound.exception.PostnotFoundException;
-import org.springframework.http.HttpStatus;
+import com.example.lostnfound.exception.PostNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +54,7 @@ public class UserServiceImpl implements UserService {
         User user=userRepo.findByEmail(email);
         if(user==null){
             logger.error("Unable to locate user with email: {}", email);
-            throw new UserNotFoundException("User not found with email: " + email + "\n", HttpStatus.NOT_FOUND);
+            throw new UserNotFoundException("User not found with email: " + email + "\n");
         }
         else return user;
     }
@@ -64,7 +63,7 @@ public class UserServiceImpl implements UserService {
     public List<Post> findPostsByUserId(Long userId) {
         List<Post> posts = postRepo.findByUserUserId(userId);
         if(posts == null) {
-            throw new PostnotFoundException("Posts not found", HttpStatus.NOT_FOUND);
+            throw new PostNotFoundException("Posts not found");
         }
         else return posts;
     }

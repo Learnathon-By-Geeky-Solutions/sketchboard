@@ -1,5 +1,6 @@
 package com.example.lostnfound.service.basicai;
 
+import com.example.lostnfound.exception.GeminiInitializationException;
 import com.google.genai.Client;
 import com.google.genai.types.GenerateContentResponse;
 import jakarta.annotation.PostConstruct;
@@ -16,9 +17,6 @@ import java.io.IOException;
 @Service
 @Component
 public class GeminiResponseImpl implements GeminiResponse {
-
-    private Constants constants = new Constants();
-
     private Client client;
     @Value("${gemini.api.key}")
     private char[] geminiApiKey;
@@ -33,7 +31,7 @@ public class GeminiResponseImpl implements GeminiResponse {
             java.util.Arrays.fill(geminiApiKey, '\0');
         } catch (Exception e) {
             log.error("Failed to initialize AI client", e);
-            throw new RuntimeException("AI service initialization failed");
+            throw new GeminiInitializationException("AI service initialization failed");
         }
     }
     @Override
@@ -53,9 +51,9 @@ public class GeminiResponseImpl implements GeminiResponse {
 
 
         // Adding header footer to query
-        query = constants.headerMsgForGemini + " user message: " + query + "\n";
-        query = query + " DB table info:\n" + constants.tableInfo + "\n";
-        query = query + constants.footerMsgForGemini;
+        query = Constants.HEADERMSGFORGEMINI + " user message: " + query + "\n";
+        query = query + " DB table info:\n" + Constants.TABLEINFO + "\n";
+        query = query + Constants.FOOTERMSGFORGEMINI;
 
         final String responseFromGemini;
 

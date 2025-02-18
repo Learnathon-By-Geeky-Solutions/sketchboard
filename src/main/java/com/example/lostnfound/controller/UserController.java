@@ -16,12 +16,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
-import com.example.lostnfound.exception.UserNotAuthenticatedException;
 
 @RestController
 public class UserController {
@@ -52,11 +50,11 @@ public class UserController {
     @GetMapping("/profile")
     public UserProfileResponse profileUser() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof UserDetails) {
-            String email = ((UserDetails) principal).getUsername();
+        if (principal instanceof UserDetails userDetails) {
+            String email = userDetails.getUsername();
             User user = userService.findByEmail(email);
             if (user == null) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
             }
             List<Post> posts = userService.findPostsByUserId(user.getUserId());
             return new UserProfileResponse(user, posts);
