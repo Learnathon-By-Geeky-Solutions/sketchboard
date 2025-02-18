@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.example.lostnfound.dto.UserDto;
 import com.example.lostnfound.model.Post;
 import com.example.lostnfound.model.User;
 import com.example.lostnfound.model.UserProfileResponse;
@@ -20,6 +21,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
 
 @RestController
 public class UserController {
@@ -43,6 +46,12 @@ public class UserController {
         String password=userMap.get("password");
         return userService.verify(mail, password);
     }
+
+    @GetMapping("/profile/{id}")
+    public UserDto getUser(@PathVariable("id") Long id) {
+        return userService.getUser(id);
+    }
+    
 
     @Operation(summary = "Get user profile", description = "Retrieves authenticated user's profile and posts")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved user profile")

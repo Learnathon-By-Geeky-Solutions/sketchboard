@@ -10,7 +10,9 @@ import com.example.lostnfound.model.Post;
 import com.example.lostnfound.model.User;
 import com.example.lostnfound.repository.PostRepo;
 import com.example.lostnfound.repository.UserRepo;
+import com.example.lostnfound.dto.UserDto;
 import com.example.lostnfound.exception.PostNotFoundException;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,13 +22,15 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManager authmManager;
     private final JWTService jwtService;
     private final PostRepo postRepo;
+    private final ModelMapper modelMapper;
     Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
-    UserServiceImpl(UserRepo userRepo, AuthenticationManager authmManager, JWTService jwtService, PostRepo postRepo) {
+    UserServiceImpl(UserRepo userRepo, AuthenticationManager authmManager, JWTService jwtService, PostRepo postRepo, ModelMapper modelMapper) {
         this.userRepo = userRepo;
         this.authmManager = authmManager;
         this.jwtService = jwtService;
         this.postRepo = postRepo;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -66,6 +70,13 @@ public class UserServiceImpl implements UserService {
             throw new PostNotFoundException("Posts not found");
         }
         else return posts;
+    }
+
+    @Override
+    public UserDto getUser(Long id) {
+        User user = userRepo.findById(id).orElseThrow(() -> new UserNotFoundException("User not found with id: " + id + "\n"));
+        UserDto userDto = this.modelMapper.map(user, UserDto.class);
+        return userDto;
     }
     
 }
