@@ -50,11 +50,11 @@ public class UserController {
     @GetMapping("/profile")
     public UserProfileResponse profileUser() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof UserDetails) {
-            String email = ((UserDetails) principal).getUsername();
+        if (principal instanceof UserDetails userDetails) {
+            String email = userDetails.getUsername();
             User user = userService.findByEmail(email);
             if (user == null) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
             }
             List<Post> posts = userService.findPostsByUserId(user.getUserId());
             return new UserProfileResponse(user, posts);

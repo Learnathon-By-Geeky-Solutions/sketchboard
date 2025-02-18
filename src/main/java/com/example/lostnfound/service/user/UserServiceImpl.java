@@ -10,7 +10,7 @@ import com.example.lostnfound.model.Post;
 import com.example.lostnfound.model.User;
 import com.example.lostnfound.repository.PostRepo;
 import com.example.lostnfound.repository.UserRepo;
-import com.example.lostnfound.exception.PostnotFoundException;
+import com.example.lostnfound.exception.PostNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
     public List<Post> findPostsByUserId(Long userId) {
         List<Post> posts = postRepo.findByUserUserId(userId);
         if(posts == null) {
-            throw new PostnotFoundException("Posts not found");
+            throw new PostNotFoundException("Posts not found");
         }
         else return posts;
     }
