@@ -8,6 +8,7 @@ class LostnFoundApplicationTests {
 
 	@Test
 	void contextLoads() {
+		//There will be no test cases in this project till now
 	}
 
 }

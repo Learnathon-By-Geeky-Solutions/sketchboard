@@ -1,8 +1,6 @@
 package com.example.lostnfound.service.post;
 import java.util.List;
 import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -12,8 +10,11 @@ import com.example.lostnfound.repository.PostRepo;
 @Service
 @Component
 public class PostServiceiImpl implements PostService {
-    @Autowired
-    private PostRepo postRepo;
+    private final PostRepo postRepo;
+
+    PostServiceiImpl(PostRepo postRepo) {
+        this.postRepo = postRepo;
+    }
 
     @Override
     public Post savePost(Post post) {
