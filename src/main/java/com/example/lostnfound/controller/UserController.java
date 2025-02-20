@@ -5,15 +5,16 @@ import java.util.Map;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import com.example.lostnfound.dto.UserDto;
+import com.example.lostnfound.exception.UserNotAuthenticatedException;
 import com.example.lostnfound.model.Post;
 import com.example.lostnfound.model.User;
 import com.example.lostnfound.model.UserProfileResponse;
 import com.example.lostnfound.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -32,41 +33,55 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public User register(@RequestBody User user) {
+    @Operation(summary = "Register a new user", description = "Registers a new user")
+    public ResponseEntity<User> register(@RequestBody User user) {
         user.setPassword(encoder.encode(user.getPassword()));
-        return userService.userRegister(user);
+        User registeredUser = userService.userRegister(user);
+        if (registeredUser != null) {
+            return new ResponseEntity<>(registeredUser, HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
     
     @PostMapping("/login")
-    public String login(@RequestBody Map<String, String> userMap) {
-        String mail=userMap.get("email");
-        String password=userMap.get("password");
-        return userService.verify(mail, password);
+    @Operation(summary = "Login", description = "Logs in a user")
+    public ResponseEntity<String> login(@RequestBody Map<String, String> userMap) {
+        String mail = userMap.get("email");
+        String password = userMap.get("password");
+        String token = userService.verify(mail, password);
+        if (token != null) {
+            return new ResponseEntity<>(token, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
     }
 
+    @Operation(summary = "Get user profile by id", description = "Retrieves user's profile by id")
     @GetMapping("/profile/{id}")
-    public UserDto getUser(@PathVariable("id") Long id) {
-        return userService.getUser(id);
+    public ResponseEntity<UserDto> getUser(@PathVariable("id") Long id) {
+        UserDto userDto = userService.getUser(id);
+        if (userDto != null) {
+            return new ResponseEntity<>(userDto, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
     
-
     @Operation(summary = "Get user profile", description = "Retrieves authenticated user's profile and posts")
-    @ApiResponse(responseCode = "200", description = "Successfully retrieved user profile")
-    @ApiResponse(responseCode = "401", description = "User not authenticated")
     @GetMapping("/profile")
-    public UserProfileResponse profileUser() {
+    public ResponseEntity<UserProfileResponse> profileUser() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof UserDetails userDetails) {
             String email = userDetails.getUsername();
             User user = userService.findByEmail(email);
             if (user == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+                throw new UserNotAuthenticatedException( "User not found");
             }
             List<Post> posts = userService.findPostsByUserId(user.getUserId());
-            return new UserProfileResponse(user, posts);
+            UserProfileResponse response = new UserProfileResponse(user, posts);
+            return new ResponseEntity<>(response, HttpStatus.OK);
         }
-        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
+        throw new UserNotAuthenticatedException( "User not authenticated");
     }
-    
-    
 }
