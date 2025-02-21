@@ -1,6 +1,9 @@
 package com.example.lostnfound.controller;
 
 import java.util.Map;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.lostnfound.model.User;
 import com.example.lostnfound.service.user.UserService;
@@ -24,12 +27,14 @@ public class UserController {
         user.setPassword(encoder.encode(user.getPassword()));
         return userService.userRegister(user);
     }
-    
+
     @PostMapping("/login")
-    public String login(@RequestBody Map<String, String> userMap) {
-        String mail=userMap.get("email");
-        String password=userMap.get("password");
-        return userService.verify(mail, password);
+    public ResponseEntity<String> login(@RequestBody Map<String, String> userMap) {
+        String mail = userMap.get("email");
+        String password = userMap.get("password");
+        String result = userService.verify(mail, password);
+        HttpStatus status = result.equals("Login Failed") ? HttpStatus.UNAUTHORIZED : HttpStatus.OK;
+        return new ResponseEntity<>(result, status);
     }
     
 }
