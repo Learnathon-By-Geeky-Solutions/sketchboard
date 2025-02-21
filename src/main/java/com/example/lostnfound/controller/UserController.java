@@ -2,6 +2,9 @@ package com.example.lostnfound.controller;
 
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import com.example.lostnfound.dto.UserDto;
@@ -43,7 +46,7 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-    
+
     @PostMapping("/login")
     @Operation(summary = "Login", description = "Logs in a user")
     public ResponseEntity<String> login(@RequestBody Map<String, String> userMap) {
