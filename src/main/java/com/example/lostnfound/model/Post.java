@@ -12,9 +12,9 @@ import com.example.lostnfound.enums.Status;
 
 import jakarta.persistence.*;
 import lombok.*;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
-// import jakarta.persistence.JoinColumn;
-// import jakarta.persistence.ManyToOne;
 @Getter
 @Setter
 @Entity
@@ -75,7 +75,7 @@ public class Post {
         this.lastUpdatedTime = LocalDateTime.now();
     }
 
-    // @ManyToOne
-    // @JoinColumn(name = "user_id", nullable = false)
-    // private Person person;
+    @ManyToOne 
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }

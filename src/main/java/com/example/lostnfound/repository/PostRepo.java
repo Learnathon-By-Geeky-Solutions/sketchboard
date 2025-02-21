@@ -16,4 +16,6 @@ public interface PostRepo extends JpaRepository<Post, Integer>{
                "ILIKE CONCAT('%', :searchTerm, '%')", nativeQuery = true)
     List<Post> searchPosts(@Param("searchTerm") String searchTerm);
 
+    List<Post> findByUserUserId(Long userId);
+
 }  

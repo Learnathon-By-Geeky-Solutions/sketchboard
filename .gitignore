@@ -33,4 +33,5 @@ build/
 .vscode/
 
 ### Manual ###
+#Don't include env file 
 .env
