@@ -1,12 +1,12 @@
 package com.example.lostnfound.enums;
 
 public enum Catagory {
-    Documents,
-    Electronics,
-    Jwelleries,
-    Accessories,
-    Clothes,
-    Mobile;
+    DOCUMENTS,
+    ELECTRONICS,
+    JWELLERIES,
+    ACCESSORIES,
+    CLOTHES,
+    MOBILE;
 
     public static Catagory[] getAllCategories() {
         return Catagory.values();

@@ -4,27 +4,17 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import com.example.lostnfound.enums.Catagory;
 import com.example.lostnfound.enums.Status;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import jakarta.persistence.*;
 import lombok.*;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
-// import jakarta.persistence.JoinColumn;
-// import jakarta.persistence.ManyToOne;
 @Getter
 @Setter
 @Entity
@@ -71,6 +61,9 @@ public class Post {
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime lastUpdatedTime;
 
+    // @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    // private List<Comment> comments;
+
     @PrePersist
     protected void onCreate() {
         this.uploadTime = LocalDateTime.now();
@@ -82,7 +75,7 @@ public class Post {
         this.lastUpdatedTime = LocalDateTime.now();
     }
 
-    // @ManyToOne
-    // @JoinColumn(name = "user_id", nullable = false)
-    // private Person person;
+    @ManyToOne 
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }
