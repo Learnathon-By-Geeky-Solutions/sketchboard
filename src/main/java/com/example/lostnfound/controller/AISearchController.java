@@ -4,6 +4,8 @@ import com.example.lostnfound.model.Post;
 import com.example.lostnfound.service.basicai.GeminiResponse;
 import com.example.lostnfound.service.basicai.QueryExecutor;
 
+import io.swagger.v3.oas.annotations.Operation;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,6 +25,7 @@ public class AISearchController {
         }
 
         @GetMapping("/basicAISearch")
+        @Operation(summary = "Basic AI Search", description = "Searches for posts using AI")
         public ResponseEntity<List<Post>> basicAISearch(@RequestParam ("msg") String query) {
                 String response = geminiResponse.getResponse(query);
                 return queryExecutor.executeAISearch(response);

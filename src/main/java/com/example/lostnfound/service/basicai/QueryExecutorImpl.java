@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 @Slf4j
 public class QueryExecutorImpl implements QueryExecutor {    
     private final JdbcTemplate jdbcTemplate;
+    
     private static final Logger logger = LoggerFactory.getLogger(QueryExecutorImpl.class);
     QueryExecutorImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;

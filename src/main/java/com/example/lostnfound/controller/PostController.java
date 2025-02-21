@@ -1,6 +1,8 @@
 package com.example.lostnfound.controller;
 
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 
 import com.example.lostnfound.model.Post;
 import com.example.lostnfound.model.User;
@@ -18,8 +20,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import com.example.lostnfound.service.user.UserService;
-import com.example.lostnfound.exception.UserNotAuthenticatedException;
 
+import io.swagger.v3.oas.annotations.Operation;
+
+import com.example.lostnfound.exception.UserNotAuthenticatedException;
 
 @RestController
 public class PostController {
@@ -32,8 +36,9 @@ public class PostController {
     }
 
     @PostMapping("/posts")
-    public Post postMethodName(@RequestBody Post post) {
-       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    @Operation(summary = "Create a new post", description = "Creates a new post")
+    public ResponseEntity<Post> postMethodName(@RequestBody Post post) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = null;
         if (authentication != null && authentication.getPrincipal() instanceof UserDetails userDetails) {
             email = userDetails.getUsername();
@@ -44,37 +49,49 @@ public class PostController {
         } else {
             throw new UserNotAuthenticatedException("User is not authenticated");
         }
-        return postService.savePost(post);
+        Post savedPost = postService.savePost(post);
+        return new ResponseEntity<>(savedPost, HttpStatus.CREATED);
     }
 
     @GetMapping("/posts")
-    public List<Post> getPosts() {
-        return postService.getPosts();
+    @Operation(summary = "Get all posts", description = "Retrieves all posts")
+    public ResponseEntity<List<Post>> getPosts() {
+        List<Post> posts = postService.getPosts();
+        return new ResponseEntity<>(posts, HttpStatus.OK);
     }
     
     @GetMapping("/posts/{id}")
-    public Post getPost(@PathVariable("id") int id) {
-        return postService.getPost(id);
+    @Operation(summary = "Get post by id", description = "Retrieves post by id")
+    public ResponseEntity<Post> getPost(@PathVariable("id") int id) {
+        Post post = postService.getPost(id);
+        return new ResponseEntity<>(post, HttpStatus.OK);
     }
 
     @DeleteMapping("/posts/{id}")
-    public String deletePost(@PathVariable("id") int id) {
+    @Operation(summary = "Delete post by id", description = "Deletes post by id")
+    public ResponseEntity<String> deletePost(@PathVariable("id") int id) {
         postService.deletePost(id);
-        return "Post deleted successfully";
+        return new ResponseEntity<>("Post deleted successfully", HttpStatus.OK);
     }
 
     @PutMapping("posts/{id}")
-    public Post updatePost(@PathVariable("id") int id, @RequestBody Post post) {
-        return postService.updatePost(id, post);
+    @Operation(summary = "Update post by id", description = "Updates post by id")
+    public ResponseEntity<Post> updatePost(@PathVariable("id") int id, @RequestBody Post post) {
+        Post updatedPost = postService.updatePost(id, post);
+        return new ResponseEntity<>(updatedPost, HttpStatus.OK);
     }
 
     @GetMapping("/search-posts")
-    public List<Post> searchPosts(@RequestParam String query) {
-        return postService.searchPosts(query);
+    @Operation(summary = "Search posts", description = "Searches posts by query")
+    public ResponseEntity<List<Post>> searchPosts(@RequestParam String query) {
+        List<Post> posts = postService.searchPosts(query);
+        return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
     @GetMapping("/categories")
-    public Catagory[] getAllCategories() {
-        return Catagory.getAllCategories();
+    @Operation(summary = "Get all categories", description = "Retrieves all categories")
+    public ResponseEntity<Catagory[]> getAllCategories() {
+        Catagory[] categories = Catagory.getAllCategories();
+        return new ResponseEntity<>(categories, HttpStatus.OK);
     }
 }
