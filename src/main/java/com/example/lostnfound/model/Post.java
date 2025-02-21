@@ -3,22 +3,14 @@ package com.example.lostnfound.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.example.lostnfound.enums.Catagory;
 import com.example.lostnfound.enums.Status;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import jakarta.persistence.*;
 import lombok.*;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -68,6 +60,9 @@ public class Post {
     @Column(name = "lastupdatedtime")
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime lastUpdatedTime;
+
+    // @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    // private List<Comment> comments;
 
     @PrePersist
     protected void onCreate() {

@@ -3,6 +3,7 @@ package com.example.lostnfound.model;
 import com.example.lostnfound.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
+import java.util.List;
 
 @Getter
 @Setter
@@ -35,4 +36,11 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private Role role;
+
+    // @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
+    // private List<Post> posts;
+
+    // @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
+    // private List<Comment> comments;
+
 }
