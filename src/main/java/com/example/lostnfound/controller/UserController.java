@@ -2,6 +2,7 @@ package com.example.lostnfound.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,7 +54,7 @@ public class UserController {
         String mail = userMap.get("email");
         String password = userMap.get("password");
         String token = userService.verify(mail, password);
-        if (token != null) {
+        if (!Objects.equals(token, "Login Failed")) {
             return new ResponseEntity<>(token, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
