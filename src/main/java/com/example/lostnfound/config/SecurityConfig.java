@@ -44,6 +44,7 @@ public class SecurityConfig {
         .addFilterBefore(jwtFilter,UsernamePasswordAuthenticationFilter.class)
         .build();
     }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);

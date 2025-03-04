@@ -6,6 +6,7 @@ import java.util.Objects;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import com.example.lostnfound.dto.UserDto;
@@ -29,9 +30,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RestController
 public class UserController {
     private final UserService userService;
-    private final BCryptPasswordEncoder encoder;
+    private final PasswordEncoder encoder;
 
-    public UserController(UserService userService, BCryptPasswordEncoder encoder) {
+    public UserController(UserService userService, PasswordEncoder encoder) {
         this.userService = userService;
         this.encoder = encoder;
     }
@@ -57,7 +58,7 @@ public class UserController {
         if (!Objects.equals(token, "Login Failed")) {
             return new ResponseEntity<>(token, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>("Unauthorized access. Please check your credentials.", HttpStatus.UNAUTHORIZED);
         }
     }
 
@@ -87,5 +88,11 @@ public class UserController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         throw new UserNotAuthenticatedException( "User not authenticated");
+    }
+
+    @Operation(summary = "Validate JWT token", description = "Validates JWT token")
+    @GetMapping("/validate")
+    public ResponseEntity<String> validate() {
+        return new ResponseEntity<>("Token is valid", HttpStatus.OK);
     }
 }
