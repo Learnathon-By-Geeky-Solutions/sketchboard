@@ -81,9 +81,9 @@ public class PostController {
         return new ResponseEntity<>(updatedPost, HttpStatus.OK);
     }
 
-    @GetMapping("/search-posts")
+    @GetMapping("/search")
     @Operation(summary = "Search posts", description = "Searches posts by query")
-    public ResponseEntity<List<Post>> searchPosts(@RequestParam String query) {
+    public ResponseEntity<List<Post>> searchPosts(@RequestParam("q") String query) {
         List<Post> posts = postService.searchPosts(query);
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }
