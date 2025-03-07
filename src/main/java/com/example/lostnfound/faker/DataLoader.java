@@ -1,10 +1,12 @@
 package com.example.lostnfound.faker;
 
-import com.example.lostnfound.enums.Catagory;
+import com.example.lostnfound.enums.Category;
 import com.example.lostnfound.enums.Status;
 import com.example.lostnfound.model.Post;
 import com.example.lostnfound.repository.PostRepo;
 import com.example.lostnfound.repository.UserRepo;
+import com.example.lostnfound.service.basicai.GeminiResponseImpl;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -22,10 +24,14 @@ public class DataLoader implements CommandLineRunner {
    
     private final PostRepo postRepository;
     private final UserRepo userRepo;
+    private final GeminiResponseImpl myGemini;
+    private final ObjectMapper objectMapper;
 
-    DataLoader(PostRepo postRepository, UserRepo userRepo) {
+    DataLoader(PostRepo postRepository, UserRepo userRepo, GeminiResponseImpl myGemini, ObjectMapper objectMapper) {
         this.postRepository = postRepository;
         this.userRepo = userRepo;
+        this.myGemini = myGemini;
+        this.objectMapper = objectMapper;
     }
 
 
@@ -33,14 +39,15 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) throws Exception {
         Logger logger = LoggerFactory.getLogger(DataLoader.class);
         int postCount = postRepository.findAll().size();
-        int extraNeed = 100 - postCount;
+        int extraPostNeed = 50 - postCount;
         int userCount = userRepo.findAll().size();
-        int extraUserNeed = 50 - userCount;
+        int extraUserNeed = 20 - userCount;
 
 
         Faker faker = new Faker();
 
         for (int i = 0; i < extraUserNeed; i++) {
+
             User user = new User();
             user.setName(faker.name().fullName());
             user.setEmail(faker.internet().emailAddress());
@@ -67,24 +74,48 @@ public class DataLoader implements CommandLineRunner {
             Thread.currentThread().interrupt();
             logger.error("Thread was interrupted, Failed to complete operation");
         }
-        for (int i = 0; i < extraNeed; i++) {
-            Post post = new Post();
-            post.setTitle(faker.lorem().sentence());
-            post.setDescription(faker.lorem().paragraph());
-            post.setLocation(faker.address().fullAddress());
-            post.setDate(LocalDate.now().minusDays(faker.number().numberBetween(0, 30)));
-            post.setTime(LocalTime.of(
-                faker.number().numberBetween(0, 23),
-                faker.number().numberBetween(0, 59)
-            ));
-            post.setCategory(Catagory.values()[faker.number().numberBetween(0, Catagory.values().length)]);
-            post.setStatus(Status.values()[faker.number().numberBetween(0, Status.values().length)]);
-            post.setRange(faker.number().numberBetween(1, 100)); 
+        for (int i = 0; i < extraPostNeed; i++) {
+            String instruction = """
+                Lost and found Post model schema:
+                {
+                    title:,
+                    description:,
+                    location:,
+                    date: yyyy-mm-dd,
+                    time: hh:mm, ex. 22:30, (No AM/PM),
+                    category: DOCUMENTS | ELECTRONICS | JEWELLERIES | ACCESSORIES | CLOTHES | MOBILE;,
+                    status: LOST | FOUND,
+                    range: int
+                }
+                
+                Give Random instance example in DICTIONARY format. Make the description realistic and very descriptive.
+                Have the location from Bangladesh.
+                
+                Strict RULE: NO EXTRA TEXT. MUST USE DOUBLE QUOTES. NO SINGLE QUOTES.
+                
+                Giving you two characters. Keep the location close to first character and the lost item close to the second character.
+                
+                """;
+            instruction += " first character: " + faker.lorem().characters(1) + ";\n";
+            instruction += " second character: " + faker.lorem().characters(1) + ";";
+            String response = myGemini.rawQuery(instruction);
+            System.out.println("AI Response: " + response);
+            //make sure the response is a valid JSON
+            StringBuilder rb = new StringBuilder(response);
+            while (rb.charAt(rb.length() - 1) != '}') {
+                rb.deleteCharAt(rb.length() - 1);
+            }
+            while(rb.charAt(0) != '{') {
+                rb.deleteCharAt(0);
+            }
+            response = rb.toString();
+            Post post = objectMapper.readValue(response, Post.class);
             post.setUser(userRepo.findById(faker.number().numberBetween(1, userRepo.count() + 1)).orElse(null));
-
             try {
                 postRepository.save(post);
-                logger.info("Generated post {}/{}", i + 1, extraNeed);
+                logger.info("Generated post {}/{}", i + 1, extraPostNeed);
+                //delay of 5s, as we have API rate limit (15 Requests per minute)
+                Thread.sleep(5000);
             } catch (Exception e) {
                 logger.error("Failed to save post  {}: {}", i + 1, e.getMessage());
             }

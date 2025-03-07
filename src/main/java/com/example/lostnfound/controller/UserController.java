@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,10 +33,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class UserController {
     private final UserService userService;
     private final PasswordEncoder encoder;
+    private final ModelMapper modelMapper;
 
-    public UserController(UserService userService, PasswordEncoder encoder) {
+    @Autowired
+    public UserController(UserService userService, PasswordEncoder encoder, ModelMapper modelMapper) {
         this.userService = userService;
         this.encoder = encoder;
+        this.modelMapper = modelMapper;
     }
 
     @PostMapping("/register")
@@ -84,7 +89,7 @@ public class UserController {
                 throw new UserNotAuthenticatedException( "User not found");
             }
             List<Post> posts = userService.findPostsByUserId(user.getUserId());
-            UserProfileResponse response = new UserProfileResponse(user, posts);
+            UserProfileResponse response = new UserProfileResponse(modelMapper.map(user, UserDto.class), posts);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         throw new UserNotAuthenticatedException( "User not authenticated");

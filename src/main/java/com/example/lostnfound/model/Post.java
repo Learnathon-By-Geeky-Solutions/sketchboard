@@ -3,11 +3,8 @@ package com.example.lostnfound.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
-import com.example.lostnfound.enums.Catagory;
+import com.example.lostnfound.enums.Category;
 import com.example.lostnfound.enums.Status;
 
 import jakarta.persistence.*;
@@ -30,7 +27,7 @@ public class Post {
     @Column(name = "title",nullable = false, columnDefinition = "varchar(255)") 
     private String title;
 
-    @Column(name = "description",columnDefinition = "varchar(255) default 'Unknown'")
+    @Column(name = "description",columnDefinition = "varchar(10000) default 'Unknown'")
     private String description;
 
     @Column(name = "location",nullable = false, columnDefinition = "varchar(255)")
@@ -44,7 +41,7 @@ public class Post {
 
     @Column(name = "category", nullable = false)
     @Enumerated(EnumType.STRING)
-    private Catagory category;
+    private Category category;
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)

@@ -4,6 +4,8 @@ import com.example.lostnfound.exception.GeminiInitializationException;
 import com.google.genai.Client;
 import com.google.genai.types.GenerateContentResponse;
 import jakarta.annotation.PostConstruct;
+import lombok.Data;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpException;
@@ -55,8 +57,11 @@ public class GeminiResponseImpl implements GeminiResponse {
         query = query + " DB table info:\n" + Constants.TABLEINFO + "\n";
         query = query + Constants.FOOTERMSGFORGEMINI;
 
-        final String responseFromGemini;
+        return rawQuery(query);
+    }
 
+    public String rawQuery(String query){
+        final String responseFromGemini;
         try {
             GenerateContentResponse response =
                     client.models.generateContent(modelId, query, null);

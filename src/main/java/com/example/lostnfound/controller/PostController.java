@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PutMapping;
-import com.example.lostnfound.enums.Catagory;
+import com.example.lostnfound.enums.Category;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -90,8 +90,8 @@ public class PostController {
 
     @GetMapping("/categories")
     @Operation(summary = "Get all categories", description = "Retrieves all categories")
-    public ResponseEntity<Catagory[]> getAllCategories() {
-        Catagory[] categories = Catagory.getAllCategories();
+    public ResponseEntity<Category[]> getAllCategories() {
+        Category[] categories = Category.getAllCategories();
         return new ResponseEntity<>(categories, HttpStatus.OK);
     }
 }
