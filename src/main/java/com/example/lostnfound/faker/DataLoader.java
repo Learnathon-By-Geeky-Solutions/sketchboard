@@ -89,15 +89,17 @@ public class DataLoader implements CommandLineRunner {
                 }
                 
                 Give Random instance example in DICTIONARY format. Make the description realistic and very descriptive.
-                Have the location from Bangladesh.
+                Have the location from Bangladesh. 
                 
                 Strict RULE: NO EXTRA TEXT. MUST USE DOUBLE QUOTES. NO SINGLE QUOTES.
                 
                 Giving you two characters. Keep the location close to first character and the lost item close to the second character.
-                
+                For category and status, i am giving you the index of the given enum.
                 """;
             instruction += " first character: " + faker.lorem().characters(1) + ";\n";
-            instruction += " second character: " + faker.lorem().characters(1) + ";";
+            instruction += " second character: " + faker.lorem().characters(1) + ";\n";
+            instruction += " category: " + faker.number().numberBetween(0, Category.values().length) + ";\n";
+            instruction += " status: " + faker.number().numberBetween(0, Status.values().length) + ";\n";
             String response = myGemini.rawQuery(instruction);
             System.out.println("AI Response: " + response);
             //make sure the response is a valid JSON
