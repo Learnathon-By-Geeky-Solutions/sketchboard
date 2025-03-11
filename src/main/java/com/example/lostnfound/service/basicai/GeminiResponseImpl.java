@@ -68,7 +68,7 @@ public class GeminiResponseImpl implements GeminiResponse {
             responseFromGemini = response.text();
         } catch (HttpException | IOException e) {
             log.error("Error processing AI search request", e);
-            return "AI_ERR_" + System.currentTimeMillis();
+            return "AI_ERR_: " + e.getMessage();
         }
         return responseFromGemini;
     }
