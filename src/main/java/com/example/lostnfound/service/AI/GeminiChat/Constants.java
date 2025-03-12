@@ -1,4 +1,4 @@
-package com.example.lostnfound.service.basicai;
+package com.example.lostnfound.service.AI.GeminiChat;
 import com.example.lostnfound.model.Post;
 import com.example.lostnfound.util.DatabaseUtils;
 
