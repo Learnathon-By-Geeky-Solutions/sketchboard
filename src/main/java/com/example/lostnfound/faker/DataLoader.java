@@ -17,6 +17,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Objects;
+
 @Component
 public class DataLoader implements CommandLineRunner {
 
@@ -40,7 +42,7 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) throws Exception {
         Logger logger = LoggerFactory.getLogger(DataLoader.class);
         int postCount = postRepository.findAll().size();
-        int extraPostNeed = 30 - postCount;
+        int extraPostNeed = 3 - postCount;
         int userCount = userRepo.findAll().size();
         int extraUserNeed = 5 - userCount;
 
@@ -103,6 +105,7 @@ public class DataLoader implements CommandLineRunner {
             instruction += " status: " + faker.number().numberBetween(0, Status.values().length) + ";\n";
             String response = myGemini.rawQuery(instruction);
             System.out.println("AI Response: " + response);
+            Objects.requireNonNull(response);
             //make sure the response is a valid JSON
             StringBuilder rb = new StringBuilder(response);
             while (rb.charAt(rb.length() - 1) != '}') {

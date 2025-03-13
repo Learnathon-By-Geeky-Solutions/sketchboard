@@ -31,7 +31,7 @@ public class Post {
 
     @Column
     @JdbcTypeCode(SqlTypes.VECTOR)
-    @Array(length = 384) // dimensions
+    @Array(length = 3072) // dimensions
     private float[] embedding;
 
     @Column(name = "title",nullable = false, columnDefinition = "varchar(255)")

@@ -21,7 +21,9 @@ public class PostServiceiImpl implements PostService {
 
     @Override
     public Post savePost(Post post) throws IOException, InterruptedException {
-        post.setEmbedding(embeddingService.getEmbedding(post.infoForEmbedding()));
+        float[] embedding = embeddingService.getEmbedding(post.infoForEmbedding());
+        System.out.println("********EmbeddingSize: " + embedding.length);
+        post.setEmbedding(embedding);
         return postRepo.save(post);
     }
 
