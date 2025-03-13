@@ -40,9 +40,9 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) throws Exception {
         Logger logger = LoggerFactory.getLogger(DataLoader.class);
         int postCount = postRepository.findAll().size();
-        int extraPostNeed = 10 - postCount;
+        int extraPostNeed = 30 - postCount;
         int userCount = userRepo.findAll().size();
-        int extraUserNeed = 1 - userCount;
+        int extraUserNeed = 5 - userCount;
 
 
         Faker faker = new Faker();
