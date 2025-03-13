@@ -11,6 +11,12 @@ import jakarta.persistence.*;
 import lombok.*;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import org.hibernate.annotations.Array;
+import org.hibernate.annotations.JavaType;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 
 @Getter
 @Setter
@@ -18,16 +24,20 @@ import jakarta.persistence.ManyToOne;
 @Table(name = "post")
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "title",nullable = false, columnDefinition = "varchar(255)") 
+    @Column
+    @JdbcTypeCode(SqlTypes.VECTOR)
+    @Array(length = 384) // dimensions
+    private float[] embedding;
+
+    @Column(name = "title",nullable = false, columnDefinition = "varchar(255)")
     private String title;
 
-    @Column(name = "description",columnDefinition = "varchar(10000) default 'Unknown'")
+    @Column(name = "description",columnDefinition = "varchar(10000)")
     private String description;
 
     @Column(name = "location",nullable = false, columnDefinition = "varchar(255)")
@@ -75,4 +85,14 @@ public class Post {
     @ManyToOne 
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+
+    public String infoForEmbedding(){
+        String title5x = title + " " + title + " " + title + " " + title + " " + title;
+        StringBuilder category10x = new StringBuilder();
+        for (int i = 0; i < 10; i++) {
+            category10x.append(category).append(" ");
+        }
+        return title5x + " " + description + " " + title5x + " " + location + " " + category10x;
+    }
 }

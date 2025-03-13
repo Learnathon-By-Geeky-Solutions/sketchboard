@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+
 @Repository
 public interface PostRepo extends JpaRepository<Post, Integer>{
     @Query(value = "SELECT * FROM post " +
@@ -17,5 +18,8 @@ public interface PostRepo extends JpaRepository<Post, Integer>{
     List<Post> searchPosts(@Param("searchTerm") String searchTerm);
 
     List<Post> findByUserUserId(Long userId);
+
+    @Query(value = "SELECT * FROM post ORDER BY embedding <=> CAST(:queryEmbedding AS vector) LIMIT :topK", nativeQuery = true)
+    List<Post> findTopKSimilarPosts(@Param("queryEmbedding") float[] queryEmbedding, @Param("topK") int topK);
 
 }  

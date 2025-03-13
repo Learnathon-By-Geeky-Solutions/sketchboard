@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import com.example.lostnfound.model.Post;
 import com.example.lostnfound.model.User;
 import com.example.lostnfound.service.post.PostService;
+
+import java.io.IOException;
 import java.util.List;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,7 +39,7 @@ public class PostController {
 
     @PostMapping("/posts")
     @Operation(summary = "Create a new post", description = "Creates a new post")
-    public ResponseEntity<Post> postMethodName(@RequestBody Post post) {
+    public ResponseEntity<Post> postMethodName(@RequestBody Post post) throws IOException, InterruptedException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = null;
         if (authentication != null && authentication.getPrincipal() instanceof UserDetails userDetails) {
