@@ -12,10 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -36,20 +33,20 @@ public class AISearchController {
             this.postService = postService;
         }
 
-        @GetMapping("/basicAISearch")
+        @PostMapping("/basicAISearch")
         @Operation(summary = "Basic AI Search", description = "Searches for posts using AI")
         public ResponseEntity<List<Post>> basicAISearch(@RequestBody String query) {
                 String response = geminiResponse.getResponse(query);
                 return queryExecutor.executeAISearch(response);
         }
 
-        @GetMapping("/getEmbedding")
+        @PostMapping("/getEmbedding")
         @Operation(summary = "Get Embedding", description = "Get embedding for a given input")
         public float[] getEmbedding(@RequestBody String input) throws Exception {
                 return embeddingService.getEmbedding(input);
         }
 
-        @GetMapping("/enhancedSearch")
+        @PostMapping("/enhancedSearch")
         @Operation(summary = "Enhanced Search", description = "Searches for posts using AI and returns similar posts")
         public List<PostDto> enhancedSearch(@RequestBody aiSearchQuery query) throws IOException, InterruptedException {
                 float[] queryEmbedding = embeddingService.getEmbedding(query.getQuery());
@@ -63,7 +60,7 @@ public class AISearchController {
                 return postDtos;
         }
 
-        @GetMapping("/getSimilarPosts")
+        @PostMapping("/getSimilarPosts")
         @Operation(summary = "Get Similar Posts", description = "Get similar posts for a given post")
         public List<PostDto> getSimilarPosts(@RequestBody aiSearchQuery query) {
                 Post post = postService.getPost(query.getPostId());
