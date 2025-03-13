@@ -2,6 +2,8 @@ package com.example.lostnfound.dto;
 
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 public class PostDto {
     String title;
@@ -9,8 +11,8 @@ public class PostDto {
     String location;
     String category;
     String status;
-    String createdAt;
-    String updatedAt;
+    LocalDateTime createdAt;
+    LocalDateTime updatedAt;
     String user;
 }
 
