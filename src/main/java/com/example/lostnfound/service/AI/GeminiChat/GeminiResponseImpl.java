@@ -1,11 +1,9 @@
-package com.example.lostnfound.service.basicai;
+package com.example.lostnfound.service.AI.GeminiChat;
 
 import com.example.lostnfound.exception.GeminiInitializationException;
 import com.google.genai.Client;
 import com.google.genai.types.GenerateContentResponse;
 import jakarta.annotation.PostConstruct;
-import lombok.Data;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpException;

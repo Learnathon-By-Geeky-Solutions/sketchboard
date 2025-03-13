@@ -1,8 +1,8 @@
 package com.example.lostnfound.controller;
 
 import com.example.lostnfound.model.Post;
-import com.example.lostnfound.service.basicai.GeminiResponse;
-import com.example.lostnfound.service.basicai.QueryExecutor;
+import com.example.lostnfound.service.AI.GeminiChat.GeminiResponse;
+import com.example.lostnfound.service.AI.GeminiChat.QueryExecutor;
 
 import io.swagger.v3.oas.annotations.Operation;
 
