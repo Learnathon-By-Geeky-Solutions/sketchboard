@@ -37,7 +37,19 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <google.genai.version>0.1.0</google.genai.version>
+        <spring-ai.version>1.0.0-M6</spring-ai.version>
     </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.ai</groupId>
+                <artifactId>spring-ai-bom</artifactId>
+                <version>${spring-ai.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         
@@ -54,6 +66,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jdbc</artifactId>
@@ -74,7 +87,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
-            <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -98,14 +110,30 @@
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-impl</artifactId>
             <version>0.12.6</version>
-            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-jackson</artifactId>
             <version>0.12.6</version>
-            <scope>runtime</scope>
         </dependency>
+
+        <dependency>
+            <groupId>io.hypersistence</groupId>
+            <artifactId>hypersistence-utils-hibernate-60</artifactId>
+            <version>3.5.0</version> <!-- Use appropriate version for your Hibernate -->
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-vector</artifactId>
+            <version>6.4.0.Final</version>
+        </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>com.pgvector</groupId>-->
+<!--            <artifactId>pgvector</artifactId>-->
+<!--            <version>0.1.6</version>-->
+<!--        </dependency>-->
         
         <dependency>
             <groupId>org.springdoc</groupId>
@@ -115,7 +143,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <scope>runtime</scope>
+            <version>42.6.0</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -137,6 +165,7 @@
             <artifactId>google-genai</artifactId>
             <version>${google.genai.version}</version>
         </dependency>
+
     </dependencies>
 
     <build>

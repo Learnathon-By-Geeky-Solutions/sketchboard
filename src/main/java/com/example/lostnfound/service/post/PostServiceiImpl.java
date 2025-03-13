@@ -1,6 +1,9 @@
 package com.example.lostnfound.service.post;
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
+
+import com.example.lostnfound.service.AI.Embedding.EmbeddingService;
 import org.springframework.stereotype.Service;
 
 import com.example.lostnfound.model.Post;
@@ -9,14 +12,17 @@ import com.example.lostnfound.repository.PostRepo;
 @Service
 public class PostServiceiImpl implements PostService {
     private final PostRepo postRepo;
+    private final EmbeddingService embeddingService;
 
-    PostServiceiImpl(PostRepo postRepo) {
+    PostServiceiImpl(PostRepo postRepo, EmbeddingService embeddingService) {
         this.postRepo = postRepo;
+        this.embeddingService = embeddingService;
     }
 
     @Override
-    public Post savePost(Post post) {
-       return postRepo.save(post);
+    public Post savePost(Post post) throws IOException, InterruptedException {
+        post.setEmbedding(embeddingService.getEmbedding(post.infoForEmbedding()));
+        return postRepo.save(post);
     }
 
     @Override
@@ -70,4 +76,26 @@ public class PostServiceiImpl implements PostService {
         return postRepo.searchPosts(searchTerm);
     }
 
+    private float cosineSimilarity(float[] a, float[] b) {
+        float dotProduct = 0;
+        float normA = 0;
+        float normB = 0;
+        for (int i = 0; i < a.length; i++) {
+            dotProduct += a[i] * b[i];
+            normA += a[i] * a[i];
+            normB += b[i] * b[i];
+        }
+        return dotProduct / (float) (Math.sqrt(normA) * Math.sqrt(normB));
+    }
+
+    @Override
+    public List<Post> findTopKSimilarPosts(float[] embed, int topK) {
+
+        Objects.requireNonNull(embed);
+        List<Post> res = postRepo.findTopKSimilarPosts(embed, topK);
+        for(Post post : res) {
+            System.out.println(post.getId() + " => " + cosineSimilarity(embed, post.getEmbedding()));
+        }
+        return res;
+    }
 }

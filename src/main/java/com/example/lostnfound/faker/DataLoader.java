@@ -6,6 +6,7 @@ import com.example.lostnfound.model.Post;
 import com.example.lostnfound.repository.PostRepo;
 import com.example.lostnfound.repository.UserRepo;
 import com.example.lostnfound.service.AI.GeminiChat.GeminiResponseImpl;
+import com.example.lostnfound.service.post.PostService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
 import org.springframework.boot.CommandLineRunner;
@@ -24,12 +25,14 @@ public class DataLoader implements CommandLineRunner {
     private final UserRepo userRepo;
     private final GeminiResponseImpl myGemini;
     private final ObjectMapper objectMapper;
+    private final PostService postService;
 
-    DataLoader(PostRepo postRepository, UserRepo userRepo, GeminiResponseImpl myGemini, ObjectMapper objectMapper) {
+    DataLoader(PostRepo postRepository, UserRepo userRepo, GeminiResponseImpl myGemini, ObjectMapper objectMapper, PostService postService) {
         this.postRepository = postRepository;
         this.userRepo = userRepo;
         this.myGemini = myGemini;
         this.objectMapper = objectMapper;
+        this.postService = postService;
     }
 
 
@@ -37,9 +40,9 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) throws Exception {
         Logger logger = LoggerFactory.getLogger(DataLoader.class);
         int postCount = postRepository.findAll().size();
-        int extraPostNeed = 50 - postCount;
+        int extraPostNeed = 10 - postCount;
         int userCount = userRepo.findAll().size();
-        int extraUserNeed = 20 - userCount;
+        int extraUserNeed = 1 - userCount;
 
 
         Faker faker = new Faker();
@@ -112,7 +115,7 @@ public class DataLoader implements CommandLineRunner {
             Post post = objectMapper.readValue(response, Post.class);
             post.setUser(userRepo.findById(faker.number().numberBetween(1, userRepo.count() + 1)).orElse(null));
             try {
-                postRepository.save(post);
+                postService.savePost(post);
                 logger.info("Generated post {}/{}", i + 1, extraPostNeed);
                 //delay of 5s, as we have API rate limit (15 Requests per minute)
                 Thread.sleep(5000);

@@ -14,45 +14,38 @@ import java.net.http.HttpResponse;
 @Data
 public class EmbeddingService {
 
-    /*
-       import requests
-
-hf_token = ""
-
-API_URL = "https://api-inference.huggingface.co/pipeline/feature-extraction/sentence-transformers/all-MiniLM-L6-v2"
-headers = {"Authorization": f"Bearer {hf_token}"}
-
-def query(payload):
-    response = requests.post(API_URL, headers=headers, json=payload)
-    return response.json()
-
-output = query({"inputs": "The big brown dog"})
-
-print(output)
-
-
-         */
     // Make http request
-    @Value("${gemini.api.key}")
+    @Value("${HF_TOKEN}")
     private String huggingfaceToken;
     String url = "https://api-inference.huggingface.co/pipeline/feature-extraction/sentence-transformers/all-MiniLM-L6-v2";
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public float[] getEmbedding(String input) throws IOException, InterruptedException {
-        System.out.println("Getting embedding for: " + input);
+        System.out.println("Token: " + huggingfaceToken);
+        //remove problematic characters
+        input = input.replaceAll("[<>]", "")
+                .replaceAll("(?i)script", "")
+                .trim();
+        //this regex removes all special characters except for spaces
+        String reqBody = "{\"inputs\": \"" + input + "\"}";
+        System.out.println("Request body: " + reqBody);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .header("Authorization", "Bearer " + huggingfaceToken)
                 .headers("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString("(\"{\\\"inputs\\\": \\\"\" + input + \"\\\"}\")"))
+                .POST(HttpRequest.BodyPublishers.ofString("(\"{\\\"inputs\\\": \\\"\"" + input + "\"\\\"}\")"))
                 .build();
 
         // Get response
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        System.out.println(response.body());
-        return objectMapper.readValue(response.body(), float[][].class)[0];
+        try {
+            return objectMapper.readValue(response.body(), float[].class);
+        } catch (Exception e) {
+            System.out.println("Error + " + e.getMessage());
+            System.out.println("Response: " + response.body());
+        }
+        return null;
     }
-
 
 }
