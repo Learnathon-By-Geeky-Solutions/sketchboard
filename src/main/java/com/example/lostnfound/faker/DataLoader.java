@@ -121,7 +121,7 @@ public class DataLoader implements CommandLineRunner {
                 postService.savePost(post);
                 logger.info("Generated post {}/{}", i + 1, extraPostNeed);
                 //delay of 5s, as we have API rate limit (15 Requests per minute)
-                Thread.sleep(5000);
+                Thread.sleep(10000);
             } catch (Exception e) {
                 logger.error("Failed to save post  {}: {}", i + 1, e.getMessage());
             }
