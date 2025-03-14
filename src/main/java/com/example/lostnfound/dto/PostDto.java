@@ -3,6 +3,7 @@ package com.example.lostnfound.dto;
 import com.example.lostnfound.enums.Category;
 import com.example.lostnfound.enums.Status;
 import lombok.Data;
+import java.util.List;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -22,5 +23,6 @@ public class PostDto {
     LocalDateTime uploadTime;
     LocalDateTime lastUpdatedTime;
     long userId;
+    private List<Long> commentIds;
 }
 

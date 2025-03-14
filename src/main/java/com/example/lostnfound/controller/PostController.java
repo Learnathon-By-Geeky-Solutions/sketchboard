@@ -1,37 +1,31 @@
 package com.example.lostnfound.controller;
-
-import com.example.lostnfound.dto.PostDto;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.modelmapper.ModelMapper;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpStatus;
-
-import com.example.lostnfound.model.Post;
-import com.example.lostnfound.model.User;
-import com.example.lostnfound.service.post.PostService;
+import com.example.lostnfound.model.Comment;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.lostnfound.dto.PostDto;
 import com.example.lostnfound.enums.Category;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
+import com.example.lostnfound.model.Post;
+import com.example.lostnfound.service.post.PostService;
 import com.example.lostnfound.service.user.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
-
-import com.example.lostnfound.exception.UserNotAuthenticatedException;
 
 @RestController
 public class PostController {
@@ -85,6 +79,10 @@ public class PostController {
     public ResponseEntity<PostDto> getPost(@PathVariable("id") int id) {
         Post post = postService.getPost(id);
         PostDto myPost = modelMapper.map(post, PostDto.class);
+        List<Long> commentIds = post.getComments().stream()
+                .map(Comment::getId)
+                .collect(Collectors.toList());
+        myPost.setCommentIds(commentIds);
         System.out.println("The last update time: " + post.getLastUpdatedTime());
         return new ResponseEntity<>(myPost, HttpStatus.OK);
     }
