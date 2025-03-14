@@ -1,8 +1,12 @@
 package com.example.lostnfound.dto;
 
+import com.example.lostnfound.enums.Category;
+import com.example.lostnfound.enums.Status;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Data
 public class PostDto {
@@ -10,8 +14,11 @@ public class PostDto {
     String title;
     String description;
     String location;
-    String category;
-    String status;
+    LocalDate date;
+    LocalTime time;
+    Category category;
+    Status status;
+    int range;
     LocalDateTime uploadTime;
     LocalDateTime lastUpdatedTime;
     String user;
