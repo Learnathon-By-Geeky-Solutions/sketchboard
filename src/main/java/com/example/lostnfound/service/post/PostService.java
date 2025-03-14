@@ -20,4 +20,6 @@ public interface PostService {
     List<Post> searchPosts(String searchTerm) ;
 
     List<Post> findTopKSimilarPosts(float[] embed, int topK);
+
+    List<Post> getCustomizedPosts();
 }

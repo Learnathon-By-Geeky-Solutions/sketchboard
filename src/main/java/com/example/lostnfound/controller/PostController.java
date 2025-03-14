@@ -1,5 +1,8 @@
 package com.example.lostnfound.controller;
 
+import com.example.lostnfound.dto.PostDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
@@ -9,7 +12,10 @@ import com.example.lostnfound.model.User;
 import com.example.lostnfound.service.post.PostService;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,6 +37,7 @@ import com.example.lostnfound.exception.UserNotAuthenticatedException;
 public class PostController {
     private final PostService postService;
     private final UserService userService;
+    private final ModelMapper modelMapper = new ModelMapper();
 
     PostController(PostService postService, UserService userService) {
         this.postService = postService;
@@ -39,34 +46,46 @@ public class PostController {
 
     @PostMapping("/posts")
     @Operation(summary = "Create a new post", description = "Creates a new post")
-    public ResponseEntity<Post> postMethodName(@RequestBody Post post) throws IOException, InterruptedException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = null;
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails userDetails) {
-            email = userDetails.getUsername();
-        }
-        if (email != null) {
-            User user = userService.findByEmail(email);
-            post.setUser(user);
-        } else {
-            throw new UserNotAuthenticatedException("User is not authenticated");
-        }
+    public ResponseEntity<PostDto> postMethodName(@RequestBody Post post) throws IOException, InterruptedException {
+        post.setUser(userService.getCurrentUser());
         Post savedPost = postService.savePost(post);
-        return new ResponseEntity<>(savedPost, HttpStatus.CREATED);
+        PostDto myPost = modelMapper.map(savedPost, PostDto.class);
+        return new ResponseEntity<>(myPost, HttpStatus.CREATED);
     }
 
     @GetMapping("/posts")
     @Operation(summary = "Get all posts", description = "Retrieves all posts")
-    public ResponseEntity<List<Post>> getPosts() {
+    public ResponseEntity<List<PostDto>> getPosts() {
         List<Post> posts = postService.getPosts();
-        return new ResponseEntity<>(posts, HttpStatus.OK);
+        List<PostDto>myPosts = new ArrayList<>();
+        for(Post post: posts){
+            myPosts.add(modelMapper.map(post, PostDto.class));
+        }
+        return new ResponseEntity<>(myPosts, HttpStatus.OK);
     }
-    
+
+    @GetMapping("/customizedPosts")
+    @Operation(summary = "Get related posts", description = "Retrieves related posts for user")
+    public  ResponseEntity<List<PostDto>> getCustomizedPosts() {
+        Long myUserId = userService.getCurrentUser().getUserId();
+        List<Post> posts = postService.getCustomizedPosts();
+        List<PostDto>myPosts = new ArrayList<>();
+        for(Post post: posts){
+            //skip if post is by the user
+            if(Objects.equals(post.getUser().getUserId(), myUserId)){
+                continue;
+            }
+            myPosts.add(modelMapper.map(post, PostDto.class));
+        }
+        return new ResponseEntity<>(myPosts, HttpStatus.OK);
+    }
+
     @GetMapping("/posts/{id}")
     @Operation(summary = "Get post by id", description = "Retrieves post by id")
-    public ResponseEntity<Post> getPost(@PathVariable("id") int id) {
+    public ResponseEntity<PostDto> getPost(@PathVariable("id") int id) {
         Post post = postService.getPost(id);
-        return new ResponseEntity<>(post, HttpStatus.OK);
+        PostDto myPost = modelMapper.map(post, PostDto.class);
+        return new ResponseEntity<>(myPost, HttpStatus.OK);
     }
 
     @DeleteMapping("/posts/{id}")
@@ -78,16 +97,21 @@ public class PostController {
 
     @PutMapping("posts/{id}")
     @Operation(summary = "Update post by id", description = "Updates post by id")
-    public ResponseEntity<Post> updatePost(@PathVariable("id") int id, @RequestBody Post post) {
+    public ResponseEntity<PostDto> updatePost(@PathVariable("id") int id, @RequestBody Post post) {
         Post updatedPost = postService.updatePost(id, post);
-        return new ResponseEntity<>(updatedPost, HttpStatus.OK);
+        PostDto myPost = modelMapper.map(updatedPost, PostDto.class);
+        return new ResponseEntity<>(myPost, HttpStatus.OK);
     }
 
     @GetMapping("/search")
     @Operation(summary = "Search posts", description = "Searches posts by query")
-    public ResponseEntity<List<Post>> searchPosts(@RequestParam("q") String query) {
+    public ResponseEntity<List<PostDto>> searchPosts(@RequestParam("q") String query) {
         List<Post> posts = postService.searchPosts(query);
-        return new ResponseEntity<>(posts, HttpStatus.OK);
+        List<PostDto> myPosts = new ArrayList<>();
+        for (Post post : posts) {
+            myPosts.add(modelMapper.map(post, PostDto.class));
+        }
+        return new ResponseEntity<>(myPosts, HttpStatus.OK);
     }
 
     @GetMapping("/categories")

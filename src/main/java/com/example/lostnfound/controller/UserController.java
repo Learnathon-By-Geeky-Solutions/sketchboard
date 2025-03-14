@@ -1,5 +1,6 @@
 package com.example.lostnfound.controller;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -89,6 +90,7 @@ public class UserController {
                 throw new UserNotAuthenticatedException( "User not found");
             }
             List<Post> posts = userService.findPostsByUserId(user.getUserId());
+            System.out.println("User embed " + Arrays.toString(user.getEmbedding()));
             UserProfileResponse response = new UserProfileResponse(modelMapper.map(user, UserDto.class), posts);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }

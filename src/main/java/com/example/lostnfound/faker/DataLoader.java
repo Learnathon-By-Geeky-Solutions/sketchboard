@@ -22,7 +22,7 @@ import java.util.Objects;
 @Component
 public class DataLoader implements CommandLineRunner {
 
-   
+
     private final PostRepo postRepository;
     private final UserRepo userRepo;
     private final GeminiResponseImpl myGemini;
@@ -42,7 +42,7 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) throws Exception {
         Logger logger = LoggerFactory.getLogger(DataLoader.class);
         int postCount = postRepository.findAll().size();
-        int extraPostNeed = 30 - postCount;
+        int extraPostNeed = 20 - postCount;
         int userCount = userRepo.findAll().size();
         int extraUserNeed = 5 - userCount;
 
@@ -60,6 +60,7 @@ public class DataLoader implements CommandLineRunner {
             user.setAddress(faker.address().fullAddress());
             user.setRole(Role.values()[faker.number().numberBetween(0, Role.values().length)]);
             user.setDepartment(faker.company().profession());
+            user.setEmbedding(new float[3072]);
 
 
             try {

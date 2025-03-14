@@ -3,7 +3,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
+import com.example.lostnfound.model.User;
 import com.example.lostnfound.service.AI.Embedding.EmbeddingService;
+import com.example.lostnfound.service.user.UserService;
 import org.springframework.stereotype.Service;
 
 import com.example.lostnfound.model.Post;
@@ -13,10 +15,12 @@ import com.example.lostnfound.repository.PostRepo;
 public class PostServiceiImpl implements PostService {
     private final PostRepo postRepo;
     private final EmbeddingService embeddingService;
+    private final UserService userService;
 
-    PostServiceiImpl(PostRepo postRepo, EmbeddingService embeddingService) {
+    PostServiceiImpl(PostRepo postRepo, EmbeddingService embeddingService, UserService userService) {
         this.postRepo = postRepo;
         this.embeddingService = embeddingService;
+        this.userService = userService;
     }
 
     @Override
@@ -24,6 +28,8 @@ public class PostServiceiImpl implements PostService {
         float[] embedding = embeddingService.getEmbedding(post.infoForEmbedding());
         System.out.println("********EmbeddingSize: " + embedding.length);
         post.setEmbedding(embedding);
+        User user = post.getUser();
+        user.addInteraction(embedding,3);
         return postRepo.save(post);
     }
 
@@ -34,6 +40,8 @@ public class PostServiceiImpl implements PostService {
 
     @Override
     public Post getPost(int id) {
+        User currentUser = userService.getCurrentUser();
+        currentUser.addInteraction(postRepo.findById(id).get().getEmbedding(), 1);
         return postRepo.findById(id).get();
     }
 
@@ -99,5 +107,11 @@ public class PostServiceiImpl implements PostService {
             System.out.println(post.getId() + " => " + cosineSimilarity(embed, post.getEmbedding()));
         }
         return res;
+    }
+
+    @Override
+    public List<Post> getCustomizedPosts() {
+        User currentUser = userService.getCurrentUser();
+        return findTopKSimilarPosts(currentUser.getEmbedding(), Integer.MAX_VALUE);
     }
 }

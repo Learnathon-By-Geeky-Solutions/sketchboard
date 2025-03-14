@@ -3,6 +3,10 @@ package com.example.lostnfound.model;
 import com.example.lostnfound.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Array;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import java.util.List;
 
 @Getter
@@ -17,6 +21,14 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id", updatable = false, nullable = false)
     private Long userId;
+
+    @Column(name = "sumofweights")
+    private float sumOfWeights = 0;
+
+    @Column
+    @JdbcTypeCode(SqlTypes.VECTOR)
+    @Array(length = 3072) // dimensions
+    private float[] embedding = new float[3072];
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -42,5 +54,27 @@ public class User {
 
     // @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
     // private List<Comment> comments;
+
+    public void addInteraction(float[] embedding, float weight){
+        /*
+            The formula for updating the embedding is as follows:
+            new_embedding = (embedding * weight) + (old_embedding * sumOfWeights) / (sumOfWeights + weight)
+         */
+        float[] mulofnew = new float[embedding.length];
+        for(int i = 0; i < embedding.length; i++){
+            mulofnew[i] = (float) (embedding[i] * weight);
+        }
+
+        float[] mulofOld = new float[this.embedding.length];
+        for(int i = 0; i < embedding.length; i++){
+            mulofOld[i] = (float) (this.embedding[i] * this.sumOfWeights);
+        }
+
+        this.embedding = mulofnew;
+        this.sumOfWeights += weight;
+        for(int i = 0; i < embedding.length; i++){
+            this.embedding[i] = (float) (mulofOld[i] + mulofnew[i]) / this.sumOfWeights;
+        }
+    }
 
 }
