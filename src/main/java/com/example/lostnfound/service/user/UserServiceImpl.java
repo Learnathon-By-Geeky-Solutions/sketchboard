@@ -12,7 +12,6 @@ import com.example.lostnfound.model.Post;
 import com.example.lostnfound.model.User;
 import com.example.lostnfound.repository.PostRepo;
 import com.example.lostnfound.repository.UserRepo;
-import com.example.lostnfound.dto.UserDto;
 import com.example.lostnfound.exception.PostNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -67,7 +66,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<Post> findPostsByUserId(Long userId) {
-        List<Post> posts = postRepo.findByUserUserId(userId);
+        List<Post> posts = postRepo.findByUserId(userId);
         if(posts == null) {
             throw new PostNotFoundException("Posts not found");
         }

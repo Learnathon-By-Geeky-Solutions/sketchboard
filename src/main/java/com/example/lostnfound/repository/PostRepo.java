@@ -17,7 +17,7 @@ public interface PostRepo extends JpaRepository<Post, Integer>{
                "ILIKE CONCAT('%', :searchTerm, '%')", nativeQuery = true)
     List<Post> searchPosts(@Param("searchTerm") String searchTerm);
 
-    List<Post> findByUserUserId(Long userId);
+    List<Post> findByUserId(Long userId);
 
     @Query(value = "SELECT * FROM post ORDER BY embedding <=> CAST(:queryEmbedding AS vector) LIMIT :topK", nativeQuery = true)
     List<Post> findTopKSimilarPosts(@Param("queryEmbedding") float[] queryEmbedding, @Param("topK") int topK);
