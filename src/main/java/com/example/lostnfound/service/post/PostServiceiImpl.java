@@ -77,7 +77,7 @@ public class PostServiceiImpl implements PostService {
             if (postToUpdate.getRange() != 0) {
                 postToUpdate.setRange(post.getRange());
             }
-            
+            postToUpdate.setEmbedding(embeddingService.getEmbedding(postToUpdate.infoForEmbedding()));
             return postRepo.save(postToUpdate);
     }
 
