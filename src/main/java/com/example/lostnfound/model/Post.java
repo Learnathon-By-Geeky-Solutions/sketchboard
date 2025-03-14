@@ -82,10 +82,8 @@ public class Post {
         this.lastUpdatedTime = LocalDateTime.now();
     }
 
-    @ManyToOne 
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 
     public String infoForEmbedding(){
         String title5x = title + " " + title + " " + title + " " + title + " " + title;

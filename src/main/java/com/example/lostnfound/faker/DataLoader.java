@@ -117,7 +117,7 @@ public class DataLoader implements CommandLineRunner {
             }
             response = rb.toString();
             Post post = objectMapper.readValue(response, Post.class);
-            post.setUser(userRepo.findById(faker.number().numberBetween(1, userRepo.count() + 1)).orElse(null));
+            post.setUserId(faker.number().numberBetween(1, userRepo.count() + 1));
             try {
                 postService.savePost(post);
                 logger.info("Generated post {}/{}", i + 1, extraPostNeed);

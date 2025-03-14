@@ -28,7 +28,7 @@ public class PostServiceiImpl implements PostService {
         float[] embedding = embeddingService.getEmbedding(post.infoForEmbedding());
         System.out.println("********EmbeddingSize: " + embedding.length);
         post.setEmbedding(embedding);
-        User user = post.getUser();
+        User user = userService.getUser(post.getUserId());
         user.addInteraction(embedding,3);
         return postRepo.save(post);
     }

@@ -47,7 +47,7 @@ public class PostController {
     @PostMapping("/posts")
     @Operation(summary = "Create a new post", description = "Creates a new post")
     public ResponseEntity<PostDto> postMethodName(@RequestBody Post post) throws IOException, InterruptedException {
-        post.setUser(userService.getCurrentUser());
+        post.setUserId(userService.getCurrentUser().getUserId());
         Post savedPost = postService.savePost(post);
         PostDto myPost = modelMapper.map(savedPost, PostDto.class);
         return new ResponseEntity<>(myPost, HttpStatus.CREATED);
@@ -72,7 +72,7 @@ public class PostController {
         List<PostDto>myPosts = new ArrayList<>();
         for(Post post: posts){
             //skip if post is by the user
-            if(Objects.equals(post.getUser().getUserId(), myUserId)){
+            if(Objects.equals(post.getUserId(), myUserId)){
                 continue;
             }
             myPosts.add(modelMapper.map(post, PostDto.class));

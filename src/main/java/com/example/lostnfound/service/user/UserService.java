@@ -11,6 +11,6 @@ public interface UserService {
     String verify(String name, String password);
     User findByEmail(String email);
     List<Post> findPostsByUserId(Long userId);
-    UserDto getUser(Long id) ;
+    User getUser(Long id) ;
     User getCurrentUser();
 }
