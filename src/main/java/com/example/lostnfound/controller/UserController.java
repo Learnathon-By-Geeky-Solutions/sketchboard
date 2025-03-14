@@ -47,6 +47,7 @@ public class UserController {
     @Operation(summary = "Register a new user", description = "Registers a new user")
     public ResponseEntity<User> register(@RequestBody User user) {
         user.setPassword(encoder.encode(user.getPassword()));
+        user.setEmbedding(new float[3072]);
         User registeredUser = userService.userRegister(user);
         if (registeredUser != null) {
             return new ResponseEntity<>(registeredUser, HttpStatus.CREATED);
