@@ -85,6 +85,7 @@ public class PostController {
     public ResponseEntity<PostDto> getPost(@PathVariable("id") int id) {
         Post post = postService.getPost(id);
         PostDto myPost = modelMapper.map(post, PostDto.class);
+        System.out.println("The last update time: " + post.getLastUpdatedTime());
         return new ResponseEntity<>(myPost, HttpStatus.OK);
     }
 

@@ -23,12 +23,12 @@ public class User {
     private Long userId;
 
     @Column(name = "sumofweights")
-    private float sumOfWeights = 0;
+    private float sumOfWeights;
 
     @Column
     @JdbcTypeCode(SqlTypes.VECTOR)
     @Array(length = 3072) // dimensions
-    private float[] embedding = new float[3072];
+    private float[] embedding;
 
     @Column(name = "name", nullable = false)
     private String name;

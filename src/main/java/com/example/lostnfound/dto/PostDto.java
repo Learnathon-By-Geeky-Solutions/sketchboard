@@ -12,8 +12,8 @@ public class PostDto {
     String location;
     String category;
     String status;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
+    LocalDateTime uploadTime;
+    LocalDateTime lastUpdatedTime;
     String user;
 }
 
