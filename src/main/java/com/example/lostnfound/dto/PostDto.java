@@ -21,6 +21,6 @@ public class PostDto {
     int range;
     LocalDateTime uploadTime;
     LocalDateTime lastUpdatedTime;
-    String user;
+    long userId;
 }
 
