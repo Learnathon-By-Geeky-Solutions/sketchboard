@@ -2,6 +2,8 @@ package com.example.lostnfound.service.user;
 import java.util.List;
 
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -76,6 +78,19 @@ public class UserServiceImpl implements UserService {
     public UserDto getUser(Long id) {
         User user = userRepo.findById(id).orElseThrow(() -> new UserNotFoundException("User not found with id: " + id + "\n"));
         return modelMapper.map(user, UserDto.class);
+    }
+
+    public User getCurrentUser(){
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails userDetails) {
+            String email = userDetails.getUsername();
+            User user = findByEmail(email);
+            if (user == null) {
+                throw new UserNotFoundException( "User not found");
+            }
+            return user;
+        }
+        else return null;
     }
     
 }
