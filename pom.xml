@@ -126,7 +126,7 @@
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-vector</artifactId>
-            <version>6.4.0.Final</version>
+            <version>6.6.8.Final</version>
         </dependency>
 
 <!--        <dependency>-->
