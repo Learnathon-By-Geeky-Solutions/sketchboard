@@ -67,6 +67,7 @@ public class User {
             The formula for updating the embedding is as follows:
             new_embedding = (embedding * weight) + (old_embedding * sumOfWeights) / (sumOfWeights + weight)
          */
+        System.out.println("New Embedding: " + embedding);
         float[] mulofnew = new float[embedding.length];
         for(int i = 0; i < embedding.length; i++){
             mulofnew[i] = (float) (embedding[i] * weight);
