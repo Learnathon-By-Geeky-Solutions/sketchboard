@@ -3,14 +3,14 @@ package com.example.lostnfound.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 import com.example.lostnfound.enums.Category;
 import com.example.lostnfound.enums.Status;
 
 import jakarta.persistence.*;
 import lombok.*;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+
 import org.hibernate.annotations.Array;
 import org.hibernate.annotations.JavaType;
 import org.hibernate.annotations.JdbcType;
@@ -27,7 +27,7 @@ import org.hibernate.type.SqlTypes;
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column
     @JdbcTypeCode(SqlTypes.VECTOR)
@@ -68,8 +68,8 @@ public class Post {
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime lastUpdatedTime;
 
-    // @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    // private List<Comment> comments;
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments;
 
     @PrePersist
     protected void onCreate() {

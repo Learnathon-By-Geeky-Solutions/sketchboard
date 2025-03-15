@@ -3,6 +3,7 @@ package com.example.lostnfound.service.post;
 import java.io.IOException;
 import java.util.List;
 
+import com.example.lostnfound.model.Comment;
 import com.example.lostnfound.model.Post;
 
 public interface PostService {
@@ -22,4 +23,5 @@ public interface PostService {
     List<Post> findTopKSimilarPosts(float[] embed, int topK);
 
     List<Post> getCustomizedPosts();
+
 }

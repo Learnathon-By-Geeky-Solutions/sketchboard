@@ -1,12 +1,13 @@
 package com.example.lostnfound.service.Comment;
 
+import com.example.lostnfound.dto.CommentDto;
 import com.example.lostnfound.model.Comment;
 import com.example.lostnfound.repository.CommentRepo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -22,13 +23,16 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<Comment> getAllComments() {
-        return commentRepo.findAll();
+    public List<CommentDto> getAllCommentDtos() {
+        return commentRepo.findAll().stream()
+                .map(comment -> new CommentDto(comment.getContent(), comment.getUser().getUserId(), comment.getPost().getId() , comment.getCreatedAt()))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Comment getCommentById(Long id) {
-        return commentRepo.findById(id).orElse(null);
+    public CommentDto getCommentDtoById(Long id) {
+        Optional<Comment> comment = Optional.ofNullable(commentRepo.findById(id).orElse(null));
+        return new CommentDto(comment.get().getContent(), comment.get().getUser().getUserId(), comment.get().getPost().getId(), comment.get().getCreatedAt());
     }
 
     @Override

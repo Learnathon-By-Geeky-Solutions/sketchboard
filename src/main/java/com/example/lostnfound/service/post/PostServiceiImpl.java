@@ -1,4 +1,5 @@
 package com.example.lostnfound.service.post;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
@@ -8,6 +9,7 @@ import com.example.lostnfound.service.AI.Embedding.EmbeddingService;
 import com.example.lostnfound.service.user.UserService;
 import org.springframework.stereotype.Service;
 
+import com.example.lostnfound.exception.PostNotFoundException;
 import com.example.lostnfound.model.Post;
 import com.example.lostnfound.repository.PostRepo;
 
@@ -114,4 +116,5 @@ public class PostServiceiImpl implements PostService {
         User currentUser = userService.getCurrentUser();
         return findTopKSimilarPosts(currentUser.getEmbedding(), Integer.MAX_VALUE);
     }
+
 }

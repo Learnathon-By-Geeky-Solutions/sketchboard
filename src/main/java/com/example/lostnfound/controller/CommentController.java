@@ -1,5 +1,6 @@
 package com.example.lostnfound.controller;
 
+import com.example.lostnfound.dto.CommentDto;
 import com.example.lostnfound.model.Comment;
 import com.example.lostnfound.service.Comment.CommentService;
 import jakarta.validation.Valid;
@@ -25,13 +26,13 @@ public class CommentController {
     }
 
     @GetMapping
-    public List<Comment> getAllComments() {
-        return commentService.getAllComments();
+    public List<CommentDto> getAllComments() {
+        return commentService.getAllCommentDtos();
     }
 
     @GetMapping("/{id}")
-    public Comment getCommentById(@PathVariable Long id) {
-        return commentService.getCommentById(id);
+    public CommentDto getCommentById(@PathVariable Long id) {
+        return commentService.getCommentDtoById(id);
     }
 
     @PutMapping("/{id}")
