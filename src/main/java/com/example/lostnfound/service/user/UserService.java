@@ -34,7 +34,7 @@ public class UserService {
         this.modelMapper = modelMapper;
     }
 
-    public User userRegister(User user) {
+    public User save(User user) {
         return userRepo.save(user);
     }
 
@@ -69,7 +69,7 @@ public class UserService {
         else return posts;
     }
 
-    public User getUser(Long id) {
+    public User findById(Long id) {
         return userRepo.findById(id).orElseThrow(() -> new UserNotFoundException("User not found with id: " + id + "\n"));
     }
 

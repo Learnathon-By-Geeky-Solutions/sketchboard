@@ -44,7 +44,8 @@ public class UserController {
     public ResponseEntity<User> register(@RequestBody User user) {
         user.setPassword(encoder.encode(user.getPassword()));
         user.setEmbedding(new float[3072]);
-        User registeredUser = userService.userRegister(user);
+        user.setMessages(List.of());
+        User registeredUser = userService.save(user);
         if (registeredUser != null) {
             return new ResponseEntity<>(registeredUser, HttpStatus.CREATED);
         } else {
@@ -99,5 +100,12 @@ public class UserController {
     @GetMapping("/validate")
     public ResponseEntity<String> validate() {
         return new ResponseEntity<>("Token is valid", HttpStatus.OK);
+    }
+
+    @GetMapping("/getMyMessages")
+    @Operation(summary = "Get messages", description = "Retrieves messages for user")
+    public ResponseEntity<List<Long>> getMyMessages() {
+        User user = userService.getCurrentUser();
+        return new ResponseEntity<>(user.getMessages(), HttpStatus.OK);
     }
 }

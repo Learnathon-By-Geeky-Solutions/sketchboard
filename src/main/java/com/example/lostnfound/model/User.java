@@ -4,6 +4,7 @@ import com.example.lostnfound.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Array;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -48,6 +49,12 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private Role role;
+
+    //my msg list
+    @ElementCollection
+    @CollectionTable(name = "messages", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "message_id")
+    private List<Long> messages;
 
     // @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
     // private List<Post> posts;

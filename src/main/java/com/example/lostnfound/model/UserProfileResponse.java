@@ -1,9 +1,13 @@
 package com.example.lostnfound.model;
 
 import com.example.lostnfound.dto.UserDto;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
+@Setter
+@Getter
 public class UserProfileResponse {
     private UserDto user;
     private List<Post> posts;
@@ -13,19 +17,4 @@ public class UserProfileResponse {
         this.posts = posts;
     }
 
-    public UserDto getUser() {
-        return user;
-    }
-
-    public void setUser(UserDto user) {
-        this.user = user;
-    }
-
-    public List<Post> getPosts() {
-        return posts;
-    }
-
-    public void setPosts(List<Post> posts) {
-        this.posts = posts;
-    }
 }

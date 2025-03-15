@@ -28,7 +28,7 @@ public class PostService {
         float[] embedding = embeddingService.getEmbedding(post.infoForEmbedding());
         System.out.println("********EmbeddingSize: " + embedding.length);
         post.setEmbedding(embedding);
-        User user = userService.getUser(post.getUserId());
+        User user = userService.findById(post.getUserId());
         user.addInteraction(embedding,3);
         return postRepo.save(post);
     }

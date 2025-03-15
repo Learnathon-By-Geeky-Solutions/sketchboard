@@ -1,11 +1,12 @@
 package com.example.lostnfound.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.example.lostnfound.enums.MessageReadStatus;
+import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
+@Entity
 @Data
 public class Message {
     @Id
@@ -18,6 +19,15 @@ public class Message {
     @Column(name = "receiver_id", nullable = false)
     private Long receiverId;
 
+    @Column(name = "read_status", nullable = false)
+    private MessageReadStatus readStatus;
+
     @Column(name = "content", nullable = false)
     private String content;
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
 }
