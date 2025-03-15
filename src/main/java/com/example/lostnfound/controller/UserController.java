@@ -108,4 +108,11 @@ public class UserController {
         User user = userService.getCurrentUser();
         return new ResponseEntity<>(user.getMessages(), HttpStatus.OK);
     }
+
+    @GetMapping("/myId")
+    @Operation(summary = "Get user id", description = "Retrieves user id")
+    public ResponseEntity<Long> getMyId() {
+        User user = userService.getCurrentUser();
+        return new ResponseEntity<>(user.getUserId(), HttpStatus.OK);
+    }
 }
