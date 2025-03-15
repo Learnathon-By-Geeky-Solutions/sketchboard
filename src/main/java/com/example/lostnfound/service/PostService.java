@@ -1,4 +1,4 @@
-package com.example.lostnfound.service.post;
+package com.example.lostnfound.service;
 
 import java.io.IOException;
 import java.util.List;

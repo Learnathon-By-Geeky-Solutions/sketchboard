@@ -7,7 +7,7 @@ import com.example.lostnfound.service.AI.Embedding.EmbeddingService;
 
 import com.example.lostnfound.service.AI.GeminiChat.GeminiResponse;
 import com.example.lostnfound.service.AI.GeminiChat.QueryExecutor;
-import com.example.lostnfound.service.post.PostService;
+import com.example.lostnfound.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 
 import org.modelmapper.ModelMapper;

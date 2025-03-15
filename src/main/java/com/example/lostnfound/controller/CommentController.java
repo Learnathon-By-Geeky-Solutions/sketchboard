@@ -2,7 +2,7 @@ package com.example.lostnfound.controller;
 
 import com.example.lostnfound.dto.CommentDto;
 import com.example.lostnfound.model.Comment;
-import com.example.lostnfound.service.Comment.CommentService;
+import com.example.lostnfound.service.CommentService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

@@ -1,4 +1,4 @@
-package com.example.lostnfound.service.Comment;
+package com.example.lostnfound.service;
 
 import com.example.lostnfound.dto.CommentDto;
 import com.example.lostnfound.model.Comment;

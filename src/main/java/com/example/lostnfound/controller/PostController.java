@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.example.lostnfound.service.post.PostService;
+import com.example.lostnfound.service.PostService;
 import com.example.lostnfound.service.user.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;

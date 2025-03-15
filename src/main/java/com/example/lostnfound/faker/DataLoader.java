@@ -6,7 +6,7 @@ import com.example.lostnfound.model.Post;
 import com.example.lostnfound.repository.PostRepo;
 import com.example.lostnfound.repository.UserRepo;
 import com.example.lostnfound.service.AI.GeminiChat.GeminiResponse;
-import com.example.lostnfound.service.post.PostService;
+import com.example.lostnfound.service.PostService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
 import org.springframework.boot.CommandLineRunner;
