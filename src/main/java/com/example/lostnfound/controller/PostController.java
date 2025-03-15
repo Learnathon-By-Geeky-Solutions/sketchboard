@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.example.lostnfound.service.post.PostService;
+import com.example.lostnfound.service.user.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.lostnfound.dto.PostDto;
 import com.example.lostnfound.enums.Category;
 import com.example.lostnfound.model.Post;
-import com.example.lostnfound.service.post.PostService;
-import com.example.lostnfound.service.user.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 

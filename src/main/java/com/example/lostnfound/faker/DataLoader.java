@@ -5,7 +5,7 @@ import com.example.lostnfound.enums.Status;
 import com.example.lostnfound.model.Post;
 import com.example.lostnfound.repository.PostRepo;
 import com.example.lostnfound.repository.UserRepo;
-import com.example.lostnfound.service.AI.GeminiChat.GeminiResponseImpl;
+import com.example.lostnfound.service.AI.GeminiChat.GeminiResponse;
 import com.example.lostnfound.service.post.PostService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
@@ -25,11 +25,11 @@ public class DataLoader implements CommandLineRunner {
 
     private final PostRepo postRepository;
     private final UserRepo userRepo;
-    private final GeminiResponseImpl myGemini;
+    private final GeminiResponse myGemini;
     private final ObjectMapper objectMapper;
     private final PostService postService;
 
-    DataLoader(PostRepo postRepository, UserRepo userRepo, GeminiResponseImpl myGemini, ObjectMapper objectMapper, PostService postService) {
+    DataLoader(PostRepo postRepository, UserRepo userRepo, GeminiResponse myGemini, ObjectMapper objectMapper, PostService postService) {
         this.postRepository = postRepository;
         this.userRepo = userRepo;
         this.myGemini = myGemini;

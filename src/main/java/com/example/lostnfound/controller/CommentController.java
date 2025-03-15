@@ -4,7 +4,6 @@ import com.example.lostnfound.dto.CommentDto;
 import com.example.lostnfound.model.Comment;
 import com.example.lostnfound.service.Comment.CommentService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 

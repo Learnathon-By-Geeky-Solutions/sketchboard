@@ -4,9 +4,9 @@ import com.example.lostnfound.dto.PostDto;
 import com.example.lostnfound.dto.aiSearchQuery;
 import com.example.lostnfound.model.Post;
 import com.example.lostnfound.service.AI.Embedding.EmbeddingService;
+
 import com.example.lostnfound.service.AI.GeminiChat.GeminiResponse;
 import com.example.lostnfound.service.AI.GeminiChat.QueryExecutor;
-
 import com.example.lostnfound.service.post.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 
