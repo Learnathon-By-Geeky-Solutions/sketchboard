@@ -69,7 +69,7 @@ public class UserController {
     @Operation(summary = "Get user profile by id", description = "Retrieves user's profile by id")
     @GetMapping("/profile/{id}")
     public ResponseEntity<UserDto> getUser(@PathVariable("id") Long id) {
-        User user = userService.getCurrentUser();
+        User user = userService.findById(id);
         UserDto userDto = modelMapper.map(user, UserDto.class);
         if (userDto != null) {
             return new ResponseEntity<>(userDto, HttpStatus.OK);
