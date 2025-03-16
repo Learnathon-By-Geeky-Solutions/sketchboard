@@ -37,10 +37,10 @@ public class PostService {
         return postRepo.findAll();
     }
 
-    public Post getPost(int id) {
+    public Post getPost(Long id) {
         User currentUser = userService.getCurrentUser();
-        currentUser.addInteraction(postRepo.findById(id).get().getEmbedding(), 1);
-        return postRepo.findById(id).get();
+        currentUser.addInteraction(postRepo.findById(Math.toIntExact(id)).get().getEmbedding(), 1);
+        return postRepo.findById(Math.toIntExact(id)).get();
     }
 
     public void deletePost(int id) {
@@ -93,7 +93,7 @@ public class PostService {
         return dotProduct / (float) (Math.sqrt(normA) * Math.sqrt(normB));
     }
 
-    public List<Post> findTopKSimilarPosts(float[] embed, int topK) {
+    public List<Post> findTopKSimilarPosts(float[] embed, Long topK) {
 
         Objects.requireNonNull(embed);
         List<Post> res = postRepo.findTopKSimilarPosts(embed, topK);
@@ -105,7 +105,7 @@ public class PostService {
 
     public List<Post> getCustomizedPosts() {
         User currentUser = userService.getCurrentUser();
-        return findTopKSimilarPosts(currentUser.getEmbedding(), Integer.MAX_VALUE);
+        return findTopKSimilarPosts(currentUser.getEmbedding(), Long.MAX_VALUE);
     }
 
 }

@@ -76,7 +76,7 @@ public class PostController {
 
     @GetMapping("/posts/{id}")
     @Operation(summary = "Get post by id", description = "Retrieves post by id")
-    public ResponseEntity<PostDto> getPost(@PathVariable("id") int id) {
+    public ResponseEntity<PostDto> getPost(@PathVariable("id") Long id) {
         Post post = postService.getPost(id);
         PostDto myPost = modelMapper.map(post, PostDto.class);
         List<Long> commentIds = post.getComments().stream()

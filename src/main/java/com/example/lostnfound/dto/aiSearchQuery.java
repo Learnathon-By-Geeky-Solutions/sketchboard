@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class aiSearchQuery {
     String query;
-    int limit;
-    int postId;
+    Long limit;
+    Long postId;
 }
