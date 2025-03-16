@@ -123,9 +123,11 @@ public class DataLoader implements CommandLineRunner {
                 logger.info("Generated post {}/{}", i + 1, extraPostNeed);
                 //delay of 5s, as we have API rate limit (15 Requests per minute)
                 Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                logger.error("Thread was interrupted, Failed to complete operation");
             } catch (Exception e) {
                 logger.error("Failed to save post  {}: {}", i + 1, e.getMessage());
             }
-        }
     }
 }
