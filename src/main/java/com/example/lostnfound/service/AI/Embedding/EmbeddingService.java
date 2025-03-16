@@ -88,8 +88,12 @@ public class EmbeddingService {
             JsonNode root = objectMapper.readTree(response.body());
             JsonNode value= root.path("embedding").path("values");
             return objectMapper.treeToValue(value, float[].class);
-        } catch (IOException | InterruptedException e) {
-            log.error("Error: " + e.getMessage());
+        } catch (IOException e) {
+            log.error("Error: " + e.getMessage(), e);
+            return null;
+        } catch (InterruptedException e) {
+            log.error("Error: " + e.getMessage(), e);
+            Thread.currentThread().interrupt(); // Re-interrupt the thread
             return null;
         }
     }
