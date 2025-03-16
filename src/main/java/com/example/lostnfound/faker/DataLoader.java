@@ -80,26 +80,26 @@ public class DataLoader implements CommandLineRunner {
         }
         for (int i = 0; i < extraPostNeed; i++) {
             String instruction = """
-                Lost and found Post model schema:
-                {
-                    title:,
-                    description:,
-                    location:,
-                    date: yyyy-mm-dd,
-                    time: hh:mm, ex. 22:30, (No AM/PM),
-                    category: DOCUMENTS | ELECTRONICS | JEWELLERIES | ACCESSORIES | CLOTHES | MOBILE;,
-                    status: LOST | FOUND,
-                    range: int
-                }
-                
-                Give Random instance example in DICTIONARY format. Make the description realistic and very descriptive.
-                Have the location from Bangladesh. 
-                
-                Strict RULE: NO EXTRA TEXT. MUST USE DOUBLE QUOTES. NO SINGLE QUOTES.
-                
-                Giving you two characters. Keep the location close to first character and the lost item close to the second character.
-                For category and status, i am giving you the index of the given enum.
-                """;
+                    Lost and found Post model schema:
+                    {
+                        title:,
+                        description:,
+                        location:,
+                        date: yyyy-mm-dd,
+                        time: hh:mm, ex. 22:30, (No AM/PM),
+                        category: DOCUMENTS | ELECTRONICS | JEWELLERIES | ACCESSORIES | CLOTHES | MOBILE;,
+                        status: LOST | FOUND,
+                        range: int
+                    }
+                    
+                    Give Random instance example in DICTIONARY format. Make the description realistic and very descriptive.
+                    Have the location from Bangladesh. 
+                    
+                    Strict RULE: NO EXTRA TEXT. MUST USE DOUBLE QUOTES. NO SINGLE QUOTES.
+                    
+                    Giving you two characters. Keep the location close to first character and the lost item close to the second character.
+                    For category and status, i am giving you the index of the given enum.
+                    """;
             instruction += " first character: " + faker.lorem().characters(1) + ";\n";
             instruction += " second character: " + faker.lorem().characters(1) + ";\n";
             instruction += " category: " + faker.number().numberBetween(0, Category.values().length) + ";\n";
@@ -112,7 +112,7 @@ public class DataLoader implements CommandLineRunner {
             while (rb.charAt(rb.length() - 1) != '}') {
                 rb.deleteCharAt(rb.length() - 1);
             }
-            while(rb.charAt(0) != '{') {
+            while (rb.charAt(0) != '{') {
                 rb.deleteCharAt(0);
             }
             response = rb.toString();
@@ -129,5 +129,6 @@ public class DataLoader implements CommandLineRunner {
             } catch (Exception e) {
                 logger.error("Failed to save post  {}: {}", i + 1, e.getMessage());
             }
+        }
     }
 }
