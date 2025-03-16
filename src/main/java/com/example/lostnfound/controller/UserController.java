@@ -41,13 +41,14 @@ public class UserController {
 
     @PostMapping("/register")
     @Operation(summary = "Register a new user", description = "Registers a new user")
-    public ResponseEntity<User> register(@RequestBody User user) {
+    public ResponseEntity<UserDto> register(@RequestBody User user) {
         user.setPassword(encoder.encode(user.getPassword()));
         user.setEmbedding(new float[3072]);
         user.setMessages(List.of());
         User registeredUser = userService.save(user);
         if (registeredUser != null) {
-            return new ResponseEntity<>(registeredUser, HttpStatus.CREATED);
+            UserDto userDto = modelMapper.map(registeredUser, UserDto.class);
+            return new ResponseEntity<>(userDto, HttpStatus.CREATED);
         } else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

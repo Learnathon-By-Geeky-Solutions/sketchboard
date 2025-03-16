@@ -58,16 +58,16 @@ public class MessageController {
 
     @PostMapping("/readMessage")
     @Operation(summary = "Read Message", description = "Read Message")
-    public Message readMessage(@RequestBody Long messageId) {
+    public ResponseEntity<Message> readMessage(@RequestBody Long messageId) {
         Message message = messageService.findById(messageId);
         message.setReadStatus(MessageReadStatus.READ);
         messageService.save(message);
-        return  message;
+        return ResponseEntity.ok(message);
     }
 
     @GetMapping("/UpdateMessage")
     @Operation(summary = "Update Message", description = "Update Message")
-    public ResponseEntity updateMessage(@RequestBody Long messageId, @RequestBody String content) {
+    public ResponseEntity<Void> updateMessage(@RequestBody Long messageId, @RequestBody String content) {
         Message message = messageService.findById(messageId);
         Long CurrentUserId = userService.getCurrentUser().getUserId();
         if (!Objects.equals(message.getSenderId(), CurrentUserId)) {
