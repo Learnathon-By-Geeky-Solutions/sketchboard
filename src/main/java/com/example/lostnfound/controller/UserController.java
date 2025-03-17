@@ -69,11 +69,14 @@ public class UserController {
 
     @Operation(summary = "Get user profile by id", description = "Retrieves user's profile by id")
     @GetMapping("/profile/{id}")
-    public ResponseEntity<UserDto> getUser(@PathVariable("id") Long id) {
+    public ResponseEntity<UserProfileResponse> getUser(@PathVariable("id") Long id) {
         User user = userService.findById(id);
-        UserDto userDto = modelMapper.map(user, UserDto.class);
-        if (userDto != null) {
-            return new ResponseEntity<>(userDto, HttpStatus.OK);
+        
+        if (user != null) {
+            List<Post> posts = userService.findPostsByUserId(user.getUserId());
+            System.out.println("User embed " + Arrays.toString(user.getEmbedding()));
+            UserProfileResponse response = new UserProfileResponse(modelMapper.map(user, UserDto.class), posts);
+            return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
