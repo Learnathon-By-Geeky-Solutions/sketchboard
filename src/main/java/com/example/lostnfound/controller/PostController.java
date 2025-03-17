@@ -60,7 +60,7 @@ public class PostController {
 
     @GetMapping("/customizedPosts")
     @Operation(summary = "Get related posts", description = "Retrieves related posts for user")
-    public  ResponseEntity<List<PostDto>> getCustomizedPosts() {
+    public ResponseEntity<List<PostDto>> getCustomizedPosts() {
         Long myUserId = userService.getCurrentUser().getUserId();
         List<Post> posts = postService.getCustomizedPosts();
         List<PostDto>myPosts = new ArrayList<>();

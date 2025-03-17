@@ -41,13 +41,14 @@ public class UserController {
 
     @PostMapping("/register")
     @Operation(summary = "Register a new user", description = "Registers a new user")
-    public ResponseEntity<User> register(@RequestBody User user) {
+    public ResponseEntity<UserDto> register(@RequestBody User user) {
         user.setPassword(encoder.encode(user.getPassword()));
         user.setEmbedding(new float[3072]);
         user.setMessages(List.of());
         User registeredUser = userService.save(user);
         if (registeredUser != null) {
-            return new ResponseEntity<>(registeredUser, HttpStatus.CREATED);
+            UserDto userDto = modelMapper.map(registeredUser, UserDto.class);
+            return new ResponseEntity<>(userDto, HttpStatus.CREATED);
         } else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -68,11 +69,14 @@ public class UserController {
 
     @Operation(summary = "Get user profile by id", description = "Retrieves user's profile by id")
     @GetMapping("/profile/{id}")
-    public ResponseEntity<UserDto> getUser(@PathVariable("id") Long id) {
+    public ResponseEntity<UserProfileResponse> getUser(@PathVariable("id") Long id) {
         User user = userService.findById(id);
-        UserDto userDto = modelMapper.map(user, UserDto.class);
-        if (userDto != null) {
-            return new ResponseEntity<>(userDto, HttpStatus.OK);
+        
+        if (user != null) {
+            List<Post> posts = userService.findPostsByUserId(user.getUserId());
+            System.out.println("User embed " + Arrays.toString(user.getEmbedding()));
+            UserProfileResponse response = new UserProfileResponse(modelMapper.map(user, UserDto.class), posts);
+            return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
