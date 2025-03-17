@@ -23,13 +23,13 @@ public class CommentService {
 
     public List<CommentDto> getAllCommentDtos() {
         return commentRepo.findAll().stream()
-                .map(comment -> new CommentDto(comment.getContent(), comment.getUser().getUserId(), comment.getPost().getId() , comment.getCreatedAt()))
+                .map(comment -> new CommentDto(comment.getId(), comment.getContent(), comment.getUser().getUserId(), comment.getPost().getId() , comment.getCreatedAt()))
                 .collect(Collectors.toList());
     }
 
     public CommentDto getCommentDtoById(Long id) {
         Optional<Comment> comment = Optional.ofNullable(commentRepo.findById(id).orElse(null));
-        return new CommentDto(comment.get().getContent(), comment.get().getUser().getUserId(), comment.get().getPost().getId(), comment.get().getCreatedAt());
+        return new CommentDto(comment.get().getId(), comment.get().getContent(), comment.get().getUser().getUserId(), comment.get().getPost().getId(), comment.get().getCreatedAt());
     }
 
     public void deleteComment(Long id) {
