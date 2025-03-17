@@ -33,7 +33,7 @@ public class CommentController {
         newComment.setPost(postService.getPost(comment.getPostId()));
         newComment.setUser(userService.getCurrentUser());
         Comment savedComment = commentService.saveComment(newComment);
-        CommentDto commentDto = new CommentDto(savedComment.getContent(), savedComment.getUser().getUserId(), savedComment.getPost().getId(), savedComment.getCreatedAt());
+        CommentDto commentDto = new CommentDto(savedComment.getId(), savedComment.getContent(), savedComment.getUser().getUserId(), savedComment.getPost().getId(), savedComment.getCreatedAt());
         return new ResponseEntity<>(commentDto, HttpStatus.CREATED);
     }
 
@@ -52,7 +52,7 @@ public class CommentController {
     @PutMapping("/{id}")
     public ResponseEntity<CommentDto> updateComment(@PathVariable Long id, @RequestBody Comment comment) {
         Comment updatedComment = commentService.updateComment(id, comment);
-        CommentDto commentDto = new CommentDto(updatedComment.getContent(), updatedComment.getUser().getUserId(), updatedComment.getPost().getId(), updatedComment.getCreatedAt());
+        CommentDto commentDto = new CommentDto(updatedComment.getId(),updatedComment.getContent(), updatedComment.getUser().getUserId(), updatedComment.getPost().getId(), updatedComment.getCreatedAt());
         return new ResponseEntity<>(commentDto, HttpStatus.OK);
     }
 
