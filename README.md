@@ -6,7 +6,8 @@ Sketchboard is the team name for our project, Lost and Found. This project aims 
 ## Technology Stack
 
 - **Backend:** Spring Boot
-- **Frontend:** React.js ([Repository](https://github.com/asif17r/lostnfound-frontend))
+- **Frontend:** React.js ([Repository](https://github.com/asif17r/lostnfound-frontend)) *(This frontend is for testing purposes only; the deployment frontend may differ significantly.)*
+
 - **Database:** PostgreSQL
 - **Containerization:** Docker
 - **Build Tool:** Maven
