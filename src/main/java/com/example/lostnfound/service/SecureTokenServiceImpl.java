@@ -16,7 +16,7 @@ public class SecureTokenServiceImpl implements SecureTokenService {
 
     private static BytesKeyGenerator bytesKeyGenerator = KeyGenerators.secureRandom(12);
 
-    @Value("300")
+    @Value("${secure.token.validity}")
     private int tokenValidityInSecond;
 
     @Autowired
