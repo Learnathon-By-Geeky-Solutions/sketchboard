@@ -7,8 +7,10 @@ import org.hibernate.annotations.Array;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import org.springframework.data.domain.Auditable;
 
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -16,7 +18,7 @@ import java.util.List;
 @Table(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class User{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,6 +51,13 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private Role role;
+
+    // for Email Verification
+    private boolean accountVerified;
+    private boolean loginDisabled;
+
+    @OneToMany(mappedBy = "user")
+    Set<SecureToken> token;
 
     //my msg list
     @ElementCollection
