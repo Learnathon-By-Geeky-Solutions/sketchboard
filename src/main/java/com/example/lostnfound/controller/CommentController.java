@@ -6,6 +6,7 @@ import com.example.lostnfound.service.CommentService;
 import com.example.lostnfound.service.PostService;
 import com.example.lostnfound.service.user.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -30,6 +31,7 @@ public class CommentController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
+    @Operation(summary = "Create Comment", description = "Create comment using post id and its content")
     public ResponseEntity<CommentDto> createComment(@RequestBody @Valid CommentDto comment) {
         Comment newComment = new Comment();
         newComment.setContent(comment.getContent());
@@ -41,18 +43,21 @@ public class CommentController {
     }
 
     @GetMapping
+    @Operation(summary = "Get All Comments", description = "Get all comments of a post")
     public ResponseEntity<List<CommentDto>> getAllComments() {
         List<CommentDto> comments = commentService.getAllCommentDtos();
         return new ResponseEntity<>(comments, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get Comment", description = "Get details of a comment by its id")
     public ResponseEntity<CommentDto> getCommentById(@PathVariable Long id) {
         CommentDto comment = commentService.getCommentDtoById(id);
         return new ResponseEntity<>(comment, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Update Comment", description = "Update comment by its id")
     public ResponseEntity<CommentDto> updateComment(@PathVariable("id") Long id, @RequestBody CommentDto commentDto) {
         Comment updatedComment = commentService.updateComment(id, commentDto.getContent());
         CommentDto newcommentDto = new CommentDto(updatedComment.getId(), updatedComment.getContent(), updatedComment.getUser().getUserId(), updatedComment.getPost().getId(), updatedComment.getCreatedAt());
@@ -62,6 +67,7 @@ public class CommentController {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete Comment", description = "Delete comment by its id")
     public ResponseEntity<Void> deleteComment(@PathVariable Long id) {
         commentService.deleteComment(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
