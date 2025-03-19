@@ -9,6 +9,7 @@ import com.example.lostnfound.service.AI.GeminiChat.GeminiResponse;
 import com.example.lostnfound.service.AI.GeminiChat.QueryExecutor;
 import com.example.lostnfound.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@Tag(name = "AI Search APIs", description = "REST APIs related to AI search for searching posts using AI.")
 public class AISearchController {
 
         private final ModelMapper modelMapper = new ModelMapper();

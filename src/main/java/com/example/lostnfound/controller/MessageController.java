@@ -7,6 +7,8 @@ import com.example.lostnfound.model.User;
 import com.example.lostnfound.service.MessageService;
 import com.example.lostnfound.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @RestController
+@Tag(name = "Message APIs", description = "REST APIs related to messages for CRUD operations.Like send, read and update messages.")
 public class MessageController {
     private final UserService userService;
     private  final MessageService messageService;

@@ -23,7 +23,6 @@ public class UserService {
     private final AuthenticationManager authmManager;
     private final JWTService jwtService;
     private final PostRepo postRepo;
-    private final ModelMapper modelMapper;
     Logger logger = LoggerFactory.getLogger(UserService.class);
 
     UserService(UserRepo userRepo, AuthenticationManager authmManager, JWTService jwtService, PostRepo postRepo, ModelMapper modelMapper) {
@@ -31,7 +30,6 @@ public class UserService {
         this.authmManager = authmManager;
         this.jwtService = jwtService;
         this.postRepo = postRepo;
-        this.modelMapper = modelMapper;
     }
 
     public User save(User user) {
