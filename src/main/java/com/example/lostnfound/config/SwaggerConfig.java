@@ -17,12 +17,6 @@ public class SwaggerConfig {
         return new OpenAPI()
         .info(
             new Info().title("LostNFound API Documentation").version("1.0").description(" by team Sketchboard")
-        )
-        .servers(
-            List.of(
-                new Server().url("http://localhost:8080").description("Local server"),
-                new Server().url("https://chair-succeed-peter-psi.trycloudflare.com/").description("Hosted server")
-            )
         );
     }
 }
