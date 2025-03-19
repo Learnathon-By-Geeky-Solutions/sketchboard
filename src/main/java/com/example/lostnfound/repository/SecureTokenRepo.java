@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface SecureTokenRepo extends JpaRepository<SecureToken, Long> {
 
     SecureToken findByToken(String token);
-    void removeToken(SecureToken token);
+    void delete(SecureToken token);
 }

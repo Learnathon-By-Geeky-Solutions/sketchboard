@@ -2,9 +2,9 @@ package com.example.lostnfound.service;
 
 import com.example.lostnfound.model.SecureToken;
 import com.example.lostnfound.repository.SecureTokenRepo;
-import com.google.api.client.util.Value;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.keygen.BytesKeyGenerator;
 import org.springframework.security.crypto.keygen.KeyGenerators;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ public class SecureTokenServiceImpl implements SecureTokenService {
 
     private static BytesKeyGenerator bytesKeyGenerator = KeyGenerators.secureRandom(12);
 
-    @Value("${secure.token.validity}")
+    @Value("${app.token.validity}")
     private int tokenValidityInSecond;
 
     @Autowired

@@ -10,9 +10,9 @@ public class AccountVerificationEmailContext extends AbstractEmailContext {
     public <T> void init(T context) {
         User user = (User) context;
         put("Username", user.getName());
-        setTemplateLocation("mail/email-verification");
+        setTemplateLocation("mail/email-verification.html"); // Corrected path
         setSubject("Complete Email Verification");
-        setFrom("sk03ru@gmail.com");
+        setFrom("s2010676102@ru.ac.bd");
         setTo(user.getEmail());
     }
 
@@ -21,12 +21,16 @@ public class AccountVerificationEmailContext extends AbstractEmailContext {
         put("token", token);
     }
 
-    public void buildVerificationUrl(final String baseURL, final String token) {
-        final String url = UriComponentsBuilder.fromHttpUrl(baseURL)
-                .path("/account/verify")
+    public void buildVerificationUrl(String baseUrl, String token) {
+        // Ensure baseUrl is not null
+        if (baseUrl == null) {
+            throw new IllegalArgumentException("Base URL must not be null");
+        }
+
+        UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path("registration/verify")
                 .queryParam("token", token)
                 .toUriString();
-        put("verificationURL", url);
     }
 
 }
