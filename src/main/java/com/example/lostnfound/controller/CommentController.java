@@ -50,11 +50,12 @@ public class CommentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CommentDto> updateComment(@PathVariable("id") Long id, @RequestBody String content) {
-        Comment updatedComment = commentService.updateComment(id, content);
-        CommentDto commentDto = new CommentDto(updatedComment.getId(), updatedComment.getContent(), updatedComment.getUser().getUserId(), updatedComment.getPost().getId(), updatedComment.getCreatedAt());
-        return new ResponseEntity<>(commentDto, HttpStatus.OK);
+    public ResponseEntity<CommentDto> updateComment(@PathVariable("id") Long id, @RequestBody CommentDto commentDto) {
+        Comment updatedComment = commentService.updateComment(id, commentDto.getContent());
+        CommentDto newcommentDto = new CommentDto(updatedComment.getId(), updatedComment.getContent(), updatedComment.getUser().getUserId(), updatedComment.getPost().getId(), updatedComment.getCreatedAt());
+        return new ResponseEntity<>(newcommentDto, HttpStatus.OK);
     }
+    
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
