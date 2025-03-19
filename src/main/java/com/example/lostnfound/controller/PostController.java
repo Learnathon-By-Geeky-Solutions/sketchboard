@@ -1,11 +1,9 @@
 package com.example.lostnfound.controller;
-import com.example.lostnfound.model.Comment;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import com.example.lostnfound.service.PostService;
 import com.example.lostnfound.service.user.UserService;
@@ -26,8 +24,10 @@ import com.example.lostnfound.enums.Category;
 import com.example.lostnfound.model.Post;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
+@Tag(name = "Post APIs", description = "REST APIs related to posts for CRUD operations.Like create, read, update, delete and search posts.")
 public class PostController {
     private final PostService postService;
     private final UserService userService;
@@ -40,11 +40,18 @@ public class PostController {
 
     @PostMapping("/posts")
     @Operation(summary = "Create a new post", description = "Creates a new post")
-    public ResponseEntity<PostDto> postMethodName(@RequestBody Post post) throws IOException, InterruptedException {
-        post.setUserId(userService.getCurrentUser().getUserId());
-        Post savedPost = postService.savePost(post);
-        PostDto myPost = modelMapper.map(savedPost, PostDto.class);
-        return new ResponseEntity<>(myPost, HttpStatus.CREATED);
+    public ResponseEntity<PostDto> givePost(@RequestBody PostDto postDto) throws IOException, InterruptedException {
+        Post newPost = new Post();
+        newPost.setTitle(postDto.getTitle());
+        newPost.setDescription(postDto.getDescription());
+        newPost.setCategory(postDto.getCategory());
+        newPost.setUserId(userService.getCurrentUser().getUserId());
+        newPost.setLocation(postDto.getLocation());
+        newPost.setRange(postDto.getRange());
+        newPost.setTime(postDto.getTime());
+        newPost.setDate(postDto.getDate());
+        newPost.setStatus(postDto.getStatus());
+        return new ResponseEntity<>(postDto, HttpStatus.CREATED);
     }
 
     @GetMapping("/posts")
@@ -79,11 +86,6 @@ public class PostController {
     public ResponseEntity<PostDto> getPost(@PathVariable("id") Long id) {
         Post post = postService.getPost(id);
         PostDto myPost = modelMapper.map(post, PostDto.class);
-        List<Long> commentIds = post.getComments().stream()
-                .map(Comment::getId)
-                .collect(Collectors.toList());
-        myPost.setCommentIds(commentIds);
-        System.out.println("The last update time: " + post.getLastUpdatedTime());
         return new ResponseEntity<>(myPost, HttpStatus.OK);
     }
 
@@ -96,8 +98,18 @@ public class PostController {
 
     @PutMapping("posts/{id}")
     @Operation(summary = "Update post by id", description = "Updates post by id")
-    public ResponseEntity<PostDto> updatePost(@PathVariable("id") int id, @RequestBody Post post) {
-        Post updatedPost = postService.updatePost(id, post);
+    public ResponseEntity<PostDto> updatePost(@PathVariable("id") int id, @RequestBody PostDto postDto) {
+        Post updatedPost = new Post();
+        updatedPost.setTitle(postDto.getTitle());
+        updatedPost.setDescription(postDto.getDescription());
+        updatedPost.setCategory(postDto.getCategory());
+        updatedPost.setUserId(userService.getCurrentUser().getUserId());
+        updatedPost.setLocation(postDto.getLocation());
+        updatedPost.setRange(postDto.getRange());
+        updatedPost.setTime(postDto.getTime());
+        updatedPost.setDate(postDto.getDate());
+        updatedPost.setStatus(postDto.getStatus());
+        postService.updatePost(id, updatedPost);
         PostDto myPost = modelMapper.map(updatedPost, PostDto.class);
         return new ResponseEntity<>(myPost, HttpStatus.OK);
     }

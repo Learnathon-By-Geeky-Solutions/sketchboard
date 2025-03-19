@@ -5,6 +5,8 @@ import com.example.lostnfound.model.Comment;
 import com.example.lostnfound.service.CommentService;
 import com.example.lostnfound.service.PostService;
 import com.example.lostnfound.service.user.UserService;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/comments")
+@Tag(name = "Comment APIs", description = "REST APIs related to comments for CRUD operations.Like create, read, update, delete and search comments.")
 public class CommentController {
 
     private final CommentService commentService;

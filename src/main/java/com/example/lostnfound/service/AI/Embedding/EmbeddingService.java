@@ -1,17 +1,11 @@
 package com.example.lostnfound.service.AI.Embedding;
-import com.example.lostnfound.exception.GeminiInitializationException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.genai.Client;
-import com.google.genai.types.GenerateContentResponse;
-import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.HttpException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.DataInput;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
