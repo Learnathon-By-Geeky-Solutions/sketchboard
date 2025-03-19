@@ -36,11 +36,11 @@ public class CommentService {
         commentRepo.deleteById(id);
     }
 
-    public Comment updateComment(Long id, Comment comment) {
+    public Comment updateComment(Long id, String content) {
         Optional<Comment> existingComment = commentRepo.findById(id);
         if (existingComment.isPresent()) {
             Comment updatedComment = existingComment.get();
-            updatedComment.setContent(comment.getContent());
+            updatedComment.setContent(content);
             // Update other fields as necessary
             return commentRepo.save(updatedComment);
         } else {
