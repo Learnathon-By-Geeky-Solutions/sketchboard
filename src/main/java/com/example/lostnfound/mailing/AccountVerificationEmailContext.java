@@ -16,7 +16,7 @@ public class AccountVerificationEmailContext extends AbstractEmailContext {
         setTo(user.getEmail());
     }
 
-    public void setTo(String token) {
+    public void setToken(String token) {
         this.token = token;
         put("token", token);
     }

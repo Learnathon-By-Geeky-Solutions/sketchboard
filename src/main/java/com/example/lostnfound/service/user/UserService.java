@@ -1,6 +1,12 @@
 package com.example.lostnfound.service.user;
 import java.util.List;
 
+import com.example.lostnfound.mailing.AccountVerificationEmailContext;
+import com.example.lostnfound.model.SecureToken;
+import com.example.lostnfound.service.EmailService;
+import com.example.lostnfound.service.SecureTokenService;
+import com.google.api.client.util.Value;
+import jakarta.mail.MessagingException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,18 +30,26 @@ public class UserService {
     private final JWTService jwtService;
     private final PostRepo postRepo;
     private final ModelMapper modelMapper;
+    private final SecureTokenService secureTokenService;
+    private final EmailService emailService;
+    @Value("${site.base.url.https}")
+    private String baseUrl;
     Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    UserService(UserRepo userRepo, AuthenticationManager authmManager, JWTService jwtService, PostRepo postRepo, ModelMapper modelMapper) {
+    UserService(UserRepo userRepo, AuthenticationManager authmManager, JWTService jwtService, PostRepo postRepo, ModelMapper modelMapper, SecureTokenService secureTokenService, EmailService emailService) {
         this.userRepo = userRepo;
         this.authmManager = authmManager;
         this.jwtService = jwtService;
         this.postRepo = postRepo;
         this.modelMapper = modelMapper;
+        this.secureTokenService = secureTokenService;
+        this.emailService = emailService;
     }
 
     public User save(User user) {
-        return userRepo.save(user);
+        User newUser = userRepo.save(user);
+        sendRegistrationEmail(user);
+        return newUser;
     }
 
     public String verify(String email, String password) {
@@ -84,6 +98,27 @@ public class UserService {
             return user;
         }
         else return null;
+    }
+
+    public boolean checkIfUserExist(String email) {
+        return userRepo.findByEmail(email) != null;
+    }
+
+    public void sendRegistrationEmail(User user) {
+        SecureToken secureToken = secureTokenService.createToken();
+        secureToken.setUser(user);
+        secureTokenService.saveSecureToken(secureToken);
+
+        AccountVerificationEmailContext context = new AccountVerificationEmailContext();
+        context.init(user);
+        context.setToken(secureToken.getToken());
+        context.buildVerificationUrl(baseUrl, secureToken.getToken());
+
+        try {
+            emailService.sendEmail(context);
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
     }
     
 }
