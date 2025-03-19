@@ -1,5 +1,6 @@
 package com.example.lostnfound.dto;
 
+import com.example.lostnfound.enums.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
@@ -25,5 +26,9 @@ public class UserDto {
     @NotEmpty
     @Schema(description = "Department of the User.", example = "Computer Science", required = true)
     private String department;
+
+    @NotEmpty
+    @Schema(description = "Role of the User.", example = "USER", required = true)
+    private Role role;
 
 }

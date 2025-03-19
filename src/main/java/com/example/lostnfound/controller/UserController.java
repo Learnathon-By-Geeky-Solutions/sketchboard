@@ -52,7 +52,12 @@ public class UserController {
         newUser.setEmail(user.getEmail());
         newUser.setPassword(encoder.encode(user.getPassword()));
         newUser.setName(user.getName());
+        newUser.setDepartment(user.getDepartment());
         newUser.setAddress(user.getAddress());
+        newUser.setRole(user.getRole());
+        System.out.println("THe user provided: ");
+        //print in json format
+        System.out.println(user);
         userService.save(newUser);
         return new ResponseEntity<>(modelMapper.map(userService.save(newUser), UserDto.class), HttpStatus.CREATED);
     }
