@@ -50,9 +50,9 @@ public class CommentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CommentDto> updateComment(@PathVariable Long id, @RequestBody Comment comment) {
-        Comment updatedComment = commentService.updateComment(id, comment);
-        CommentDto commentDto = new CommentDto(updatedComment.getId(),updatedComment.getContent(), updatedComment.getUser().getUserId(), updatedComment.getPost().getId(), updatedComment.getCreatedAt());
+    public ResponseEntity<CommentDto> updateComment(@PathVariable("id") Long id, @RequestBody String content) {
+        Comment updatedComment = commentService.updateComment(id, content);
+        CommentDto commentDto = new CommentDto(updatedComment.getId(), updatedComment.getContent(), updatedComment.getUser().getUserId(), updatedComment.getPost().getId(), updatedComment.getCreatedAt());
         return new ResponseEntity<>(commentDto, HttpStatus.OK);
     }
 
