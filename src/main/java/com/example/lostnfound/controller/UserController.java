@@ -55,8 +55,7 @@ public class UserController {
         newUser.setDepartment(user.getDepartment());
         newUser.setAddress(user.getAddress());
         newUser.setRole(user.getRole());
-        System.out.println("THe user provided: ");
-        //print in json format
+        newUser.setEmbedding(new float[3072]);
         System.out.println(user);
         userService.save(newUser);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
