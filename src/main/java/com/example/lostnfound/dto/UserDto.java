@@ -1,20 +1,27 @@
 package com.example.lostnfound.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 @Data
 public class UserDto {
+    @Schema(description = "Id of the User.", example = "1")
+    private Long id;
+
     @NotEmpty
     @Schema(description = "Name of the User.", example = "John Doe", required = true)
     private String name;
 
     @NotEmpty
+    @Email
     @Schema(description = "Email of the User.", example = "johndoe@gmail.com", required = true)
     private String email;
 
     @NotEmpty  
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$",message = "Password must be at least 8 characters with at least one digit, one uppercase, one lowercase, and one special character")
     @Schema(description = "Password of the User.", example = "password", required = true)
     private String password;
 

@@ -54,7 +54,7 @@ public class UserController {
         newUser.setName(user.getName());
         newUser.setAddress(user.getAddress());
         userService.save(newUser);
-        return new ResponseEntity<>(modelMapper.map(userService.save(newUser), UserDto.class), HttpStatus.CREATED);
+        return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
     @PostMapping("/login")

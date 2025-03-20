@@ -31,17 +31,19 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class PostController {
     private final PostService postService;
     private final UserService userService;
-    private final ModelMapper modelMapper = new ModelMapper();
+    private final ModelMapper modelMapper ;
 
     PostController(PostService postService, UserService userService) {
         this.postService = postService;
         this.userService = userService;
+        this.modelMapper = new ModelMapper();
     }
 
     @PostMapping("/posts")
     @Operation(summary = "Create a new post", description = "Creates a new post")
     public ResponseEntity<PostDto> givePost(@RequestBody PostDto postDto) throws IOException, InterruptedException {
         Post newPost = new Post();
+        newPost.setUserId(userService.getCurrentUser().getUserId());
         newPost.setTitle(postDto.getTitle());
         newPost.setDescription(postDto.getDescription());
         newPost.setCategory(postDto.getCategory());
@@ -51,7 +53,8 @@ public class PostController {
         newPost.setTime(postDto.getTime());
         newPost.setDate(postDto.getDate());
         newPost.setStatus(postDto.getStatus());
-        return new ResponseEntity<>(postDto, HttpStatus.CREATED);
+        postService.savePost(newPost);
+        return new ResponseEntity<>(modelMapper.map(newPost, PostDto.class), HttpStatus.CREATED);
     }
 
     @GetMapping("/posts")
