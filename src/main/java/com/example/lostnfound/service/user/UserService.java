@@ -33,6 +33,9 @@ public class UserService {
     }
 
     public void save(User user) {
+        if(userRepo.findByEmail(user.getEmail()) != null) {
+            throw new UserNotFoundException("User already exists with email: " + user.getEmail() + "\n");
+        }
         userRepo.save(user);
     }
 

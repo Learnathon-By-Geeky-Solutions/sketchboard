@@ -47,7 +47,7 @@ public class UserController {
 
     @PostMapping("/register")
     @Operation(summary = "Register a new user", description = "Registers a new user")
-    public ResponseEntity<UserDto> register(@RequestBody UserDto user) {
+    public ResponseEntity<?> register(@RequestBody UserDto user) {
         User newUser = new User();
         newUser.setEmail(user.getEmail());
         newUser.setPassword(encoder.encode(user.getPassword()));
@@ -56,9 +56,13 @@ public class UserController {
         newUser.setAddress(user.getAddress());
         newUser.setRole(user.getRole());
         newUser.setEmbedding(new float[3072]);
-        System.out.println("New created user is: " + newUser);  
-        userService.save(newUser);
-        return new ResponseEntity<>(user, HttpStatus.CREATED);
+        System.out.println("New created user is: " + newUser);
+        try{
+            userService.save(newUser);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.CONFLICT);
+        }
+        return new ResponseEntity<>(modelMapper.map(newUser, UserDto.class), HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
