@@ -37,7 +37,7 @@ public class SecurityConfig {
         .and()
         .csrf(customizer -> customizer.disable())
         .authorizeHttpRequests(request->request
-        .requestMatchers("/","/register","/login","/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+        .requestMatchers("/register","/login","/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
         .anyRequest().authenticated())
         .httpBasic(Customizer.withDefaults())
         .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -66,7 +66,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("*")); // Allow frontend origin
+        configuration.setAllowedOrigins(List.of("http://localhost:5173")); // Allow frontend origin
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true); // Important for JWT authentication

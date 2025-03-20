@@ -17,7 +17,7 @@ public class UserDto {
     private String name;
 
     @NotEmpty
-    @Email
+    @Pattern(regexp = "^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$", message = "Invalid email format")
     @Schema(description = "Email of the User.", example = "johndoe@gmail.com", required = true)
     private String email;
 
