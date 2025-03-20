@@ -55,11 +55,10 @@ public class UserController {
         newUser.setDepartment(user.getDepartment());
         newUser.setAddress(user.getAddress());
         newUser.setRole(user.getRole());
-        System.out.println("THe user provided: ");
-        //print in json format
-        System.out.println(user);
+        newUser.setEmbedding(new float[3072]);
+        System.out.println("New created user is: " + newUser);  
         userService.save(newUser);
-        return new ResponseEntity<>(modelMapper.map(userService.save(newUser), UserDto.class), HttpStatus.CREATED);
+        return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
     @PostMapping("/login")

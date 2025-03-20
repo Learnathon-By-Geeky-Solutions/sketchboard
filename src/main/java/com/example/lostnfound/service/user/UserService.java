@@ -32,8 +32,8 @@ public class UserService {
         this.postRepo = postRepo;
     }
 
-    public User save(User user) {
-        return userRepo.save(user);
+    public void save(User user) {
+        userRepo.save(user);
     }
 
     public String verify(String email, String password) {
