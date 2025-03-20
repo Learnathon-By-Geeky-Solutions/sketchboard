@@ -30,7 +30,7 @@ The database will be created and configured automatically during application sta
     mvn spring-boot:run
     ```
    
-### Demo account for testing API endpoints
+### Demo account for testing [API endpoints](https://precision-multiple-tie-bomb.trycloudflare.com)
 - Bearer Token
    ```
    eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJqb2huZG9lQGdtYWlsLmNvbSIsImlhdCI6MTc0MjUwNTc2NywiZXhwIjo5MjIzMzcyMDM2ODU0Nzc1fQ.dI4cK-rf-OPvOboWBmUi8HFdQuEaTJSyQlvzpzZrTobEzckxJTGeshsuBlJVxVkV
