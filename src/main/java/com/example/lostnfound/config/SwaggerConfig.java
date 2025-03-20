@@ -35,7 +35,7 @@ public class SwaggerConfig {
                         .type(SecurityScheme.Type.HTTP)
                         .scheme("bearer")
                         .bearerFormat("JWT")
-                        .description("Enter JWT token"))
+                        .description("Enter the JWT token"))
                 .addSecuritySchemes("BasicAuth",
                     new SecurityScheme()
                         .name("BasicAuth")

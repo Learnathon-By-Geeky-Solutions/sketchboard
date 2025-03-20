@@ -29,6 +29,17 @@ The database will be created and configured automatically during application sta
     mvn clean install
     mvn spring-boot:run
     ```
+   
+### Demo account for testing API endpoints
+- Bearer Token
+   ```
+   eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJqb2huZG9lQGdtYWlsLmNvbSIsImlhdCI6MTc0MjUwNTc2NywiZXhwIjo5MjIzMzcyMDM2ODU0Nzc1fQ.dI4cK-rf-OPvOboWBmUi8HFdQuEaTJSyQlvzpzZrTobEzckxJTGeshsuBlJVxVkV
+   ```
+- Or you can use login credentials
+   ```bash
+   Email: johndoe@gmail.com
+   Password: password
+   ```
 
 ## Team Members
 
