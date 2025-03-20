@@ -24,8 +24,20 @@ public class SwaggerConfig {
         .addSecurityItem(
             new SecurityRequirement().addList("SketchboardSecurityScheme")
         )
-        .components(new Components().addSecuritySchemes("SketchboardSecurityScheme",
-         new SecurityScheme().name("SketchboardSecurityScheme").type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")));
+        .components(new Components()
+        .addSecuritySchemes("BearerAuth",
+            new SecurityScheme().name("BearerAuth")
+                 .type(SecurityScheme.Type.HTTP)
+                 .scheme("bearer")
+                 .bearerFormat("JWT")
+                 .description("Enter JWT token in the format **Bearer &lt;token>**")
+        )
+        .addSecuritySchemes("BasicAuth",
+            new SecurityScheme().name("BasicAuth")
+                 .type(SecurityScheme.Type.HTTP)
+                 .scheme("basic")
+                    .description("Or Enter your username and password")
+        ));
 
     }
 }
