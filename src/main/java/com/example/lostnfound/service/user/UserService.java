@@ -1,9 +1,9 @@
 package com.example.lostnfound.service.user;
 import java.util.List;
+import java.util.Objects;
 
 import com.example.lostnfound.mailing.AccountVerificationEmailContext;
 import com.example.lostnfound.model.SecureToken;
-import com.example.lostnfound.service.EmailService;
 import com.example.lostnfound.service.EmailServiceImpl;
 import com.example.lostnfound.service.SecureTokenService;
 import jakarta.mail.MessagingException;
@@ -19,7 +19,10 @@ import com.example.lostnfound.model.Post;
 import com.example.lostnfound.model.User;
 import com.example.lostnfound.repository.PostRepo;
 import com.example.lostnfound.repository.UserRepo;
+import com.example.lostnfound.exception.InvalidTokenException;
 import com.example.lostnfound.exception.PostNotFoundException;
+
+import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,5 +124,16 @@ public class UserService {
             throw new RuntimeException(e);
         }
     }
-    
+
+    public boolean verifyUser(String token) throws InvalidTokenException {
+        SecureToken secureToken = secureTokenService.findByToken(token);
+
+        if (Objects.isNull(token) || !StringUtils.equals(token, secureToken.getToken()) || secureToken.isExpired()) {
+            throw new InvalidTokenException("Token is invalid or expired");
+        }
+        User user = userRepo.findById(secureToken.getUser().getUserId()).orElseThrow(() -> new UserNotFoundException("User not found with id: " + secureToken.getUser().getUserId() + "\n"));
+        user.setAccountVerified(true);
+        userRepo.save(user);
+        return true;
+    }
 }

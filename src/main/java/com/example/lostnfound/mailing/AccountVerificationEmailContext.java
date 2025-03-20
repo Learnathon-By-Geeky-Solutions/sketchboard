@@ -11,8 +11,8 @@ public class AccountVerificationEmailContext extends AbstractEmailContext {
         User user = (User) context;
         put("Username", user.getName());
         setTemplateLocation("mail/email-verification.html"); // Corrected path
-        setSubject("Complete Email Verification");
-        setFrom("s2010676102@ru.ac.bd");
+        setSubject("LostNFound: Complete Your Email Verification");
+        setFrom("no-reply@lostnfound.com");
         setTo(user.getEmail());
     }
 
@@ -27,10 +27,9 @@ public class AccountVerificationEmailContext extends AbstractEmailContext {
             throw new IllegalArgumentException("Base URL must not be null");
         }
 
-        UriComponentsBuilder.fromHttpUrl(baseUrl)
-                .path("registration/verify")
-                .queryParam("token", token)
-                .toUriString();
+        final String url= UriComponentsBuilder.fromUriString(baseUrl)
+                .path("/registration/verify").queryParam("token", token).toUriString();
+        put("verificationURL", url);
     }
 
 }
