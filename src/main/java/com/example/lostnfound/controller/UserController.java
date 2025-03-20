@@ -56,7 +56,7 @@ public class UserController {
         newUser.setAddress(user.getAddress());
         newUser.setRole(user.getRole());
         newUser.setEmbedding(new float[3072]);
-        System.out.println(user);
+        System.out.println("New created user is: " + newUser);  
         userService.save(newUser);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
