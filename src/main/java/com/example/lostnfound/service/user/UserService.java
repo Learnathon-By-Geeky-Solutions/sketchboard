@@ -1,5 +1,6 @@
 package com.example.lostnfound.service.user;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -82,6 +83,26 @@ public class UserService {
             return user;
         }
         else return null;
+    }
+
+    public void update(User updatedUser) {
+        User user = getCurrentUser();
+         if(Objects.nonNull(updatedUser.getName()) && !"".equalsIgnoreCase(updatedUser.getName())) {
+            user.setName(updatedUser.getName());
+            }
+        if(Objects.nonNull(updatedUser.getEmail()) && !"".equalsIgnoreCase(updatedUser.getEmail())) {
+            user.setEmail(updatedUser.getEmail());
+        }
+        if(Objects.nonNull(updatedUser.getPassword()) && !"".equalsIgnoreCase(updatedUser.getPassword())) {
+            user.setPassword(updatedUser.getPassword());
+        }
+        if(Objects.nonNull(updatedUser.getAddress()) && !"".equalsIgnoreCase(updatedUser.getAddress())) {
+            user.setAddress(updatedUser.getAddress());
+        }
+        if(Objects.nonNull(updatedUser.getDepartment()) && !"".equalsIgnoreCase(updatedUser.getDepartment())) {
+            user.setDepartment(updatedUser.getDepartment());
+        }
+        userRepo.save(user);
     }
     
 }

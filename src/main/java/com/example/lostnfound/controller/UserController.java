@@ -24,6 +24,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -131,5 +132,19 @@ public class UserController {
     public ResponseEntity<Long> getMyId() {
         User user = userService.getCurrentUser();
         return new ResponseEntity<>(user.getUserId(), HttpStatus.OK);
+    }
+
+    @PutMapping("/updateProfile")
+    @Operation(summary = "Update user profile", description = "Updates user profile")
+    public ResponseEntity<UserDto> updateProfile(@RequestBody UserDto user) {
+        User updatedUser = new User();
+        updatedUser.setEmail(user.getEmail());
+        updatedUser.setName(user.getName());
+        updatedUser.setDepartment(user.getDepartment());
+        updatedUser.setAddress(user.getAddress());
+        updatedUser.setRole(user.getRole());
+        updatedUser.setEmbedding(new float[3072]);
+        userService.update(updatedUser);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 }
