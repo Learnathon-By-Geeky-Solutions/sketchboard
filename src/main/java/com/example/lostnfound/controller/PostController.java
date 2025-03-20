@@ -42,8 +42,15 @@ public class PostController {
     @PostMapping("/posts")
     @Operation(summary = "Create a new post", description = "Creates a new post")
     public ResponseEntity<PostDto> givePost(@RequestBody PostDto postDto) throws IOException, InterruptedException {
+        System.out.println("THe post entry is called************************************");
         Post newPost = new Post();
         newPost.setUserId(userService.getCurrentUser().getUserId());
+        createPostFromDto(postDto, newPost);
+        postService.savePost(newPost);
+        return new ResponseEntity<>(modelMapper.map(newPost, PostDto.class), HttpStatus.CREATED);
+    }
+
+    private void createPostFromDto(@RequestBody PostDto postDto, Post newPost) {
         newPost.setTitle(postDto.getTitle());
         newPost.setDescription(postDto.getDescription());
         newPost.setCategory(postDto.getCategory());
@@ -53,8 +60,6 @@ public class PostController {
         newPost.setTime(postDto.getTime());
         newPost.setDate(postDto.getDate());
         newPost.setStatus(postDto.getStatus());
-        postService.savePost(newPost);
-        return new ResponseEntity<>(modelMapper.map(newPost, PostDto.class), HttpStatus.CREATED);
     }
 
     @GetMapping("/posts")
@@ -103,15 +108,7 @@ public class PostController {
     @Operation(summary = "Update post by id", description = "Updates post by id")
     public ResponseEntity<PostDto> updatePost(@PathVariable("id") int id, @RequestBody PostDto postDto) {
         Post updatedPost = new Post();
-        updatedPost.setTitle(postDto.getTitle());
-        updatedPost.setDescription(postDto.getDescription());
-        updatedPost.setCategory(postDto.getCategory());
-        updatedPost.setUserId(userService.getCurrentUser().getUserId());
-        updatedPost.setLocation(postDto.getLocation());
-        updatedPost.setRange(postDto.getRange());
-        updatedPost.setTime(postDto.getTime());
-        updatedPost.setDate(postDto.getDate());
-        updatedPost.setStatus(postDto.getStatus());
+        createPostFromDto(postDto, updatedPost);
         postService.updatePost(id, updatedPost);
         PostDto myPost = modelMapper.map(updatedPost, PostDto.class);
         return new ResponseEntity<>(myPost, HttpStatus.OK);

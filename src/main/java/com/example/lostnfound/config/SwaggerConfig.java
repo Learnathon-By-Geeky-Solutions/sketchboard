@@ -18,26 +18,30 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
-        .info(
-            new Info().title("LostNFound API Documentation").version("1.0").description(" by team Sketchboard")
-        )
-        .addSecurityItem(
-            new SecurityRequirement().addList("SketchboardSecurityScheme")
-        )
-        .components(new Components()
-        .addSecuritySchemes("BearerAuth",
-            new SecurityScheme().name("BearerAuth")
-                 .type(SecurityScheme.Type.HTTP)
-                 .scheme("bearer")
-                 .bearerFormat("JWT")
-                 .description("Enter JWT token in the format **Bearer &lt;token>**")
-        )
-        .addSecuritySchemes("BasicAuth",
-            new SecurityScheme().name("BasicAuth")
-                 .type(SecurityScheme.Type.HTTP)
-                 .scheme("basic")
-                    .description("Or Enter your username and password")
-        ));
-
+            .info(new Info()
+                .title("LostNFound API Documentation")
+                .version("1.0")
+                .description("by team Sketchboard"))
+            .addSecurityItem(
+                new SecurityRequirement().addList("BearerAuth") // JWT Token
+            )
+            .addSecurityItem(
+                new SecurityRequirement().addList("BasicAuth") // Username & Password
+            )
+            .components(new Components()
+                .addSecuritySchemes("BearerAuth",
+                    new SecurityScheme()
+                        .name("BearerAuth")
+                        .type(SecurityScheme.Type.HTTP)
+                        .scheme("bearer")
+                        .bearerFormat("JWT")
+                        .description("Enter JWT token"))
+                .addSecuritySchemes("BasicAuth",
+                    new SecurityScheme()
+                        .name("BasicAuth")
+                        .type(SecurityScheme.Type.HTTP)
+                        .scheme("basic")
+                        .description("Or Enter your username and password"))
+            );
     }
 }

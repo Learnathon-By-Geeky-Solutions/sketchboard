@@ -84,18 +84,22 @@ public class UserController {
         User user = userService.findById(id);
         
         if (user != null) {
-            List<Post> posts = userService.findPostsByUserId(user.getUserId());
-            List<PostDto> postDtos = posts.stream()
-                                          .map(post -> modelMapper.map(post, PostDto.class))
-                                          .collect(Collectors.toList());
-            System.out.println("User embed " + Arrays.toString(user.getEmbedding()));
-            UserProfileResponse response = new UserProfileResponse(modelMapper.map(user, UserDto.class), postDtos);
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            return getUserProfileResponseResponseEntity(user);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-    
+
+    private ResponseEntity<UserProfileResponse> getUserProfileResponseResponseEntity(User user) {
+        List<Post> posts = userService.findPostsByUserId(user.getUserId());
+        List<PostDto> postDtos = posts.stream()
+                                      .map(post -> modelMapper.map(post, PostDto.class))
+                                      .collect(Collectors.toList());
+        System.out.println("User embed " + Arrays.toString(user.getEmbedding()));
+        UserProfileResponse response = new UserProfileResponse(modelMapper.map(user, UserDto.class), postDtos);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @Operation(summary = "Get user profile", description = "Retrieves authenticated user's profile and posts")
     @GetMapping("/profile")
     public ResponseEntity<UserProfileResponse> profileUser() {
@@ -106,13 +110,7 @@ public class UserController {
             if (user == null) {
                 throw new UserNotAuthenticatedException( "User not found");
             }
-            List<Post> posts = userService.findPostsByUserId(user.getUserId());
-            List<PostDto> postDtos = posts.stream()
-                                          .map(post -> modelMapper.map(post, PostDto.class))
-                                          .collect(Collectors.toList());
-            System.out.println("User embed " + Arrays.toString(user.getEmbedding()));
-            UserProfileResponse response = new UserProfileResponse(modelMapper.map(user, UserDto.class), postDtos);
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            return getUserProfileResponseResponseEntity(user);
         }
         throw new UserNotAuthenticatedException( "User not authenticated");
     }
