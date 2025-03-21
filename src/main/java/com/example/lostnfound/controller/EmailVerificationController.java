@@ -10,17 +10,16 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.thymeleaf.util.StringUtils;
 
 @Controller
-@RequestMapping("/registration")
-public class RegistrationController {
+public class EmailVerificationController {
 
     private static final String REDIRECT_LOGIN = "redirect:/login";
     private final UserService userService;
 
-    public RegistrationController(UserService userService) {
+    public EmailVerificationController(UserService userService) {
         this.userService = userService;
     }
 
-    @GetMapping("/verify")
+    @GetMapping("/verifyEmail")
     public String verifyUser(@RequestParam String token, RedirectAttributes redirectAttributes) throws InvalidTokenException {
         if(StringUtils.isEmpty(token)) {
             redirectAttributes.addFlashAttribute("tokenError", "Invalid token");

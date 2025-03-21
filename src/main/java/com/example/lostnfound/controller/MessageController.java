@@ -2,6 +2,7 @@ package com.example.lostnfound.controller;
 
 import com.example.lostnfound.dto.msgSendBody;
 import com.example.lostnfound.enums.MessageReadStatus;
+import com.example.lostnfound.exception.UserAlreadyExistException;
 import com.example.lostnfound.model.Message;
 import com.example.lostnfound.model.User;
 import com.example.lostnfound.service.MessageService;
@@ -31,7 +32,7 @@ public class MessageController {
 
     @PostMapping("/sendMesssage")
     @Operation(summary = "Send Message", description = "Send Message")
-    public ResponseEntity<Message> sendMessage(@RequestBody msgSendBody msgPostBody) {
+    public ResponseEntity<Message> sendMessage(@RequestBody msgSendBody msgPostBody) throws UserAlreadyExistException {
         User sender = userService.getCurrentUser();
         User receiver = userService.findById(msgPostBody.getReceiverId());
         if(sender.getUserId().equals(receiver.getUserId())){

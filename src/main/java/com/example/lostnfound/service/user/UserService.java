@@ -51,6 +51,9 @@ public class UserService {
     }
 
     public User save(User user) {
+        if(userRepo.findByEmail(user.getEmail()) != null) {
+            throw new UserNotFoundException("User already exists with email: " + user.getEmail() + "\n");
+        }
         User newUser = userRepo.save(user);
         sendRegistrationEmail(user);
         return newUser;
