@@ -45,7 +45,10 @@ public class MyUserDetails implements UserDetails{
     public Long getId() {
         return user.getUserId();
     }
-    
-    
+
+    @Override
+    public boolean isEnabled() {
+        return user.isAccountVerified();
+    }
 
 }
