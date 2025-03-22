@@ -97,21 +97,7 @@ public class MessageController {
     public ResponseEntity<?> getReceivedMessages() {
         User user = userService.getCurrentUser();
         try{
-            List<MessageDto> mylist = user.getReceived_messages().stream().map(message -> {
-                MessageDto messageDto = new MessageDto();
-                messageDto.setContent(message.getContent());
-                messageDto.setCreatedAt(message.getCreatedAt());
-                messageDto.setUpdatedAt(message.getUpdatedAt());
-                messageDto.setReadStatus(message.getReadStatus());
-                messageDto.setReceiverEmail(userService.findById(message.getReceiverId()).getEmail());
-                messageDto.setReceiverId(message.getReceiverId());
-                messageDto.setReceiverName(userService.findById(message.getReceiverId()).getName());
-
-                messageDto.setSenderId(message.getSenderId());
-                messageDto.setSenderEmail(userService.findById(message.getSenderId()).getEmail());
-                messageDto.setSenderName(userService.findById(message.getSenderId()).getName());
-                return messageDto;
-            }).toList();
+            List<MessageDto> mylist = user.getReceived_messages().stream().map(this::msgToMsgDto).toList();
             return new ResponseEntity<>(mylist, HttpStatus.OK);
         } catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -120,6 +106,7 @@ public class MessageController {
 
     private MessageDto msgToMsgDto(Message message) {
         MessageDto messageDto = new MessageDto();
+        messageDto.setId(message.getId());
         messageDto.setContent(message.getContent());
         messageDto.setCreatedAt(message.getCreatedAt());
         messageDto.setUpdatedAt(message.getUpdatedAt());
