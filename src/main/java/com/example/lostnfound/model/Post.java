@@ -83,6 +83,9 @@ public class Post {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
+    @Column(name = "user_name", nullable = false)
+    private String userName;
+
     public String infoForEmbedding(){
         String title5x = title + " " + title + " " + title + " " + title + " " + title;
         StringBuilder category10x = new StringBuilder();

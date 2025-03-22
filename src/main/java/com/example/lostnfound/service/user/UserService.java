@@ -90,5 +90,14 @@ public class UserService {
     public void updatePassword(User user){
         userRepo.save(user);
     }
-    
+
+    public void update(User updatedUser) {
+        User user = getCurrentUser();
+        user.setEmail(updatedUser.getEmail());
+        user.setName(updatedUser.getName());
+        user.setDepartment(updatedUser.getDepartment());
+        user.setAddress(updatedUser.getAddress());
+        user.setRole(updatedUser.getRole());
+        userRepo.save(user);
+    }
 }

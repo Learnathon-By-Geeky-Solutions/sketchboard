@@ -51,5 +51,8 @@ public class PostDto {
     @Schema(description = "User Id of the Post.", example = "1")
     private Long userId;
 
+    @Schema(description = "User Name of the Post.", example = "John Doe")
+    private String userName;
+
 }
 
