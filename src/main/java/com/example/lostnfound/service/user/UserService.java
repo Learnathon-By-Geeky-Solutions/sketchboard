@@ -88,6 +88,7 @@ public class UserService {
     }
 
     public void updatePassword(User user){
+        logger.debug("Updating password for user: {}", user.getEmail());
         userRepo.save(user);
     }
 

@@ -9,11 +9,11 @@ import lombok.Data;
 public class PasswordDto {
 
     @NotNull
-    @Schema(description = "Email of the User.", example = "Passwod@123", required = true)
+    @Schema(description = "Current password of the User.", example = "Passwod@123", required = true)
     private String currentPassword;
     
     @NotNull
-    @Schema(description = "Email of the User.", example = "Passwod@123", required = true)
+    @Schema(description = "New password of the User.", example = "Passwod@123", required = true)
     @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$",message = "Password must be at least 8 characters with at least one digit, one uppercase, one lowercase, and one special character")
     private String newPassword;
 }
