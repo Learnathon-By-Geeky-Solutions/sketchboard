@@ -12,6 +12,7 @@ import com.example.lostnfound.model.Post;
 import com.example.lostnfound.model.User;
 import com.example.lostnfound.repository.PostRepo;
 import com.example.lostnfound.repository.UserRepo;
+import com.example.lostnfound.dto.UserDto;
 import com.example.lostnfound.exception.PostNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -91,13 +92,12 @@ public class UserService {
         else return null;
     }
 
-    public void update(User updatedUser) {
+    public void update(UserDto updatedUser) {
         User user = getCurrentUser();
         user.setEmail(updatedUser.getEmail());
         user.setName(updatedUser.getName());
         user.setDepartment(updatedUser.getDepartment());
         user.setAddress(updatedUser.getAddress());
-        user.setRole(updatedUser.getRole());
         userRepo.save(user);
     }
 }

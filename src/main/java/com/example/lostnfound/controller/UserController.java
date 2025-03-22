@@ -4,8 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
-import com.example.lostnfound.model.Message;
 import com.example.lostnfound.service.user.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import com.example.lostnfound.dto.LoginDto;
 import com.example.lostnfound.dto.PostDto;
 import com.example.lostnfound.dto.UserDto;
+import com.example.lostnfound.enums.Role;
 import com.example.lostnfound.exception.UserNotAuthenticatedException;
 import com.example.lostnfound.model.Post;
 import com.example.lostnfound.model.User;
@@ -131,14 +130,8 @@ public class UserController {
     @Operation(summary = "Update user profile", description = "Updates user profile")
     public ResponseEntity<?> updateProfile(@RequestBody UserDto user) {
         try {
-            User updatedUser = new User();
-            updatedUser.setEmail(user.getEmail());
-            updatedUser.setName(user.getName());
-            updatedUser.setDepartment(user.getDepartment());
-            updatedUser.setAddress(user.getAddress());
-            updatedUser.setRole(user.getRole());
-            updatedUser.setEmbedding(new float[3072]);
-            userService.update(updatedUser);
+
+            userService.update(user);
             return new ResponseEntity<>(user, HttpStatus.OK);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
