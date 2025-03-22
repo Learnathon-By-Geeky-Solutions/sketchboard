@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.example.lostnfound.model.Message;
 import com.example.lostnfound.service.user.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +55,7 @@ public class UserController {
         newUser.setEmbedding(new float[3072]);
         System.out.println("New created user is: " + newUser);
         try{
-            userService.save(newUser);
+            userService.register(newUser);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(),HttpStatus.CONFLICT);
         }
@@ -131,12 +132,6 @@ public class UserController {
         return new ResponseEntity<>("Token is valid", HttpStatus.OK);
     }
 
-    @GetMapping("/getMyMessages")
-    @Operation(summary = "Get messages", description = "Retrieves messages for user")
-    public ResponseEntity<List<Long>> getMyMessages() {
-        User user = userService.getCurrentUser();
-        return new ResponseEntity<>(user.getMessages(), HttpStatus.OK);
-    }
 
     @GetMapping("/myId")
     @Operation(summary = "Get user id", description = "Retrieves user id")

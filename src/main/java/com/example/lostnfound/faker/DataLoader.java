@@ -7,6 +7,7 @@ import com.example.lostnfound.repository.PostRepo;
 import com.example.lostnfound.repository.UserRepo;
 import com.example.lostnfound.service.AI.GeminiChat.GeminiResponse;
 import com.example.lostnfound.service.PostService;
+import com.example.lostnfound.service.user.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
 import org.springframework.boot.CommandLineRunner;
@@ -29,7 +30,7 @@ public class DataLoader implements CommandLineRunner {
     private final ObjectMapper objectMapper;
     private final PostService postService;
 
-    DataLoader(PostRepo postRepository, UserRepo userRepo, GeminiResponse myGemini, ObjectMapper objectMapper, PostService postService) {
+    DataLoader(PostRepo postRepository, UserRepo userRepo, GeminiResponse myGemini, ObjectMapper objectMapper, PostService postService, UserService userService) {
         this.postRepository = postRepository;
         this.userRepo = userRepo;
         this.myGemini = myGemini;
@@ -42,7 +43,7 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) throws Exception {
         Logger logger = LoggerFactory.getLogger(DataLoader.class);
         int postCount = postRepository.findAll().size();
-        int extraPostNeed = 30 - postCount;
+        int extraPostNeed = 0 - postCount;
         int userCount = userRepo.findAll().size();
         int extraUserNeed = 5 - userCount;
 
@@ -118,6 +119,7 @@ public class DataLoader implements CommandLineRunner {
             response = rb.toString();
             Post post = objectMapper.readValue(response, Post.class);
             post.setUserId(faker.number().numberBetween(1, userRepo.count() + 1));
+            post.setUserName(userRepo.findById(post.getUserId()).get().getName());
             try {
                 postService.savePost(post);
                 logger.info("Generated post {}/{}", i + 1, extraPostNeed);
