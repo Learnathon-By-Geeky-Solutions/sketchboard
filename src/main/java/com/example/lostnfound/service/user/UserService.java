@@ -86,5 +86,9 @@ public class UserService {
         }
         else return null;
     }
+
+    public void updatePassword(User user){
+        userRepo.save(user);
+    }
     
 }
