@@ -23,9 +23,18 @@ import com.example.lostnfound.model.User;
 import com.example.lostnfound.model.UserProfileResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
+
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import com.example.lostnfound.dto.PasswordDto;
+
 
 
 @RestController
@@ -165,5 +174,25 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
+    }
+
+    @PutMapping("/profile/password")
+    @Operation(summary = "Change password", description = "Changes password for user")
+    public ResponseEntity<String> changePassword(@Valid @RequestBody PasswordDto user) {
+           try {
+            User currentUser = userService.getCurrentUser();
+            if (encoder.matches(user.getCurrentPassword(), currentUser.getPassword())) {
+                currentUser.setPassword(encoder.encode(user.getNewPassword()));
+                userService.updatePassword(currentUser);
+                return new ResponseEntity<>("Password changed successfully", HttpStatus.OK);
+            } else {
+               // LOG FAILED ATTEMPT
+              // CONSIDER TRACKING FAILED ATTEMPTS FOR SECURITY
+                return new ResponseEntity<>("Incorrect password", HttpStatus.UNAUTHORIZED);
+            }
+      } catch (Exception e) {
+        // LOG ERROR
+          return new ResponseEntity<>("Error processing password change", HttpStatus.INTERNAL_SERVER_ERROR);
+      }
     }
 }

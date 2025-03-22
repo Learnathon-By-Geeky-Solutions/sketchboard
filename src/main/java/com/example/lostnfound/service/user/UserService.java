@@ -91,6 +91,11 @@ public class UserService {
         else return null;
     }
 
+    public void updatePassword(User user){
+        logger.debug("Updating password for user: {}", user.getEmail());
+        userRepo.save(user);
+    }
+
     public void update(User updatedUser) {
         User user = getCurrentUser();
         user.setEmail(updatedUser.getEmail());
