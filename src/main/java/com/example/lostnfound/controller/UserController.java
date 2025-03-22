@@ -45,98 +45,125 @@ public class UserController {
     @PostMapping("/register")
     @Operation(summary = "Register a new user", description = "Registers a new user")
     public ResponseEntity<?> register(@RequestBody UserDto user) {
-        User newUser = new User();
-        newUser.setEmail(user.getEmail());
-        newUser.setPassword(encoder.encode(user.getPassword()));
-        newUser.setName(user.getName());
-        newUser.setDepartment(user.getDepartment());
-        newUser.setAddress(user.getAddress());
-        newUser.setRole(user.getRole());
-        newUser.setEmbedding(new float[3072]);
-        System.out.println("New created user is: " + newUser);
-        try{
+        try {
+            User newUser = new User();
+            newUser.setEmail(user.getEmail());
+            newUser.setPassword(encoder.encode(user.getPassword()));
+            newUser.setName(user.getName());
+            newUser.setDepartment(user.getDepartment());
+            newUser.setAddress(user.getAddress());
+            newUser.setRole(user.getRole());
+            newUser.setEmbedding(new float[3072]);
+            System.out.println("New created user is: " + newUser);
             userService.register(newUser);
+            return new ResponseEntity<>(modelMapper.map(newUser, UserDto.class), HttpStatus.CREATED);
         } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.CONFLICT);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
-        return new ResponseEntity<>(modelMapper.map(newUser, UserDto.class), HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
     @Operation(summary = "Login", description = "Logs in a user")
-    public ResponseEntity<String> login(@RequestBody LoginDto user) {
-        String mail = user.getEmail();
-        String password = user.getPassword();
-        String token = userService.verify(mail, password);
-        if (!Objects.equals(token, "Login Failed")) {
-            return new ResponseEntity<>(token, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("Unauthorized access. Please check your credentials.", HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<?> login(@RequestBody LoginDto user) {
+        try {
+            String mail = user.getEmail();
+            String password = user.getPassword();
+            String token = userService.verify(mail, password);
+            if (!Objects.equals(token, "Login Failed")) {
+                return new ResponseEntity<>(token, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("Unauthorized access. Please check your credentials.", HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
     @Operation(summary = "Get user profile by id", description = "Retrieves user's profile by id")
     @GetMapping("/profile/{id}")
-    public ResponseEntity<UserProfileResponse> getUser(@PathVariable("id") Long id) {
-        User user = userService.findById(id);
-        
-        if (user != null) {
-            return getUserProfileResponseResponseEntity(user);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<?> getUser(@PathVariable("id") Long id) {
+        try {
+            User user = userService.findById(id);
+            if (user != null) {
+                return getUserProfileResponseResponseEntity(user);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
-    private ResponseEntity<UserProfileResponse> getUserProfileResponseResponseEntity(User user) {
-        List<Post> posts = userService.findPostsByUserId(user.getUserId());
-        List<PostDto> postDtos = posts.stream()
-                                      .map(post -> modelMapper.map(post, PostDto.class))
-                                      .collect(Collectors.toList());
-        System.out.println("User embed " + Arrays.toString(user.getEmbedding()));
-        UserProfileResponse response = new UserProfileResponse(modelMapper.map(user, UserDto.class), postDtos);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    private ResponseEntity<?> getUserProfileResponseResponseEntity(User user) {
+        try {
+            List<Post> posts = userService.findPostsByUserId(user.getUserId());
+            List<PostDto> postDtos = posts.stream()
+                    .map(post -> modelMapper.map(post, PostDto.class))
+                    .collect(Collectors.toList());
+            System.out.println("User embed " + Arrays.toString(user.getEmbedding()));
+            UserProfileResponse response = new UserProfileResponse(modelMapper.map(user, UserDto.class), postDtos);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     @Operation(summary = "Get user profile", description = "Retrieves authenticated user's profile and posts")
     @GetMapping("/profile")
-    public ResponseEntity<UserProfileResponse> profileUser() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof UserDetails userDetails) {
-            String email = userDetails.getUsername();
-            User user = userService.findByEmail(email);
-            if (user == null) {
-                throw new UserNotAuthenticatedException( "User not found");
+    public ResponseEntity<?> profileUser() {
+        try {
+            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if (principal instanceof UserDetails userDetails) {
+                String email = userDetails.getUsername();
+                User user = userService.findByEmail(email);
+                if (user == null) {
+                    throw new UserNotAuthenticatedException("User not found");
+                }
+                return getUserProfileResponseResponseEntity(user);
             }
-            return getUserProfileResponseResponseEntity(user);
+            return new ResponseEntity<>("User not authenticated", HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
-        throw new UserNotAuthenticatedException( "User not authenticated");
     }
 
     @PutMapping("/updateProfile")
     @Operation(summary = "Update user profile", description = "Updates user profile")
-    public ResponseEntity<UserDto> updateProfile(@RequestBody UserDto user) {
-        User updatedUser = new User();
-        updatedUser.setEmail(user.getEmail());
-        updatedUser.setName(user.getName());
-        updatedUser.setDepartment(user.getDepartment());
-        updatedUser.setAddress(user.getAddress());
-        updatedUser.setRole(user.getRole());
-        updatedUser.setEmbedding(new float[3072]);
-        userService.update(updatedUser);
-        return new ResponseEntity<>(user, HttpStatus.OK);
+    public ResponseEntity<?> updateProfile(@RequestBody UserDto user) {
+        try {
+            User updatedUser = new User();
+            updatedUser.setEmail(user.getEmail());
+            updatedUser.setName(user.getName());
+            updatedUser.setDepartment(user.getDepartment());
+            updatedUser.setAddress(user.getAddress());
+            updatedUser.setRole(user.getRole());
+            updatedUser.setEmbedding(new float[3072]);
+            userService.update(updatedUser);
+            return new ResponseEntity<>(user, HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     @Operation(summary = "Validate JWT token", description = "Validates JWT token")
     @GetMapping("/validate")
-    public ResponseEntity<String> validate() {
-        return new ResponseEntity<>("Token is valid", HttpStatus.OK);
+    public ResponseEntity<?> validate() {
+        try{
+            return new ResponseEntity<>("Token is valid", HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 
     @GetMapping("/myId")
     @Operation(summary = "Get user id", description = "Retrieves user id")
-    public ResponseEntity<Long> getMyId() {
-        User user = userService.getCurrentUser();
-        return new ResponseEntity<>(user.getUserId(), HttpStatus.OK);
+    public ResponseEntity<?> getMyId() {
+        try {
+            User user = userService.getCurrentUser();
+            return new ResponseEntity<>(user.getUserId(), HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 }

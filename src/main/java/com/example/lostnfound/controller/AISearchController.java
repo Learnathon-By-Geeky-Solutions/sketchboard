@@ -31,49 +31,65 @@ public class AISearchController {
         private final PostService postService;
 
         AISearchController(GeminiResponse geminiResponse, QueryExecutor queryExecutor, EmbeddingService embeddingService, PostService postService) {
-            this.geminiResponse = geminiResponse;
-            this.queryExecutor = queryExecutor;
-            this.embeddingService = embeddingService;
-            this.postService = postService;
+                this.geminiResponse = geminiResponse;
+                this.queryExecutor = queryExecutor;
+                this.embeddingService = embeddingService;
+                this.postService = postService;
         }
 
         @PostMapping("/basicAISearch")
         @Operation(summary = "Basic AI Search", description = "Searches for posts using AI")
-        public ResponseEntity<List<PostDto>> basicAISearch(@RequestBody String query) {
-                String response = geminiResponse.getResponse(query);
-                ResponseEntity<List<Post>> result = queryExecutor.executeAISearch(response);
-                List<PostDto> postDtos = result.getBody().stream()
-                        .map(post -> modelMapper.map(post, PostDto.class))
-                        .collect(Collectors.toList());
-                return new ResponseEntity<>(postDtos, result.getStatusCode());
+        public ResponseEntity<?> basicAISearch(@RequestBody String query) {
+                try {
+                        String response = geminiResponse.getResponse(query);
+                        ResponseEntity<List<Post>> result = queryExecutor.executeAISearch(response);
+                        List<PostDto> postDtos = result.getBody().stream()
+                                .map(post -> modelMapper.map(post, PostDto.class))
+                                .collect(Collectors.toList());
+                        return new ResponseEntity<>(postDtos, result.getStatusCode());
+                } catch (Exception e) {
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+                }
         }
 
         @PostMapping("/getEmbedding")
         @Operation(summary = "Get Embedding", description = "Get embedding for a given input")
-        public ResponseEntity<float[]> getEmbedding(@RequestBody String input) throws Exception {
-                float[] embedding = embeddingService.getEmbedding(input);
-                return new ResponseEntity<>(embedding, HttpStatus.OK);
+        public ResponseEntity<?> getEmbedding(@RequestBody String input) {
+                try {
+                        float[] embedding = embeddingService.getEmbedding(input);
+                        return new ResponseEntity<>(embedding, HttpStatus.OK);
+                } catch (Exception e) {
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+                }
         }
 
         @PostMapping("/enhancedSearch")
         @Operation(summary = "Enhanced Search", description = "Searches for posts using AI and returns similar posts")
-        public ResponseEntity<List<PostDto>> enhancedSearch(@RequestBody aiSearchQuery query) throws IOException, InterruptedException {
-                float[] queryEmbedding = embeddingService.getEmbedding(query.getQuery());
-                List<Post> res = postService.findTopKSimilarPosts(queryEmbedding, query.getLimit());
-                List<PostDto> postDtos = res.stream()
-                        .map(post -> modelMapper.map(post, PostDto.class))
-                        .collect(Collectors.toList());
-                return new ResponseEntity<>(postDtos, HttpStatus.OK);
+        public ResponseEntity<?> enhancedSearch(@RequestBody aiSearchQuery query){
+                try {
+                        float[] queryEmbedding = embeddingService.getEmbedding(query.getQuery());
+                        List<Post> res = postService.findTopKSimilarPosts(queryEmbedding, query.getLimit());
+                        List<PostDto> postDtos = res.stream()
+                                .map(post -> modelMapper.map(post, PostDto.class))
+                                .collect(Collectors.toList());
+                        return new ResponseEntity<>(postDtos, HttpStatus.OK);
+                } catch (Exception e) {
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+                }
         }
 
         @PostMapping("/getSimilarPosts")
         @Operation(summary = "Get Similar Posts", description = "Get similar posts for a given post")
-        public ResponseEntity<List<PostDto>> getSimilarPosts(@RequestBody aiSearchQuery query) {
-                Post post = postService.getPost(query.getPostId());
-                List<Post> res = postService.findTopKSimilarPosts(post.getEmbedding(), query.getLimit());
-                List<PostDto> postDtos = res.stream()
-                        .map(p -> modelMapper.map(p, PostDto.class))
-                        .collect(Collectors.toList());
-                return new ResponseEntity<>(postDtos, HttpStatus.OK);
+        public ResponseEntity<?> getSimilarPosts(@RequestBody aiSearchQuery query) {
+                try {
+                        Post post = postService.getPost(query.getPostId());
+                        List<Post> res = postService.findTopKSimilarPosts(post.getEmbedding(), query.getLimit());
+                        List<PostDto> postDtos = res.stream()
+                                .map(p -> modelMapper.map(p, PostDto.class))
+                                .collect(Collectors.toList());
+                        return new ResponseEntity<>(postDtos, HttpStatus.OK);
+                } catch (Exception e) {
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+                }
         }
 }

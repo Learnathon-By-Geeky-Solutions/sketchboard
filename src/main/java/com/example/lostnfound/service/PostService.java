@@ -30,6 +30,7 @@ public class PostService {
         post.setEmbedding(embedding);
         User user = userService.findById(post.getUserId());
         user.addInteraction(embedding,3);
+        post.setUserName(user.getName());
         postRepo.save(post);
     }
 

@@ -41,13 +41,16 @@ public class PostController {
 
     @PostMapping("/posts")
     @Operation(summary = "Create a new post", description = "Creates a new post")
-    public ResponseEntity<PostDto> givePost(@RequestBody PostDto postDto) throws IOException, InterruptedException {
-        System.out.println("THe post entry is called************************************");
-        Post newPost = new Post();
-        newPost.setUserId(userService.getCurrentUser().getUserId());
-        createPostFromDto(postDto, newPost);
-        postService.savePost(newPost);
-        return new ResponseEntity<>(modelMapper.map(newPost, PostDto.class), HttpStatus.CREATED);
+    public ResponseEntity<?> givePost(@RequestBody PostDto postDto) throws IOException, InterruptedException {
+        try {
+            Post newPost = new Post();
+            newPost.setUserId(userService.getCurrentUser().getUserId());
+            createPostFromDto(postDto, newPost);
+            postService.savePost(newPost);
+            return new ResponseEntity<>(modelMapper.map(newPost, PostDto.class), HttpStatus.CREATED);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        }
     }
 
     private void createPostFromDto(@RequestBody PostDto postDto, Post newPost) {
@@ -65,71 +68,99 @@ public class PostController {
 
     @GetMapping("/posts")
     @Operation(summary = "Get all posts", description = "Retrieves all posts")
-    public ResponseEntity<List<PostDto>> getPosts() {
-        List<Post> posts = postService.getPosts();
-        List<PostDto>myPosts = new ArrayList<>();
-        for(Post post: posts){
-            myPosts.add(modelMapper.map(post, PostDto.class));
+    public ResponseEntity<?> getPosts() {
+        try {
+            List<Post> posts = postService.getPosts();
+            List<PostDto> myPosts = new ArrayList<>();
+            for (Post post : posts) {
+                myPosts.add(modelMapper.map(post, PostDto.class));
+            }
+            return new ResponseEntity<>(myPosts, HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
-        return new ResponseEntity<>(myPosts, HttpStatus.OK);
     }
 
     @GetMapping("/customizedPosts")
     @Operation(summary = "Get related posts", description = "Retrieves related posts for user")
-    public ResponseEntity<List<PostDto>> getCustomizedPosts() {
-        Long myUserId = userService.getCurrentUser().getUserId();
-        List<Post> posts = postService.getCustomizedPosts();
-        List<PostDto>myPosts = new ArrayList<>();
-        for(Post post: posts){
-            //skip if post is by the user
-            if(Objects.equals(post.getUserId(), myUserId)){
-                continue;
+    public ResponseEntity<?> getCustomizedPosts() {
+        try {
+            Long myUserId = userService.getCurrentUser().getUserId();
+            List<Post> posts = postService.getCustomizedPosts();
+            List<PostDto> myPosts = new ArrayList<>();
+            for (Post post : posts) {
+                //skip if post is by the user
+                if (Objects.equals(post.getUserId(), myUserId)) {
+                    continue;
+                }
+                myPosts.add(modelMapper.map(post, PostDto.class));
             }
-            myPosts.add(modelMapper.map(post, PostDto.class));
+            return new ResponseEntity<>(myPosts, HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
-        return new ResponseEntity<>(myPosts, HttpStatus.OK);
     }
 
     @GetMapping("/posts/{id}")
     @Operation(summary = "Get post by id", description = "Retrieves post by id")
-    public ResponseEntity<PostDto> getPost(@PathVariable("id") Long id) {
-        Post post = postService.getPost(id);
-        PostDto myPost = modelMapper.map(post, PostDto.class);
-        return new ResponseEntity<>(myPost, HttpStatus.OK);
+    public ResponseEntity<?> getPost(@PathVariable("id") Long id) {
+        try {
+            Post post = postService.getPost(id);
+            PostDto myPost = modelMapper.map(post, PostDto.class);
+            return new ResponseEntity<>(myPost, HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/posts/{id}")
     @Operation(summary = "Delete post by id", description = "Deletes post by id")
     public ResponseEntity<String> deletePost(@PathVariable("id") int id) {
-        postService.deletePost(id);
-        return new ResponseEntity<>("Post deleted successfully", HttpStatus.OK);
+        try {
+            postService.deletePost(id);
+            return new ResponseEntity<>("Post deleted successfully", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PutMapping("posts/{id}")
     @Operation(summary = "Update post by id", description = "Updates post by id")
-    public ResponseEntity<PostDto> updatePost(@PathVariable("id") int id, @RequestBody PostDto postDto) {
-        Post updatedPost = new Post();
-        createPostFromDto(postDto, updatedPost);
-        postService.updatePost(id, updatedPost);
-        PostDto myPost = modelMapper.map(updatedPost, PostDto.class);
-        return new ResponseEntity<>(myPost, HttpStatus.OK);
+    public ResponseEntity<?> updatePost(@PathVariable("id") int id, @RequestBody PostDto postDto) {
+        try{
+            Post updatedPost = new Post();
+            createPostFromDto(postDto, updatedPost);
+            postService.updatePost(id, updatedPost);
+            PostDto myPost = modelMapper.map(updatedPost, PostDto.class);
+            return new ResponseEntity<>(myPost, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/search")
     @Operation(summary = "Search posts", description = "Searches posts by query")
-    public ResponseEntity<List<PostDto>> searchPosts(@RequestParam("q") String query) {
-        List<Post> posts = postService.searchPosts(query);
-        List<PostDto> myPosts = new ArrayList<>();
-        for (Post post : posts) {
-            myPosts.add(modelMapper.map(post, PostDto.class));
+    public ResponseEntity<?> searchPosts(@RequestParam("q") String query) {
+        try {
+            List<Post> posts = postService.searchPosts(query);
+            List<PostDto> myPosts = new ArrayList<>();
+            for (Post post : posts) {
+                myPosts.add(modelMapper.map(post, PostDto.class));
+            }
+            return new ResponseEntity<>(myPosts, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(myPosts, HttpStatus.OK);
     }
 
     @GetMapping("/categories")
     @Operation(summary = "Get all categories", description = "Retrieves all categories")
-    public ResponseEntity<Category[]> getAllCategories() {
-        Category[] categories = Category.getAllCategories();
-        return new ResponseEntity<>(categories, HttpStatus.OK);
+    public ResponseEntity<?> getAllCategories() {
+        try {
+            Category[] categories = Category.getAllCategories();
+            return new ResponseEntity<>(categories, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

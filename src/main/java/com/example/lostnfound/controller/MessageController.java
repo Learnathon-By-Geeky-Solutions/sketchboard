@@ -67,17 +67,21 @@ public class MessageController {
 
     @GetMapping("/UpdateMessage")
     @Operation(summary = "Update Message", description = "Update Message")
-    public ResponseEntity<Void> updateMessage(@RequestBody Long messageId, @RequestBody String content) {
-        Message message = messageService.findById(messageId);
-        Long CurrentUserId = userService.getCurrentUser().getUserId();
-        if (!Objects.equals(message.getSenderId(), CurrentUserId)) {
-            // return unauthorized
-            return ResponseEntity.status(401).build();
+    public ResponseEntity<?> updateMessage(@RequestBody Long messageId, @RequestBody String content) {
+        try {
+            Message message = messageService.findById(messageId);
+            Long CurrentUserId = userService.getCurrentUser().getUserId();
+            if (!Objects.equals(message.getSenderId(), CurrentUserId)) {
+                // return unauthorized
+                return ResponseEntity.status(401).build();
+            }
+            message.setContent(content);
+            message.setUpdatedAt(LocalDateTime.now());
+            messageService.save(message);
+            return ResponseEntity.ok().build();
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
-        message.setContent(content);
-        message.setUpdatedAt(LocalDateTime.now());
-        messageService.save(message);
-        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/getSentMessages")
