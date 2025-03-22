@@ -86,5 +86,14 @@ public class UserService {
         }
         else return null;
     }
-    
+
+    public void update(User updatedUser) {
+        User user = getCurrentUser();
+        user.setEmail(updatedUser.getEmail());
+        user.setName(updatedUser.getName());
+        user.setDepartment(updatedUser.getDepartment());
+        user.setAddress(updatedUser.getAddress());
+        user.setRole(updatedUser.getRole());
+        userRepo.save(user);
+    }
 }

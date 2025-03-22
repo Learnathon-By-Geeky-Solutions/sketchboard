@@ -59,6 +59,7 @@ public class PostController {
         newPost.setRange(postDto.getRange());
         newPost.setTime(postDto.getTime());
         newPost.setDate(postDto.getDate());
+        newPost.setUserName(postDto.getUserName());
         newPost.setStatus(postDto.getStatus());
     }
 

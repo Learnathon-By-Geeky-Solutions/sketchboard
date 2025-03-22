@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.lostnfound.dto.LoginDto;
 import com.example.lostnfound.dto.PostDto;
@@ -23,12 +23,8 @@ import com.example.lostnfound.model.UserProfileResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 
 @RestController
@@ -113,6 +109,20 @@ public class UserController {
             return getUserProfileResponseResponseEntity(user);
         }
         throw new UserNotAuthenticatedException( "User not authenticated");
+    }
+
+    @PutMapping("/updateProfile")
+    @Operation(summary = "Update user profile", description = "Updates user profile")
+    public ResponseEntity<UserDto> updateProfile(@RequestBody UserDto user) {
+        User updatedUser = new User();
+        updatedUser.setEmail(user.getEmail());
+        updatedUser.setName(user.getName());
+        updatedUser.setDepartment(user.getDepartment());
+        updatedUser.setAddress(user.getAddress());
+        updatedUser.setRole(user.getRole());
+        updatedUser.setEmbedding(new float[3072]);
+        userService.update(updatedUser);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @Operation(summary = "Validate JWT token", description = "Validates JWT token")
