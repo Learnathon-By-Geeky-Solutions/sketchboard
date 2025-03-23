@@ -3,6 +3,7 @@ package com.example.lostnfound.controller;
 import com.example.lostnfound.dto.MessageDto;
 import com.example.lostnfound.dto.msgSendBody;
 import com.example.lostnfound.enums.MessageReadStatus;
+import com.example.lostnfound.exception.UserAlreadyExistException;
 import com.example.lostnfound.model.Message;
 import com.example.lostnfound.model.User;
 import com.example.lostnfound.service.MessageService;
