@@ -24,13 +24,14 @@ public class PostService {
         this.userService = userService;
     }
 
-    public Post savePost(Post post) throws IOException, InterruptedException {
+    public void savePost(Post post) throws IOException, InterruptedException {
         float[] embedding = embeddingService.getEmbedding(post.infoForEmbedding());
         System.out.println("********EmbeddingSize: " + embedding.length);
         post.setEmbedding(embedding);
         User user = userService.findById(post.getUserId());
         user.addInteraction(embedding,3);
-        return postRepo.save(post);
+        post.setUserName(user.getName());
+        postRepo.save(post);
     }
 
     public List<Post> getPosts() {

@@ -20,6 +20,7 @@ import com.example.lostnfound.model.User;
 import com.example.lostnfound.repository.PostRepo;
 import com.example.lostnfound.repository.UserRepo;
 import com.example.lostnfound.exception.InvalidTokenException;
+import com.example.lostnfound.dto.UserDto;
 import com.example.lostnfound.exception.PostNotFoundException;
 
 import org.apache.commons.lang3.StringUtils;
@@ -50,7 +51,11 @@ public class UserService {
         this.emailService = emailService;
     }
 
-    public User save(User user) {
+    public void save(User user) {
+        userRepo.save(user);
+    }
+
+    public void register(User user) {
         if(userRepo.findByEmail(user.getEmail()) != null) {
             throw new UserNotFoundException("User already exists with email: " + user.getEmail() + "\n");
         }
@@ -138,5 +143,19 @@ public class UserService {
         user.setAccountVerified(true);
         userRepo.save(user);
         return true;
+    }
+}
+    public void update(UserDto updatedUser) {
+        User user = getCurrentUser();
+        user.setEmail(updatedUser.getEmail());
+        user.setName(updatedUser.getName());
+        user.setDepartment(updatedUser.getDepartment());
+        user.setAddress(updatedUser.getAddress());
+        userRepo.save(user);
+    }
+
+    public void updatePassword(User user){
+        logger.debug("Updating password for user: {}", user.getEmail());
+        userRepo.save(user);
     }
 }

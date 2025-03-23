@@ -13,10 +13,10 @@ public class Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "sender_id", nullable = false)
+    @Column(name = "senderId", nullable = false)
     private Long senderId;
 
-    @Column(name = "receiver_id", nullable = false)
+    @Column(name = "receiverId", nullable = false)
     private Long receiverId;
 
     @Column(name = "read_status", nullable = false)

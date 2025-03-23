@@ -60,10 +60,11 @@ public class User{
     Set<SecureToken> token;
 
     //my msg list
-    @ElementCollection
-    @CollectionTable(name = "messages", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "message_id")
-    private List<Long> messages;
+    @OneToMany(mappedBy = "senderId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Message> sent_messages;
+
+    @OneToMany(mappedBy = "receiverId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Message> received_messages;
 
     // @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
     // private List<Post> posts;
