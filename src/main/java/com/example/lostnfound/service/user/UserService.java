@@ -100,4 +100,9 @@ public class UserService {
         user.setAddress(updatedUser.getAddress());
         userRepo.save(user);
     }
+
+    public void updatePassword(User user){
+        logger.debug("Updating password for user: {}", user.getEmail());
+        userRepo.save(user);
+    }
 }
