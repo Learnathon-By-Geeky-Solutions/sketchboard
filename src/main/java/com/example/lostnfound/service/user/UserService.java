@@ -61,7 +61,6 @@ public class UserService {
         }
         User newUser = userRepo.save(user);
         sendRegistrationEmail(user);
-        return newUser;
     }
 
     public String verify(String email, String password) {
@@ -144,7 +143,6 @@ public class UserService {
         userRepo.save(user);
         return true;
     }
-}
     public void update(UserDto updatedUser) {
         User user = getCurrentUser();
         user.setEmail(updatedUser.getEmail());

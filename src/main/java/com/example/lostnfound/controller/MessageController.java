@@ -3,7 +3,6 @@ package com.example.lostnfound.controller;
 import com.example.lostnfound.dto.MessageDto;
 import com.example.lostnfound.dto.msgSendBody;
 import com.example.lostnfound.enums.MessageReadStatus;
-import com.example.lostnfound.exception.UserAlreadyExistException;
 import com.example.lostnfound.model.Message;
 import com.example.lostnfound.model.User;
 import com.example.lostnfound.service.MessageService;
@@ -28,13 +27,11 @@ import java.util.Objects;
 public class MessageController {
     private final UserService userService;
     private  final MessageService messageService;
-    private final ModelMapper modelMapper;
 
-    public MessageController(UserService userService, MessageService messageService, ModelMapper modelMapper) {
+	public MessageController(UserService userService, MessageService messageService, ModelMapper modelMapper) {
         this.userService = userService;
         this.messageService = messageService;
-        this.modelMapper = modelMapper;
-    }
+	}
 
     @PostMapping("/sendMesssage")
     @Operation(summary = "Send Message", description = "Send Message")
