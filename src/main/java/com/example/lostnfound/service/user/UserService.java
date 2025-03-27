@@ -3,6 +3,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.example.lostnfound.mailing.AccountVerificationEmailContext;
+import com.example.lostnfound.mailing.ForgotPasswordEmailContext;
 import com.example.lostnfound.model.SecureToken;
 import com.example.lostnfound.service.EmailServiceImpl;
 import com.example.lostnfound.service.SecureTokenService;
