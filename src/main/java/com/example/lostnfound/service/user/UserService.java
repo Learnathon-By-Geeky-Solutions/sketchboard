@@ -142,6 +142,7 @@ public class UserService {
         User user = userRepo.findById(secureToken.getUser().getUserId()).orElseThrow(() -> new UserNotFoundException("User not found with id: " + secureToken.getUser().getUserId() + "\n"));
         user.setAccountVerified(true);
         userRepo.save(user);
+        secureTokenService.removeToken(secureToken);
         return true;
     }
     public void update(UserDto updatedUser) {
