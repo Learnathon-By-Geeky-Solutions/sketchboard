@@ -3,6 +3,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.example.lostnfound.mailing.AccountVerificationEmailContext;
+import com.example.lostnfound.mailing.ForgotPasswordEmailContext;
 import com.example.lostnfound.model.SecureToken;
 import com.example.lostnfound.service.EmailServiceImpl;
 import com.example.lostnfound.service.SecureTokenService;
@@ -141,6 +142,7 @@ public class UserService {
         User user = userRepo.findById(secureToken.getUser().getUserId()).orElseThrow(() -> new UserNotFoundException("User not found with id: " + secureToken.getUser().getUserId() + "\n"));
         user.setAccountVerified(true);
         userRepo.save(user);
+        secureTokenService.removeToken(secureToken);
         return true;
     }
     public void update(UserDto updatedUser) {
