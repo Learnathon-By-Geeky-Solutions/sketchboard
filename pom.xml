@@ -137,7 +137,7 @@
         <dependency>
             <groupId>io.hypersistence</groupId>
             <artifactId>hypersistence-utils-hibernate-60</artifactId>
-            <version>3.9.2</version> <!-- Use appropriate version for your Hibernate -->
+            <version>3.9.3</version> <!-- Use appropriate version for your Hibernate -->
         </dependency>
 
         <dependency>
