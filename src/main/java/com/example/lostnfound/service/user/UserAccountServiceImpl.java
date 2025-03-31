@@ -2,6 +2,7 @@ package com.example.lostnfound.service.user;
 
 import com.example.lostnfound.exception.InvalidTokenException;
 import com.example.lostnfound.exception.UnknownIdentifierException;
+import com.example.lostnfound.exception.UserNotFoundException;
 import com.example.lostnfound.mailing.ForgotPasswordEmailContext;
 import com.example.lostnfound.model.SecureToken;
 import com.example.lostnfound.model.User;
@@ -34,7 +35,7 @@ public class UserAccountServiceImpl implements UserAccountService {
     }
 
     @Override
-    public void forgotPassword(String email) throws UnknownIdentifierException {
+    public void forgotPassword(String email) throws UnknownIdentifierException, UserNotFoundException {
         User user = userService.findByEmail(email);
         sendResetPasswordEmail(user);
     }
@@ -56,7 +57,7 @@ public class UserAccountServiceImpl implements UserAccountService {
     }
 
     protected void sendResetPasswordEmail(User user) throws UnknownIdentifierException {
-        SecureToken secureToken = secureTokenService.createToken();
+        SecureToken secureToken = secureTokenService.createToken(user);
         secureToken.setUser(user);
         secureTokenService.saveSecureToken(secureToken);
 

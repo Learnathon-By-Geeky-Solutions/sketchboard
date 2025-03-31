@@ -3,6 +3,7 @@ package com.example.lostnfound.controller;
 import com.example.lostnfound.dto.MessageDto;
 import com.example.lostnfound.dto.msgSendBody;
 import com.example.lostnfound.enums.MessageReadStatus;
+import com.example.lostnfound.exception.UserNotFoundException;
 import com.example.lostnfound.model.Message;
 import com.example.lostnfound.model.User;
 import com.example.lostnfound.service.MessageService;
@@ -10,6 +11,7 @@ import com.example.lostnfound.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -87,7 +89,13 @@ public class MessageController {
     public ResponseEntity<?> getMyMessages() {
         try {
             User user = userService.getCurrentUser();
-            List<MessageDto> mylist = user.getSent_messages().stream().map(this::msgToMsgDto).toList();
+            List<MessageDto> mylist = user.getSent_messages().stream().map(message -> {
+                try {
+                    return msgToMsgDto(message);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }).toList();
             return new ResponseEntity<>(mylist, HttpStatus.OK);
         } catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -96,17 +104,23 @@ public class MessageController {
 
     @GetMapping("/getReceivedMessages")
     @Operation(summary = "Get received messages", description = "Retrieves received messages for user")
-    public ResponseEntity<?> getReceivedMessages() {
+    public ResponseEntity<?> getReceivedMessages() throws Exception {
         User user = userService.getCurrentUser();
         try{
-            List<MessageDto> mylist = user.getReceived_messages().stream().map(this::msgToMsgDto).toList();
+            List<MessageDto> mylist = user.getSent_messages().stream().map(message -> {
+                try {
+                    return msgToMsgDto(message);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }).toList();
             return new ResponseEntity<>(mylist, HttpStatus.OK);
         } catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
-    private MessageDto msgToMsgDto(Message message) {
+    private MessageDto msgToMsgDto(Message message) throws Exception {
         MessageDto messageDto = new MessageDto();
         messageDto.setId(message.getId());
         messageDto.setContent(message.getContent());

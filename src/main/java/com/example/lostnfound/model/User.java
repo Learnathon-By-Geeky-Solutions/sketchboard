@@ -4,11 +4,10 @@ import com.example.lostnfound.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Array;
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-import org.springframework.data.domain.Auditable;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -56,7 +55,7 @@ public class User{
     private boolean accountVerified;
     private boolean loginDisabled;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<SecureToken> token;
 
     //my msg list
@@ -77,7 +76,7 @@ public class User{
             The formula for updating the embedding is as follows:
             new_embedding = (embedding * weight) + (old_embedding * sumOfWeights) / (sumOfWeights + weight)
          */
-        System.out.println("New Embedding: " + embedding);
+        System.out.println("New Embedding: " + Arrays.toString(embedding));
         float[] mulofnew = new float[embedding.length];
         for(int i = 0; i < embedding.length; i++){
             mulofnew[i] = (float) (embedding[i] * weight);

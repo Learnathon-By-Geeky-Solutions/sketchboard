@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import com.example.lostnfound.exception.UserNotFoundException;
 import com.example.lostnfound.service.PostService;
 import com.example.lostnfound.service.user.UserService;
 import org.modelmapper.ModelMapper;
@@ -53,7 +54,7 @@ public class PostController {
         }
     }
 
-    private void createPostFromDto(@RequestBody PostDto postDto, Post newPost) {
+    private void createPostFromDto(@RequestBody PostDto postDto, Post newPost) throws UserNotFoundException {
         newPost.setTitle(postDto.getTitle());
         newPost.setDescription(postDto.getDescription());
         newPost.setCategory(postDto.getCategory());

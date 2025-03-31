@@ -3,7 +3,6 @@ import java.util.List;
 import java.util.Objects;
 
 import com.example.lostnfound.mailing.AccountVerificationEmailContext;
-import com.example.lostnfound.mailing.ForgotPasswordEmailContext;
 import com.example.lostnfound.model.SecureToken;
 import com.example.lostnfound.service.EmailServiceImpl;
 import com.example.lostnfound.service.SecureTokenService;
@@ -35,8 +34,7 @@ public class UserService {
     private final AuthenticationManager authmManager;
     private final JWTService jwtService;
     private final PostRepo postRepo;
-    private final ModelMapper modelMapper;
-    private final SecureTokenService secureTokenService;
+	private final SecureTokenService secureTokenService;
     private final EmailServiceImpl emailService;
     @Value("${app.baseUrl}")
     private String baseUrl;
@@ -47,8 +45,7 @@ public class UserService {
         this.authmManager = authmManager;
         this.jwtService = jwtService;
         this.postRepo = postRepo;
-        this.modelMapper = modelMapper;
-        this.secureTokenService = secureTokenService;
+	    this.secureTokenService = secureTokenService;
         this.emailService = emailService;
     }
 
@@ -56,11 +53,11 @@ public class UserService {
         userRepo.save(user);
     }
 
-    public void register(User user) {
+    public void register(User user) throws Exception {
         if(userRepo.findByEmail(user.getEmail()) != null) {
             throw new UserNotFoundException("User already exists with email: " + user.getEmail() + "\n");
         }
-        User newUser = userRepo.save(user);
+        userRepo.save(user);
         sendRegistrationEmail(user);
     }
 
@@ -77,7 +74,7 @@ public class UserService {
         else return "Login Failed";
     }
 
-    public User findByEmail(String email) {
+    public User findByEmail(String email) throws UserNotFoundException {
         logger.debug("Fetching user with email: {}", email);
         User user=userRepo.findByEmail(email);
         if(user==null){
@@ -87,7 +84,7 @@ public class UserService {
         else return user;
     }
 
-    public List<Post> findPostsByUserId(Long userId) {
+    public List<Post> findPostsByUserId(Long userId) throws PostNotFoundException {
         List<Post> posts = postRepo.findByUserId(userId);
         if(posts == null) {
             throw new PostNotFoundException("Posts not found");
@@ -95,11 +92,11 @@ public class UserService {
         else return posts;
     }
 
-    public User findById(Long id) {
+    public User findById(Long id) throws UserNotFoundException {
         return userRepo.findById(id).orElseThrow(() -> new UserNotFoundException("User not found with id: " + id + "\n"));
     }
 
-    public User getCurrentUser(){
+    public User getCurrentUser() throws UserNotFoundException {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof UserDetails userDetails) {
             String email = userDetails.getUsername();
@@ -116,8 +113,8 @@ public class UserService {
         return userRepo.findByEmail(email) != null;
     }
 
-    public void sendRegistrationEmail(User user) {
-        SecureToken secureToken = secureTokenService.createToken();
+    public void sendRegistrationEmail(User user) throws MessagingException {
+        SecureToken secureToken = secureTokenService.createToken(user);
         secureToken.setUser(user);
         secureTokenService.saveSecureToken(secureToken);
 
@@ -129,23 +126,25 @@ public class UserService {
         try {
             emailService.sendEmail(context);
         } catch (MessagingException e) {
-            throw new RuntimeException(e);
+            //throw as it is
+            logger.error("Error sending email: {}", e.getMessage());
+            throw e;
         }
     }
 
-    public boolean verifyUser(String token) throws InvalidTokenException {
+    public void verifyUser(String token) throws InvalidTokenException, UserNotFoundException {
         SecureToken secureToken = secureTokenService.findByToken(token);
 
         if (Objects.isNull(token) || !StringUtils.equals(token, secureToken.getToken()) || secureToken.isExpired()) {
             throw new InvalidTokenException("Token is invalid or expired");
         }
-        User user = userRepo.findById(secureToken.getUser().getUserId()).orElseThrow(() -> new UserNotFoundException("User not found with id: " + secureToken.getUser().getUserId() + "\n"));
+        User user = userRepo.findById(secureToken.getUser().getUserId()).orElseThrow(()
+                -> new UserNotFoundException("User not found with id: " + secureToken.getUser().getUserId() + "\n"));
         user.setAccountVerified(true);
         userRepo.save(user);
         secureTokenService.removeToken(secureToken);
-        return true;
     }
-    public void update(UserDto updatedUser) {
+    public void update(UserDto updatedUser) throws UserNotFoundException {
         User user = getCurrentUser();
         user.setEmail(updatedUser.getEmail());
         user.setName(updatedUser.getName());

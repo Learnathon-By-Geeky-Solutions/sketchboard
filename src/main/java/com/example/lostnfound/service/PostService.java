@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
+import com.example.lostnfound.exception.UserNotFoundException;
 import com.example.lostnfound.model.User;
 import com.example.lostnfound.service.AI.Embedding.EmbeddingService;
 import com.example.lostnfound.service.user.UserService;
@@ -24,7 +25,7 @@ public class PostService {
         this.userService = userService;
     }
 
-    public void savePost(Post post) throws IOException, InterruptedException {
+    public void savePost(Post post) throws IOException, InterruptedException, UserNotFoundException {
         float[] embedding = embeddingService.getEmbedding(post.infoForEmbedding());
         System.out.println("********EmbeddingSize: " + embedding.length);
         post.setEmbedding(embedding);
@@ -38,7 +39,7 @@ public class PostService {
         return postRepo.findAll();
     }
 
-    public Post getPost(Long id) {
+    public Post getPost(Long id) throws UserNotFoundException {
         User currentUser = userService.getCurrentUser();
         currentUser.addInteraction(postRepo.findById(Math.toIntExact(id)).get().getEmbedding(), 1);
         return postRepo.findById(Math.toIntExact(id)).get();
@@ -48,7 +49,7 @@ public class PostService {
         postRepo.deleteById(id);
     }
 
-    public Post updatePost(int id, Post post) {
+    public void updatePost(int id, Post post) {
         Post postToUpdate = postRepo.findById(id).get();
             if(Objects.nonNull(postToUpdate.getTitle()) && !"".equalsIgnoreCase(postToUpdate.getTitle())) {
                 postToUpdate.setTitle(post.getTitle());
@@ -75,7 +76,7 @@ public class PostService {
                 postToUpdate.setRange(post.getRange());
             }
             postToUpdate.setEmbedding(embeddingService.getEmbedding(postToUpdate.infoForEmbedding()));
-            return postRepo.save(postToUpdate);
+        postRepo.save(postToUpdate);
     }
 
     public List<Post> searchPosts(String searchTerm) {
@@ -104,7 +105,7 @@ public class PostService {
         return res;
     }
 
-    public List<Post> getCustomizedPosts() {
+    public List<Post> getCustomizedPosts() throws UserNotFoundException {
         User currentUser = userService.getCurrentUser();
         return findTopKSimilarPosts(currentUser.getEmbedding(), Long.MAX_VALUE);
     }

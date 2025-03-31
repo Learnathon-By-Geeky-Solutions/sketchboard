@@ -2,13 +2,15 @@ package com.example.lostnfound.controller;
 
 import com.example.lostnfound.exception.InvalidTokenException;
 import com.example.lostnfound.exception.UnknownIdentifierException;
+import com.example.lostnfound.exception.UserNotFoundException;
 import com.example.lostnfound.service.user.UserAccountService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 
-@Controller
+@RestController
 public class PasswordController {
 
     private final UserAccountService userAccountService;
@@ -21,10 +23,10 @@ public class PasswordController {
     public String forgotPassword(@RequestParam String email) throws UnknownIdentifierException {
         try {
             userAccountService.forgotPassword(email);
-        } catch (UnknownIdentifierException e) {
+        } catch (UnknownIdentifierException | UserNotFoundException e) {
             throw new RuntimeException(e);
         }
-        return "redirect:/";
+	    return "redirect:/";
     }
 
     @PostMapping("/reset-password")

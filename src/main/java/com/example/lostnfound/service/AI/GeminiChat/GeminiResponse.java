@@ -24,7 +24,7 @@ public class GeminiResponse {
     private String modelId;
 
     @PostConstruct
-    private void initializeClient() {
+    private void initializeClient() throws GeminiInitializationException {
         try {
             client = Client.builder().apiKey(new String(geminiApiKey)).build();
             // Clear sensitive data from memory

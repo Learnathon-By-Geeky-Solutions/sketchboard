@@ -21,7 +21,9 @@ public class AbstractEmailContext {
 
     public <T> void init(T context) {}
 
-    public Object put(String key, Object value) {
-        return key==null ? null : this.context.put(key.intern(), value);
+    public void put(String key, Object value) {
+        if (key != null) {
+            this.context.put(key.intern(), value);
+        }
     }
 }

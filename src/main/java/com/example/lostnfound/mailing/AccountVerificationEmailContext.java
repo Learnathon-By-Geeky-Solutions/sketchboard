@@ -5,8 +5,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 public class AccountVerificationEmailContext extends AbstractEmailContext {
 
-    private String token;
-    @Override
+	@Override
     public <T> void init(T context) {
         User user = (User) context;
         put("Username", user.getName());
@@ -17,8 +16,7 @@ public class AccountVerificationEmailContext extends AbstractEmailContext {
     }
 
     public void setToken(String token) {
-        this.token = token;
-        put("token", token);
+	    put("token", token);
     }
 
     public void buildVerificationUrl(String baseUrl, String token) {

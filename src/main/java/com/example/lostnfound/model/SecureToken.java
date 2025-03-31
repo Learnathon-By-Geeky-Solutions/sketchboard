@@ -22,7 +22,7 @@ public class SecureToken {
     private LocalDateTime expiredAt;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
     private User user;
 
     public boolean isExpired() {
