@@ -4,7 +4,7 @@ import java.util.Objects;
 
 import com.example.lostnfound.mailing.AccountVerificationEmailContext;
 import com.example.lostnfound.model.SecureToken;
-import com.example.lostnfound.service.EmailServiceImpl;
+import com.example.lostnfound.service.EmailService;
 import com.example.lostnfound.service.SecureTokenService;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,12 +35,12 @@ public class UserService {
     private final JWTService jwtService;
     private final PostRepo postRepo;
 	private final SecureTokenService secureTokenService;
-    private final EmailServiceImpl emailService;
+    private final EmailService emailService;
     @Value("${app.baseUrl}")
     private String baseUrl;
     Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    UserService(UserRepo userRepo, AuthenticationManager authmManager, JWTService jwtService, PostRepo postRepo, ModelMapper modelMapper, SecureTokenService secureTokenService, EmailServiceImpl emailService) {
+    UserService(UserRepo userRepo, AuthenticationManager authmManager, JWTService jwtService, PostRepo postRepo, ModelMapper modelMapper, SecureTokenService secureTokenService, EmailService emailService) {
         this.userRepo = userRepo;
         this.authmManager = authmManager;
         this.jwtService = jwtService;

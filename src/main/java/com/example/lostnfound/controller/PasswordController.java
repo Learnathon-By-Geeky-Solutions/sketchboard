@@ -4,7 +4,10 @@ import com.example.lostnfound.exception.InvalidTokenException;
 import com.example.lostnfound.exception.UnknownIdentifierException;
 import com.example.lostnfound.exception.UserNotFoundException;
 import com.example.lostnfound.service.user.UserAccountService;
-import org.springframework.stereotype.Controller;
+import com.example.lostnfound.service.user.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,29 +17,36 @@ import org.springframework.web.bind.annotation.RestController;
 public class PasswordController {
 
     private final UserAccountService userAccountService;
+    private final UserService userService;
 
-    public PasswordController(UserAccountService userAccountService) {
+    public PasswordController(UserAccountService userAccountService, UserService userService) {
         this.userAccountService = userAccountService;
+	    this.userService = userService;
     }
 
     @PostMapping("/forgotPassword")
-    public String forgotPassword(@RequestParam String email) throws UnknownIdentifierException {
+    @Operation(summary = "Forgot Password", description = "Send a reset password email to the user")
+    public ResponseEntity<?> forgotPassword(@RequestParam String email) throws UnknownIdentifierException {
         try {
+            if(userService.findByEmail(email) == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found with this email");
+            }
             userAccountService.forgotPassword(email);
+            return ResponseEntity.status(HttpStatus.OK).body("Reset email sent to " + email);
         } catch (UnknownIdentifierException | UserNotFoundException e) {
-            throw new RuntimeException(e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
-	    return "redirect:/";
     }
 
     @PostMapping("/reset-password")
-    public String updatePassword(@RequestParam String token, @RequestParam String password) throws InvalidTokenException, UnknownIdentifierException {
+    @Operation(summary = "Reset Password", description = "Reset the password using the token")
+    public ResponseEntity<?> updatePassword(@RequestParam String token, @RequestParam String password) throws InvalidTokenException, UnknownIdentifierException {
         try {
             userAccountService.updatePassword(password, token);
+            return ResponseEntity.status(HttpStatus.OK).body("Password updated successfully");
         } catch (InvalidTokenException e) {
-            throw new RuntimeException(e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
-        return "redirect:/";
     }
 
 }
