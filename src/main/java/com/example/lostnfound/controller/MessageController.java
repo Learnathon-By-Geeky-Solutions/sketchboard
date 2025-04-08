@@ -55,7 +55,7 @@ public class MessageController {
             messageService.save(newMessage);
             //add msg id to sender and receiver
             sender.getSent_messages().add(newMessage);
-            receiver.getSent_messages().add(newMessage);
+            receiver.getReceived_messages().add(newMessage);
 
             userService.save(sender);
             userService.save(receiver);
@@ -107,13 +107,13 @@ public class MessageController {
     public ResponseEntity<?> getReceivedMessages() throws Exception {
         User user = userService.getCurrentUser();
         try{
-            List<MessageDto> mylist = user.getSent_messages().stream().map(message -> {
+            List<MessageDto> mylist = user.getReceived_messages().stream().map(message -> {
                 try {
                     return msgToMsgDto(message);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
-            }).toList();
+            }).toList();       
             return new ResponseEntity<>(mylist, HttpStatus.OK);
         } catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
