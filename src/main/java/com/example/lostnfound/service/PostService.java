@@ -1,7 +1,6 @@
 package com.example.lostnfound.service;
 
 import java.io.IOException;
-import java.io.File;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,11 +18,14 @@ public class PostService {
     private final PostRepo postRepo;
     private final EmbeddingService embeddingService;
     private final UserService userService;
+    private final ImageService imageService;
 
-    PostService(PostRepo postRepo, EmbeddingService embeddingService, UserService userService) {
+    PostService(PostRepo postRepo, EmbeddingService embeddingService, UserService userService, 
+               ImageService imageService) {
         this.postRepo = postRepo;
         this.embeddingService = embeddingService;
         this.userService = userService;
+        this.imageService = imageService;
     }
 
     public void savePost(Post post) throws IOException, InterruptedException, UserNotFoundException {
@@ -42,60 +44,63 @@ public class PostService {
 
     public Post getPost(Long id) throws UserNotFoundException {
         User currentUser = userService.getCurrentUser();
-        currentUser.addInteraction(postRepo.findById(Math.toIntExact(id)).get().getEmbedding(), 1);
-        return postRepo.findById(Math.toIntExact(id)).get();
+        Post post = postRepo.findById(Math.toIntExact(id))
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+        currentUser.addInteraction(post.getEmbedding(), 1);
+        return post;
     }
 
     public void deletePost(int id) {
-        Post post = postRepo.findById(id).orElse(null);
-        if (post != null && post.getImagePath() != null) {
-            File imageFile = new File(post.getImagePath());
-            if (imageFile.exists()) {
-                imageFile.delete();
-            }
+        Post post = postRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+        
+        if (post.getImage() != null) {
+            imageService.deleteImage(post.getImage().getId());
         }
+        
         postRepo.deleteById(id);
     }
 
     public void updatePost(int id, Post post) {
-        Post postToUpdate = postRepo.findById(id).orElse(null);
-        if (postToUpdate != null) {
-            if (post.getImagePath() != null && !post.getImagePath().equals(postToUpdate.getImagePath())) {
-                if (postToUpdate.getImagePath() != null) {
-                    File oldImageFile = new File(postToUpdate.getImagePath());
-                    if (oldImageFile.exists()) {
-                        oldImageFile.delete();
-                    }
-                }
-                postToUpdate.setImagePath(post.getImagePath());
+        Post postToUpdate = postRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        if (post.getImage() != null && !Objects.equals(post.getImage().getId(), postToUpdate.getImage() != null ? postToUpdate.getImage().getId() : null)) {
+            // Delete old image if exists
+            if (postToUpdate.getImage() != null) {
+                imageService.deleteImage(postToUpdate.getImage().getId());
             }
-            if(Objects.nonNull(postToUpdate.getTitle()) && !"".equalsIgnoreCase(postToUpdate.getTitle())) {
-                postToUpdate.setTitle(post.getTitle());
-            }
-            if(Objects.nonNull(postToUpdate.getDescription()) && !"".equalsIgnoreCase(postToUpdate.getDescription())) {
-                postToUpdate.setDescription(post.getDescription());
-            }
-            if(Objects.nonNull(postToUpdate.getLocation()) && !"".equalsIgnoreCase(postToUpdate.getLocation())) {
-                postToUpdate.setLocation(post.getLocation());
-            }
-            if (post.getDate() != null) {
-                postToUpdate.setDate(post.getDate());
-            }
-            if(postToUpdate.getTime() != null) {
-                postToUpdate.setTime(post.getTime());
-            }
-            if(Objects.nonNull(postToUpdate.getCategory())) {
-                postToUpdate.setCategory(post.getCategory());
-            }
-            if(Objects.nonNull(postToUpdate.getStatus())) {
-                postToUpdate.setStatus(post.getStatus());
-            }
-            if (postToUpdate.getRange() != 0) {
-                postToUpdate.setRange(post.getRange());
-            }
-            postToUpdate.setEmbedding(embeddingService.getEmbedding(postToUpdate.infoForEmbedding()));
-            postRepo.save(postToUpdate);
+            // Set new image
+            postToUpdate.setImage(post.getImage());
         }
+
+        if(Objects.nonNull(post.getTitle()) && !"".equalsIgnoreCase(post.getTitle())) {
+            postToUpdate.setTitle(post.getTitle());
+        }
+        if(Objects.nonNull(post.getDescription()) && !"".equalsIgnoreCase(post.getDescription())) {
+            postToUpdate.setDescription(post.getDescription());
+        }
+        if(Objects.nonNull(post.getLocation()) && !"".equalsIgnoreCase(post.getLocation())) {
+            postToUpdate.setLocation(post.getLocation());
+        }
+        if (post.getDate() != null) {
+            postToUpdate.setDate(post.getDate());
+        }
+        if(post.getTime() != null) {
+            postToUpdate.setTime(post.getTime());
+        }
+        if(Objects.nonNull(post.getCategory())) {
+            postToUpdate.setCategory(post.getCategory());
+        }
+        if(Objects.nonNull(post.getStatus())) {
+            postToUpdate.setStatus(post.getStatus());
+        }
+        if (post.getRange() != 0) {
+            postToUpdate.setRange(post.getRange());
+        }
+
+	    postToUpdate.setEmbedding(embeddingService.getEmbedding(postToUpdate.infoForEmbedding()));
+	    postRepo.save(postToUpdate);
     }
 
     public List<Post> searchPosts(String searchTerm) {
