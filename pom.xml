@@ -33,7 +33,7 @@
     </scm>
 
     <properties>
-        <java.version>23</java.version>
+        <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <google.genai.version>0.1.1</google.genai.version>
