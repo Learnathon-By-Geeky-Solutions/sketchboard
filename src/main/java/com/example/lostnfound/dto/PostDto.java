@@ -54,5 +54,8 @@ public class PostDto {
     @Schema(description = "User Name of the Post.", example = "John Doe")
     private String userName;
 
+    @Schema(description = "Path of the uploaded image.", example = "/images/post123.jpg")
+    private String imagePath;
+
 }
 

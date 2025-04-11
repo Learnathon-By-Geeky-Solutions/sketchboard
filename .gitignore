@@ -35,3 +35,7 @@ build/
 ### Manual ###
 #Don't include env file 
 .env
+
+### Uploads ###
+uploads/
+**/uploads/

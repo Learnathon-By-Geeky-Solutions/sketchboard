@@ -1,6 +1,7 @@
 package com.example.lostnfound.service;
 
 import java.io.IOException;
+import java.io.File;
 import java.util.List;
 import java.util.Objects;
 
@@ -46,11 +47,28 @@ public class PostService {
     }
 
     public void deletePost(int id) {
+        Post post = postRepo.findById(id).orElse(null);
+        if (post != null && post.getImagePath() != null) {
+            File imageFile = new File(post.getImagePath());
+            if (imageFile.exists()) {
+                imageFile.delete();
+            }
+        }
         postRepo.deleteById(id);
     }
 
     public void updatePost(int id, Post post) {
-        Post postToUpdate = postRepo.findById(id).get();
+        Post postToUpdate = postRepo.findById(id).orElse(null);
+        if (postToUpdate != null) {
+            if (post.getImagePath() != null && !post.getImagePath().equals(postToUpdate.getImagePath())) {
+                if (postToUpdate.getImagePath() != null) {
+                    File oldImageFile = new File(postToUpdate.getImagePath());
+                    if (oldImageFile.exists()) {
+                        oldImageFile.delete();
+                    }
+                }
+                postToUpdate.setImagePath(post.getImagePath());
+            }
             if(Objects.nonNull(postToUpdate.getTitle()) && !"".equalsIgnoreCase(postToUpdate.getTitle())) {
                 postToUpdate.setTitle(post.getTitle());
             }
@@ -76,7 +94,8 @@ public class PostService {
                 postToUpdate.setRange(post.getRange());
             }
             postToUpdate.setEmbedding(embeddingService.getEmbedding(postToUpdate.infoForEmbedding()));
-        postRepo.save(postToUpdate);
+            postRepo.save(postToUpdate);
+        }
     }
 
     public List<Post> searchPosts(String searchTerm) {

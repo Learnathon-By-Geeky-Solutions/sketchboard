@@ -1,6 +1,10 @@
 package com.example.lostnfound.controller;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -9,8 +13,10 @@ import com.example.lostnfound.exception.UserNotFoundException;
 import com.example.lostnfound.service.PostService;
 import com.example.lostnfound.service.user.UserService;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,10 +25,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.lostnfound.dto.PostDto;
 import com.example.lostnfound.enums.Category;
 import com.example.lostnfound.model.Post;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,25 +40,57 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class PostController {
     private final PostService postService;
     private final UserService userService;
-    private final ModelMapper modelMapper ;
+    private final ModelMapper modelMapper;
+    private final ObjectMapper objectMapper;
+    
+    @Value("${app.upload.dir}")
+    private String uploadDir;
 
-    PostController(PostService postService, UserService userService) {
+    PostController(PostService postService, UserService userService, ObjectMapper objectMapper) {
         this.postService = postService;
         this.userService = userService;
         this.modelMapper = new ModelMapper();
+        this.objectMapper = objectMapper;
     }
 
-    @PostMapping("/posts")
-    @Operation(summary = "Create a new post", description = "Creates a new post")
-    public ResponseEntity<?> givePost(@RequestBody PostDto postDto) throws IOException, InterruptedException {
+    @PostMapping(value = "/posts", consumes = {"multipart/form-data"})
+    @Operation(summary = "Create or update a post", description = "Handles post creation or update with optional image upload")
+    public ResponseEntity<?> handlePost(@RequestParam(value = "postDto", required = true) String postDtoJson,
+                                        @RequestParam(value = "image", required = false) MultipartFile image) throws IOException, InterruptedException {
         try {
+            PostDto postDto = objectMapper.readValue(postDtoJson, PostDto.class);
+
             Post newPost = new Post();
             newPost.setUserId(userService.getCurrentUser().getUserId());
             createPostFromDto(postDto, newPost);
+
+            if (image != null && !image.isEmpty()) {
+                String imagePath = saveImage(image);
+                newPost.setImagePath(imagePath);
+            }
+
             postService.savePost(newPost);
             return new ResponseEntity<>(modelMapper.map(newPost, PostDto.class), HttpStatus.CREATED);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        }
+    }
+
+    private String saveImage(MultipartFile image) throws IOException {
+        Path uploadPath = Path.of(uploadDir);
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+        
+        String originalFilename = StringUtils.cleanPath(image.getOriginalFilename());
+        String uniqueFilename = System.currentTimeMillis() + "_" + originalFilename;
+        Path targetLocation = uploadPath.resolve(uniqueFilename);
+        
+        try {
+            Files.copy(image.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            return targetLocation.toString();
+        } catch (IOException ex) {
+            throw new IOException("Could not store file " + uniqueFilename + ". Please try again!", ex);
         }
     }
 
@@ -63,7 +103,7 @@ public class PostController {
         newPost.setRange(postDto.getRange());
         newPost.setTime(postDto.getTime());
         newPost.setDate(postDto.getDate());
-        newPost.setUserName(postDto.getUserName());
+        newPost.setUserName(userService.getCurrentUser().getName()); // Automatically assign user name
         newPost.setStatus(postDto.getStatus());
     }
 
