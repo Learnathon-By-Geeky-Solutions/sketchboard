@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/images")
@@ -23,36 +24,59 @@ public class ImageController {
         this.imageService = imageService;
     }
 
+    @GetMapping
+    @Operation(summary = "Get all images", description = "Get a list of all images")
+    public ResponseEntity<?> getAllImages() {
+        try {
+            List<Image> images = imageService.getAllImages();
+            return ResponseEntity.ok(images);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error retrieving images: " + e.getMessage());
+        }
+    }
+
     @PostMapping
     @Operation(summary = "Upload an image", description = "Upload an image file and return the image details")
-    public ResponseEntity<Image> uploadImage(@RequestParam("file") MultipartFile file) throws IOException {
-        Image savedImage = imageService.saveImage(file);
-        return ResponseEntity.ok(savedImage);
+    public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file){
+        try {
+            Image savedImage = imageService.saveImage(file);
+            return ResponseEntity.ok(savedImage);
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body("Error uploading image: " + e.getMessage());
+        }
     }
 
     @GetMapping("/{imageId}")
     @Operation(summary = "Get an image", description = "Get an image by its ID")
-    public ResponseEntity<Resource> getImage(@PathVariable Long imageId) throws IOException {
-        Resource resource = imageService.loadImage(imageId);
-        String contentType = resource.getFile().toPath().getFileName().toString().toLowerCase();
-        String mimeType = "image/jpeg"; // default to JPEG
-        if (contentType.endsWith(".png")) {
-            mimeType = "image/png";
-        } else if (contentType.endsWith(".gif")) {
-            mimeType = "image/gif";
-        } else if (contentType.endsWith(".webp")) {
-            mimeType = "image/webp";
+    public ResponseEntity<?> getImage(@PathVariable Long imageId) {
+        try {
+            Resource resource = imageService.loadImage(imageId);
+            String contentType = resource.getFile().toPath().getFileName().toString().toLowerCase();
+            String mimeType = "image/jpeg"; // default to JPEG
+            if (contentType.endsWith(".png")) {
+                mimeType = "image/png";
+            } else if (contentType.endsWith(".gif")) {
+                mimeType = "image/gif";
+            } else if (contentType.endsWith(".webp")) {
+                mimeType = "image/webp";
+            }
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(mimeType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline")
+                    .body(resource);
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body("Error retrieving image: " + e.getMessage());
         }
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(mimeType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline")
-                .body(resource);
     }
 
     @DeleteMapping("/{imageId}")
     @Operation(summary = "Delete an image", description = "Delete an image by its ID")
-    public ResponseEntity<Void> deleteImage(@PathVariable Long imageId) {
-        imageService.deleteImage(imageId);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> deleteImage(@PathVariable Long imageId) {
+        try {
+            imageService.deleteImage(imageId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error deleting image: " + e.getMessage());
+        }
     }
 }

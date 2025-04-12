@@ -14,6 +14,7 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 
 @Service
 public class ImageService {
@@ -80,4 +81,8 @@ public class ImageService {
             throw new RuntimeException("Could not delete image file", e);
         }
     }
+
+	public List<Image> getAllImages() {
+        return imageRepository.findAll();
+	}
 }
