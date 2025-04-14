@@ -7,6 +7,7 @@ import java.util.Objects;
 
 import com.example.lostnfound.exception.UserNotFoundException;
 import com.example.lostnfound.model.Image;
+import com.example.lostnfound.repository.ImageRepository;
 import com.example.lostnfound.service.ImageService;
 import com.example.lostnfound.service.PostService;
 import com.example.lostnfound.service.user.UserService;
@@ -30,12 +31,14 @@ public class PostController {
     private final ImageService imageService;
     private final ModelMapper modelMapper;
     private final ObjectMapper objectMapper;
+    private final ImageRepository imageRepository;
 
-    PostController(PostService postService, UserService userService, ImageService imageService, ObjectMapper objectMapper) {
+    PostController(PostService postService, UserService userService, ImageService imageService, ObjectMapper objectMapper, ImageRepository imageRepository, ImageRepository imageRepository1) {
         this.postService = postService;
         this.userService = userService;
         this.imageService = imageService;
-        this.modelMapper = new ModelMapper();
+	    this.imageRepository = imageRepository1;
+	    this.modelMapper = new ModelMapper();
         this.objectMapper = objectMapper;
     }
 
@@ -53,6 +56,7 @@ public class PostController {
             if (image != null && !image.isEmpty()) {
                 Image savedImage = imageService.saveImage(image);
                 newPost.setImage(savedImage);
+                savedImage.setPost(newPost);
             }
 
             postService.savePost(newPost);
@@ -124,6 +128,8 @@ public class PostController {
             if (image != null && !image.isEmpty()) {
                 Image savedImage = imageService.saveImage(image);
                 updatedPost.setImage(savedImage);
+                savedImage.setPost(updatedPost);
+                imageRepository.save(savedImage);
             }
 
             postService.updatePost(id, updatedPost);

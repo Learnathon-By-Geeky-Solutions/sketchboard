@@ -65,7 +65,7 @@ public class PostService {
         postRepo.deleteById(id);
     }
 
-    public void updatePost(int id, Post post) {
+    public void updatePost(int id, Post post) throws IOException, InterruptedException {
         Post postToUpdate = postRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
     
