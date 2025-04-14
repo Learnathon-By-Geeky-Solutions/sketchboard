@@ -20,10 +20,10 @@ public class EmbeddingService {
     // Make http request
     @Value("${HF_TOKEN}")
     private String huggingfaceToken;
-    String url = "https://api-inference.huggingface.co/pipeline/feature-extraction/sentence-transformers/all-MiniLM-L6-v2";
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public float[] getEmbeddingHuggingFace(String input) throws IOException, InterruptedException {
+        String url = "https://api-inference.huggingface.co/pipeline/feature-extraction/sentence-transformers/all-MiniLM-L6-v2";
         System.out.println("Token: " + huggingfaceToken);
 
         //this regex removes all special characters except for spaces
@@ -92,10 +92,58 @@ public class EmbeddingService {
         }
     }
 
-    public float[] getEmbedding(String input){
+    public float[] getEmbeddingClipLocal(String input, int isImage) throws IOException, InterruptedException {
+        String url = "http://0.0.0.0:3000/encode";
+
+        String reqBody = "";
+        if(isImage == 1){
+            /* sample req body
+                [
+                    {
+                    "img_uri": "http://localhost:8080/images/3"
+                    }
+                ]
+             */
+            reqBody = "[{\"img_uri\": \"" + input + "\"}]";
+        }else{
+            /* sample req body
+                [
+                    {
+                    "text": "What is the meaning of life?"
+                    }
+                ]
+             */
+            reqBody = "[{\"text\": \"" + input + "\"}]";
+        }
+        System.out.println("Request body: " + reqBody);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(reqBody))
+                .build();
+
+        HttpClient httpClient = HttpClient.newHttpClient();
+        try{
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("Response json structure: " + response.body());
+            return objectMapper.readValue(response.body(), float[][].class)[0];
+        } catch (Exception e) {
+            System.out.println("Error + " + e.getMessage());
+            throw e;
+        }
+    }
+
+    public float[] getEmbedding(String input) throws IOException, InterruptedException {
         input = input.replaceAll("[<>]", "")
                 .replaceAll("(?i)script", "")
                 .trim();
-        return getEmbeddingGemini(input);
+        return getEmbeddingClipLocal(input, 0);
+    }
+
+    public float[] getEmbeddingImage(String input) throws IOException, InterruptedException {
+        input = input.replaceAll("[<>]", "")
+                .replaceAll("(?i)script", "")
+                .trim();
+        return getEmbeddingClipLocal(input, 1);
     }
 }

@@ -43,7 +43,7 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) throws Exception {
         Logger logger = LoggerFactory.getLogger(DataLoader.class);
         int postCount = postRepository.findAll().size();
-        int extraPostNeed = 0 - postCount;
+        int extraPostNeed = 10 - postCount;
         int userCount = userRepo.findAll().size();
         int extraUserNeed = 5 - userCount;
 
@@ -61,7 +61,7 @@ public class DataLoader implements CommandLineRunner {
             user.setAddress(faker.address().fullAddress());
             user.setRole(Role.values()[faker.number().numberBetween(0, Role.values().length)]);
             user.setDepartment(faker.company().profession());
-            user.setEmbedding(new float[3072]);
+            user.setEmbedding(new float[512]);
 
 
             try {
@@ -100,6 +100,7 @@ public class DataLoader implements CommandLineRunner {
                     
                     Giving you two characters. Keep the location close to first character and the lost item close to the second character.
                     For category and status, i am giving you the index of the given enum.
+                    
                     """;
             instruction += " first character: " + faker.lorem().characters(1) + ";\n";
             instruction += " second character: " + faker.lorem().characters(1) + ";\n";
@@ -124,7 +125,7 @@ public class DataLoader implements CommandLineRunner {
                 postService.savePost(post);
                 logger.info("Generated post {}/{}", i + 1, extraPostNeed);
                 //delay of 5s, as we have API rate limit (15 Requests per minute)
-                Thread.sleep(10000);
+                Thread.sleep(5000);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 logger.error("Thread was interrupted, Failed to complete operation");

@@ -2,6 +2,7 @@ package com.example.lostnfound.service;
 
 import com.example.lostnfound.model.Image;
 import com.example.lostnfound.repository.ImageRepository;
+import com.example.lostnfound.service.AI.Embedding.EmbeddingService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -15,16 +16,19 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ImageService {
     private final ImageRepository imageRepository;
     private final Path uploadPath;
+    private final EmbeddingService embeddingService;
 
-    public ImageService(ImageRepository imageRepository, @Value("${app.upload.dir}") String uploadDir) {
+    public ImageService(ImageRepository imageRepository, @Value("${app.upload.dir}") String uploadDir, EmbeddingService embeddingService) {
         this.imageRepository = imageRepository;
         this.uploadPath = Path.of(uploadDir);
-        createUploadDirectory();
+	    this.embeddingService = embeddingService;
+	    createUploadDirectory();
     }
 
     private void createUploadDirectory() {
@@ -35,8 +39,8 @@ public class ImageService {
         }
     }
 
-    public Image saveImage(MultipartFile file) throws IOException {
-        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+    public Image saveImage(MultipartFile file) throws IOException, InterruptedException {
+        String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
         String uniqueFileName = System.currentTimeMillis() + "_" + fileName;
         Path targetLocation = uploadPath.resolve(uniqueFileName);
 
@@ -47,8 +51,10 @@ public class ImageService {
         image.setContentType(file.getContentType());
         image.setFileSize(file.getSize());
         image.setFilePath(targetLocation.toString());
-
-        return imageRepository.save(image);
+        imageRepository.save(image);
+        image.setEmbedding(embeddingService.getEmbeddingImage(image.getImageUri()));
+        imageRepository.save(image);
+        return image;
     }
 
     public Resource loadImage(Long imageId) throws IOException {
@@ -85,4 +91,8 @@ public class ImageService {
 	public List<Image> getAllImages() {
         return imageRepository.findAll();
 	}
+
+    public List<Image> findTopKSimilarImages(float[] queryEmbedding, Long topK) {
+        return imageRepository.findTopKSimilarPosts(queryEmbedding, topK);
+    }
 }
