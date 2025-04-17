@@ -5,6 +5,8 @@ import com.example.lostnfound.exception.UnknownIdentifierException;
 import com.example.lostnfound.exception.UserNotFoundException;
 import com.example.lostnfound.service.user.UserAccountService;
 import com.example.lostnfound.service.user.UserService;
+import com.example.lostnfound.util.CodeUtils;
+
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +29,7 @@ public class PasswordController {
     @PostMapping("/forgotPassword")
     @Operation(summary = "Forgot Password", description = "Send a reset password email to the user")
     public ResponseEntity<?> forgotPassword(@RequestParam String email) throws UnknownIdentifierException {
-        if (email == null || email.isBlank() || !email.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+        if (email == null || email.isBlank() ||  !CodeUtils.EMAIL_PATTERN.matcher(email).matches()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid email format");
         }
         
