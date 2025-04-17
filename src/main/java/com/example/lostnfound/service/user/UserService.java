@@ -19,6 +19,7 @@ import com.example.lostnfound.model.Post;
 import com.example.lostnfound.model.User;
 import com.example.lostnfound.repository.PostRepo;
 import com.example.lostnfound.repository.UserRepo;
+import com.example.lostnfound.exception.EmailSendException;
 import com.example.lostnfound.exception.InvalidTokenException;
 import com.example.lostnfound.dto.UserDto;
 import com.example.lostnfound.exception.PostNotFoundException;
@@ -40,7 +41,7 @@ public class UserService {
     private String baseUrl;
     Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    UserService(UserRepo userRepo, AuthenticationManager authmManager, JWTService jwtService, PostRepo postRepo, ModelMapper modelMapper, SecureTokenService secureTokenService, EmailService emailService) {
+    UserService(UserRepo userRepo, AuthenticationManager authmManager, JWTService jwtService, PostRepo postRepo, SecureTokenService secureTokenService, EmailService emailService) {
         this.userRepo = userRepo;
         this.authmManager = authmManager;
         this.jwtService = jwtService;
@@ -127,10 +128,11 @@ public class UserService {
         try {
             emailService.sendEmail(context);
         } catch (MessagingException e) {
-            //throw as it is
-            logger.error("Error sending email: {}", e.getMessage());
-            throw e;
+            logger.error("Failed to send registration email", e);
+            throw new EmailSendException("Could not send email. Please try again later.", e);
         }
+        
+
     }
 
     public void verifyUser(String token) throws InvalidTokenException, UserNotFoundException {

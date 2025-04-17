@@ -3,7 +3,6 @@ package com.example.lostnfound.service;
 import com.example.lostnfound.mailing.AbstractEmailContext;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -14,11 +13,14 @@ import java.nio.charset.StandardCharsets;
 
 @Service
 public class EmailService {
-    @Autowired
-    private SpringTemplateEngine templateEngine;
 
-    @Autowired
-    private JavaMailSender emailSender;
+    private final SpringTemplateEngine templateEngine;
+    private final JavaMailSender emailSender;
+
+    public EmailService(SpringTemplateEngine templateEngine, JavaMailSender emailSender) {
+        this.templateEngine = templateEngine;
+        this.emailSender = emailSender;
+    }
 
     public void sendEmail(final AbstractEmailContext email) throws MessagingException {
         MimeMessage message = emailSender.createMimeMessage();

@@ -41,7 +41,7 @@ public class PostController {
 
     @PostMapping(value = "/posts", consumes = {"multipart/form-data"})
     @Operation(summary = "Create a post", description = "Creates a new post with optional image")
-    public ResponseEntity<?> handlePost(@RequestParam(value = "postDto", required = true) String postDtoJson,
+    public ResponseEntity<Object> handlePost(@RequestParam(value = "postDto", required = true) String postDtoJson,
                                       @RequestParam(value = "image", required = false) MultipartFile image) throws IOException, InterruptedException {
         try {
             PostDto postDto = objectMapper.readValue(postDtoJson, PostDto.class);
@@ -68,7 +68,7 @@ public class PostController {
 
     @GetMapping("/posts")
     @Operation(summary = "Get all posts", description = "Retrieves all posts")
-    public ResponseEntity<?> getPosts() {
+    public ResponseEntity<Object> getPosts() {
         try {
             List<Post> posts = postService.getPosts();
             List<PostDto> postDtos = new ArrayList<>();
@@ -87,7 +87,7 @@ public class PostController {
 
     @GetMapping("/posts/{id}")
     @Operation(summary = "Get post by id", description = "Retrieves post by id")
-    public ResponseEntity<?> getPost(@PathVariable("id") Long id) {
+    public ResponseEntity<Object> getPost(@PathVariable("id") Long id) {
         try {
             Post post = postService.getPost(id);
             PostDto postDto = modelMapper.map(post, PostDto.class);
@@ -102,7 +102,7 @@ public class PostController {
 
     @DeleteMapping("/posts/{id}")
     @Operation(summary = "Delete post by id", description = "Deletes post by id")
-    public ResponseEntity<?> deletePost(@PathVariable("id") int id) {
+    public ResponseEntity<Object> deletePost(@PathVariable("id") int id) {
         try {
             postService.deletePost(id);
             return new ResponseEntity<>("Post deleted successfully", HttpStatus.OK);
@@ -113,7 +113,7 @@ public class PostController {
 
     @PutMapping("/posts/{id}")
     @Operation(summary = "Update post by id", description = "Updates post by id")
-    public ResponseEntity<?> updatePost(@PathVariable("id") int id, 
+    public ResponseEntity<Object> updatePost(@PathVariable("id") int id, 
                                       @RequestParam(value = "postDto") String postDtoJson,
                                       @RequestParam(value = "image", required = false) MultipartFile image) {
         try {
@@ -152,7 +152,7 @@ public class PostController {
 
     @GetMapping("/customizedPosts")
     @Operation(summary = "Get related posts", description = "Retrieves related posts for user")
-    public ResponseEntity<?> getCustomizedPosts() {
+    public ResponseEntity<Object> getCustomizedPosts() {
         try {
             Long myUserId = userService.getCurrentUser().getUserId();
             List<Post> posts = postService.getCustomizedPosts();

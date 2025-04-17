@@ -1,7 +1,6 @@
 package com.example.lostnfound.dto;
 
 import com.example.lostnfound.enums.MessageReadStatus;
-import com.example.lostnfound.enums.Status;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 

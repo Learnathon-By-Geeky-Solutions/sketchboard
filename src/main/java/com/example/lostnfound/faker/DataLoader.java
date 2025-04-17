@@ -5,9 +5,8 @@ import com.example.lostnfound.enums.Status;
 import com.example.lostnfound.model.Post;
 import com.example.lostnfound.repository.PostRepo;
 import com.example.lostnfound.repository.UserRepo;
-import com.example.lostnfound.service.AI.GeminiChat.GeminiResponse;
 import com.example.lostnfound.service.PostService;
-import com.example.lostnfound.service.user.UserService;
+import com.example.lostnfound.service.ai.GeminiChat.GeminiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
 import org.springframework.boot.CommandLineRunner;
@@ -29,8 +28,9 @@ public class DataLoader implements CommandLineRunner {
     private final GeminiResponse myGemini;
     private final ObjectMapper objectMapper;
     private final PostService postService;
+    private Logger logger = LoggerFactory.getLogger(DataLoader.class);
 
-    DataLoader(PostRepo postRepository, UserRepo userRepo, GeminiResponse myGemini, ObjectMapper objectMapper, PostService postService, UserService userService) {
+    DataLoader(PostRepo postRepository, UserRepo userRepo, GeminiResponse myGemini, ObjectMapper objectMapper, PostService postService) {
         this.postRepository = postRepository;
         this.userRepo = userRepo;
         this.myGemini = myGemini;
@@ -106,7 +106,7 @@ public class DataLoader implements CommandLineRunner {
             instruction += " category: " + faker.number().numberBetween(0, Category.values().length) + ";\n";
             instruction += " status: " + faker.number().numberBetween(0, Status.values().length) + ";\n";
             String response = myGemini.rawQuery(instruction);
-            System.out.println("AI Response: " + response);
+            logger.info("AI Response: {}", response);
             Objects.requireNonNull(response);
             //make sure the response is a valid JSON
             StringBuilder rb = new StringBuilder(response);

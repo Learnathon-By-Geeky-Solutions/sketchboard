@@ -31,7 +31,7 @@ public class CommentController {
 
     @PostMapping
     @Operation(summary = "Create Comment", description = "Create comment using post id and its content")
-    public ResponseEntity<?> createComment(@RequestBody @Valid CommentDto comment) {
+    public ResponseEntity<Object> createComment(@RequestBody @Valid CommentDto comment) {
         try {
             Comment newComment = new Comment();
             newComment.setContent(comment.getContent());
@@ -47,7 +47,7 @@ public class CommentController {
 
     @GetMapping
     @Operation(summary = "Get All Comments", description = "Get all comments of a post")
-    public ResponseEntity<?> getAllComments() {
+    public ResponseEntity<Object> getAllComments() {
         try{
             List<CommentDto> comments = commentService.getAllCommentDtos();
             return new ResponseEntity<>(comments, HttpStatus.OK);
@@ -58,7 +58,7 @@ public class CommentController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Get Comment", description = "Get details of a comment by its id")
-    public ResponseEntity<?> getCommentById(@PathVariable Long id) {
+    public ResponseEntity<Object> getCommentById(@PathVariable Long id) {
         try{
             CommentDto comment = commentService.getCommentDtoById(id);
             return new ResponseEntity<>(comment, HttpStatus.OK);
@@ -69,7 +69,7 @@ public class CommentController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Update Comment", description = "Update comment by its id")
-    public ResponseEntity<?> updateComment(@PathVariable("id") Long id, @RequestBody CommentDto commentDto) {
+    public ResponseEntity<Object> updateComment(@PathVariable("id") Long id, @RequestBody CommentDto commentDto) {
         try{
             Comment updatedComment = commentService.updateComment(id, commentDto.getContent());
             CommentDto newcommentDto = new CommentDto(updatedComment.getId(),
@@ -84,7 +84,7 @@ public class CommentController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete Comment", description = "Delete comment by its id")
-    public ResponseEntity<?> deleteComment(@PathVariable Long id) {
+    public ResponseEntity<Object> deleteComment(@PathVariable Long id) {
         try{
             commentService.deleteComment(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);

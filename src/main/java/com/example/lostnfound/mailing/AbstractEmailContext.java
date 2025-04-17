@@ -19,8 +19,10 @@ public class AbstractEmailContext {
         this.context = new HashMap<>();
     }
 
-    public <T> void init(T context) {}
-
+    public <T> void init(T context) {
+        throw new UnsupportedOperationException("init() must be overridden in a subclass");
+    }
+    
     public void put(String key, Object value) {
         if (key != null) {
             this.context.put(key.intern(), value);

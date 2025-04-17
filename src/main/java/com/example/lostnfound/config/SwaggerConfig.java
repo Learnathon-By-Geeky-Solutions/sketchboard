@@ -1,7 +1,4 @@
 package com.example.lostnfound.config;
-
-import java.util.List;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,11 +7,12 @@ import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
-import io.swagger.v3.oas.models.servers.Server;
+
 
 @Configuration
 public class SwaggerConfig {
-
+    private String bearerAuth="BearerAuth";
+    private String basicAuth="BasicAuth";
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
@@ -23,22 +21,22 @@ public class SwaggerConfig {
                 .version("1.0")
                 .description("by team Sketchboard"))
             .addSecurityItem(
-                new SecurityRequirement().addList("BearerAuth") // JWT Token
+                new SecurityRequirement().addList(bearerAuth) // JWT Token
             )
             .addSecurityItem(
-                new SecurityRequirement().addList("BasicAuth") // Username & Password
+                new SecurityRequirement().addList(basicAuth) // Username & Password
             )
             .components(new Components()
-                .addSecuritySchemes("BearerAuth",
+                .addSecuritySchemes(bearerAuth,
                     new SecurityScheme()
-                        .name("BearerAuth")
+                        .name(bearerAuth)
                         .type(SecurityScheme.Type.HTTP)
                         .scheme("bearer")
                         .bearerFormat("JWT")
                         .description("Enter the JWT token"))
-                .addSecuritySchemes("BasicAuth",
+                .addSecuritySchemes(basicAuth,
                     new SecurityScheme()
-                        .name("BasicAuth")
+                        .name(basicAuth)
                         .type(SecurityScheme.Type.HTTP)
                         .scheme("basic")
                         .description("Or Enter your username and password"))

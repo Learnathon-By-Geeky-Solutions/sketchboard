@@ -3,10 +3,12 @@ package com.example.lostnfound.service;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Logger;
+import java.util.function.Consumer;
 
 import com.example.lostnfound.exception.UserNotFoundException;
 import com.example.lostnfound.model.User;
-import com.example.lostnfound.service.AI.Embedding.EmbeddingService;
+import com.example.lostnfound.service.ai.embedding.EmbeddingService;
 import com.example.lostnfound.service.user.UserService;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,8 @@ public class PostService {
     private final UserService userService;
     private final ImageService imageService;
 
+    private Logger logger = Logger.getLogger(PostService.class.getName());
+
     PostService(PostRepo postRepo, EmbeddingService embeddingService, UserService userService, 
                ImageService imageService) {
         this.postRepo = postRepo;
@@ -30,7 +34,7 @@ public class PostService {
 
     public void savePost(Post post) throws IOException, InterruptedException, UserNotFoundException {
         float[] embedding = embeddingService.getEmbedding(post.infoForEmbedding());
-        System.out.println("********EmbeddingSize: " + embedding.length);
+        logger.info("********EmbeddingSize: " + embedding.length);
         post.setEmbedding(embedding);
         User user = userService.findById(post.getUserId());
         user.addInteraction(embedding,3);
@@ -64,44 +68,33 @@ public class PostService {
     public void updatePost(int id, Post post) {
         Post postToUpdate = postRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
-
-        if (post.getImage() != null && !Objects.equals(post.getImage().getId(), postToUpdate.getImage() != null ? postToUpdate.getImage().getId() : null)) {
-            // Delete old image if exists
-            if (postToUpdate.getImage() != null) {
-                imageService.deleteImage(postToUpdate.getImage().getId());
-            }
-            // Set new image
-            postToUpdate.setImage(post.getImage());
-        }
-
-        if(Objects.nonNull(post.getTitle()) && !"".equalsIgnoreCase(post.getTitle())) {
-            postToUpdate.setTitle(post.getTitle());
-        }
-        if(Objects.nonNull(post.getDescription()) && !"".equalsIgnoreCase(post.getDescription())) {
-            postToUpdate.setDescription(post.getDescription());
-        }
-        if(Objects.nonNull(post.getLocation()) && !"".equalsIgnoreCase(post.getLocation())) {
-            postToUpdate.setLocation(post.getLocation());
-        }
+    
+        updateImageIfChanged(post, postToUpdate);
+        updateFieldIfPresent(post.getTitle(), postToUpdate::setTitle);
+        updateFieldIfPresent(post.getDescription(), postToUpdate::setDescription);
+        updateFieldIfPresent(post.getLocation(), postToUpdate::setLocation);
+    
         if (post.getDate() != null) {
             postToUpdate.setDate(post.getDate());
         }
-        if(post.getTime() != null) {
+    
+        if (post.getTime() != null) {
             postToUpdate.setTime(post.getTime());
         }
-        if(Objects.nonNull(post.getCategory())) {
+    
+        if (post.getCategory() != null) {
             postToUpdate.setCategory(post.getCategory());
         }
-        if(Objects.nonNull(post.getStatus())) {
+    
+        if (post.getStatus() != null) {
             postToUpdate.setStatus(post.getStatus());
         }
+    
         if (post.getRange() != 0) {
             postToUpdate.setRange(post.getRange());
         }
-
-	    postToUpdate.setEmbedding(embeddingService.getEmbedding(postToUpdate.infoForEmbedding()));
-	    postRepo.save(postToUpdate);
     }
+    
 
     public List<Post> searchPosts(String searchTerm) {
         return postRepo.searchPosts(searchTerm);
@@ -124,7 +117,7 @@ public class PostService {
         Objects.requireNonNull(embed);
         List<Post> res = postRepo.findTopKSimilarPosts(embed, topK);
         for(Post post : res) {
-            System.out.println(post.getId() + " => " + cosineSimilarity(embed, post.getEmbedding()));
+            logger.info(post.getId() + " => " + cosineSimilarity(embed, post.getEmbedding()));
         }
         return res;
     }
@@ -133,5 +126,25 @@ public class PostService {
         User currentUser = userService.getCurrentUser();
         return findTopKSimilarPosts(currentUser.getEmbedding(), Long.MAX_VALUE);
     }
+
+    private void updateImageIfChanged(Post newPost, Post existingPost) {
+        if (newPost.getImage() != null &&
+            !Objects.equals(newPost.getImage().getId(),
+                existingPost.getImage() != null ? existingPost.getImage().getId() : null)) {
+    
+            if (existingPost.getImage() != null) {
+                imageService.deleteImage(existingPost.getImage().getId());
+            }
+    
+            existingPost.setImage(newPost.getImage());
+        }
+    }
+    
+    private void updateFieldIfPresent(String fieldValue, Consumer<String> setter) {
+        if (fieldValue != null && !fieldValue.trim().isEmpty()) {
+            setter.accept(fieldValue);
+        }
+    }
+    
 
 }

@@ -1,17 +1,14 @@
 package com.example.lostnfound.controller;
 
 import com.example.lostnfound.dto.MessageDto;
-import com.example.lostnfound.dto.msgSendBody;
+import com.example.lostnfound.dto.MsgSendBody;
 import com.example.lostnfound.enums.MessageReadStatus;
-import com.example.lostnfound.exception.UserNotFoundException;
 import com.example.lostnfound.model.Message;
 import com.example.lostnfound.model.User;
 import com.example.lostnfound.service.MessageService;
 import com.example.lostnfound.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
-import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +34,7 @@ public class MessageController {
 
     @PostMapping("/sendMesssage")
     @Operation(summary = "Send Message", description = "Send Message")
-    public ResponseEntity<?> sendMessage(@RequestBody msgSendBody msgPostBody) {
+    public ResponseEntity<Object> sendMessage(@RequestBody MsgSendBody msgPostBody) {
         try {
             User sender = userService.getCurrentUser();
             User receiver = userService.findById(msgPostBody.getReceiverId());
@@ -54,8 +51,8 @@ public class MessageController {
             newMessage.setUpdatedAt(LocalDateTime.now());
             messageService.save(newMessage);
             //add msg id to sender and receiver
-            sender.getSent_messages().add(newMessage);
-            receiver.getReceived_messages().add(newMessage);
+            sender.getSentMessages().add(newMessage);
+            receiver.getReceivedMessages().add(newMessage);
 
             userService.save(sender);
             userService.save(receiver);
@@ -67,11 +64,11 @@ public class MessageController {
 
     @GetMapping("/UpdateMessage")
     @Operation(summary = "Update Message", description = "Update Message")
-    public ResponseEntity<?> updateMessage(@RequestBody Long messageId, @RequestBody String content) {
+    public ResponseEntity<Object> updateMessage(@RequestBody Long messageId, @RequestBody String content) {
         try {
             Message message = messageService.findById(messageId);
-            Long CurrentUserId = userService.getCurrentUser().getUserId();
-            if (!Objects.equals(message.getSenderId(), CurrentUserId)) {
+            Long currentUserId = userService.getCurrentUser().getUserId();
+            if (!Objects.equals(message.getSenderId(), currentUserId)) {
                 // return unauthorized
                 return ResponseEntity.status(401).build();
             }
@@ -86,10 +83,10 @@ public class MessageController {
 
     @GetMapping("/getSentMessages")
     @Operation(summary = "Get messages", description = "Retrieves messages for user")
-    public ResponseEntity<?> getMyMessages() {
+    public ResponseEntity<Object> getMyMessages() {
         try {
             User user = userService.getCurrentUser();
-            List<MessageDto> mylist = user.getSent_messages().stream().map(message -> {
+            List<MessageDto> mylist = user.getSentMessages().stream().map(message -> {
                 try {
                     return msgToMsgDto(message);
                 } catch (Exception e) {
@@ -104,10 +101,10 @@ public class MessageController {
 
     @GetMapping("/getReceivedMessages")
     @Operation(summary = "Get received messages", description = "Retrieves received messages for user")
-    public ResponseEntity<?> getReceivedMessages() throws Exception {
+    public ResponseEntity<Object> getReceivedMessages() throws Exception {
         User user = userService.getCurrentUser();
         try{
-            List<MessageDto> mylist = user.getReceived_messages().stream().map(message -> {
+            List<MessageDto> mylist = user.getReceivedMessages().stream().map(message -> {
                 try {
                     return msgToMsgDto(message);
                 } catch (Exception e) {

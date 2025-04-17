@@ -1,5 +1,8 @@
 package com.example.lostnfound.service;
 
+import com.example.lostnfound.exception.ImageNotFoundException;
+import com.example.lostnfound.exception.ImageStorageException;
+import com.example.lostnfound.exception.StorageInitializationException;
 import com.example.lostnfound.model.Image;
 import com.example.lostnfound.repository.ImageRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,7 +34,7 @@ public class ImageService {
         try {
             Files.createDirectories(uploadPath);
         } catch (IOException e) {
-            throw new RuntimeException("Could not create upload directory!", e);
+            throw new StorageInitializationException("Could not create upload directory at: " + uploadPath, e);
         }
     }
 
@@ -53,32 +56,30 @@ public class ImageService {
 
     public Resource loadImage(Long imageId) throws IOException {
         Image image = imageRepository.findById(imageId)
-                .orElseThrow(() -> new RuntimeException("Image not found"));
-
+                .orElseThrow(() -> new ImageNotFoundException("Image not found with ID: " + imageId));
         try {
             Path filePath = Path.of(image.getFilePath());
             Resource resource = new UrlResource(filePath.toUri());
-            
+
             if (resource.exists()) {
                 return resource;
             } else {
-                throw new RuntimeException("File not found: " + image.getFileName());
+                throw new ImageNotFoundException("File not found: " + image.getFileName());
             }
         } catch (MalformedURLException e) {
-            throw new RuntimeException("File not found: " + image.getFileName(), e);
+            throw new ImageStorageException("Invalid file path for image: " + image.getFileName(), e);
         }
     }
 
     public void deleteImage(Long imageId) {
         Image image = imageRepository.findById(imageId)
-                .orElseThrow(() -> new RuntimeException("Image not found"));
-
+                .orElseThrow(() -> new ImageNotFoundException("Image not found with ID: " + imageId));
         try {
             Path filePath = Path.of(image.getFilePath());
             Files.deleteIfExists(filePath);
             imageRepository.delete(image);
         } catch (IOException e) {
-            throw new RuntimeException("Could not delete image file", e);
+            throw new ImageStorageException("Could not delete image file: " + image.getFileName(), e);
         }
     }
 

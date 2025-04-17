@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 @Data
-public class aiSearchQuery {
+public class AiSearchQuery {
     @NotEmpty
     @Schema(description = "Query for AI Search.", example = "I lost my phone in the library", required = true)
     String query;
