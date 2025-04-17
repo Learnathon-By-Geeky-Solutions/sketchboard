@@ -27,6 +27,10 @@ public class PasswordController {
     @PostMapping("/forgotPassword")
     @Operation(summary = "Forgot Password", description = "Send a reset password email to the user")
     public ResponseEntity<?> forgotPassword(@RequestParam String email) throws UnknownIdentifierException {
+        if (email == null || email.isBlank() || !email.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid email format");
+        }
+        
         try {
             if(userService.findByEmail(email) == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User not found with this email");
