@@ -36,7 +36,7 @@
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <google.genai.version>0.1.1</google.genai.version>
+        <google.genai.version>0.2.0</google.genai.version>
         <spring-ai.version>1.0.0-M6</spring-ai.version>
     </properties>
     <dependencyManagement>
