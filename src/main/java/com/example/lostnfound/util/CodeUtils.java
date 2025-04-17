@@ -3,6 +3,9 @@ package com.example.lostnfound.util;
 import java.util.regex.Pattern;
 
 public class CodeUtils {
-    public static final Pattern EMAIL_PATTERN = Pattern.compile("^[\\w.-]+@([\\w-]+\\.)+[\\w-]{2,4}$");
+    private CodeUtils() {
+        throw new UnsupportedOperationException("Utility class");
+    }
+    public static final Pattern EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z]{2,}$");
 
 }
