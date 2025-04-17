@@ -75,10 +75,11 @@ public class UserService {
     }
 
     public User findByEmail(String email) throws UserNotFoundException {
-        logger.debug("Fetching user with email: {}", email);
+        String maskedEmail = email.replaceAll("(?<=.{2}).(?=.*@)", "*");
+        logger.debug("Fetching user with email: {}", maskedEmail);
         User user=userRepo.findByEmail(email);
         if(user==null){
-            logger.error("Unable to locate user with email: {}", email);
+            logger.error("Unable to locate user with email: {}", maskedEmail);
             throw new UserNotFoundException("User not found with email: " + email + "\n");
         }
         else return user;
