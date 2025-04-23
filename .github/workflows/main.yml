@@ -2,7 +2,7 @@ name: Deploy Spring Boot Backend to EC2
 
 on:
   push:
-    branches: [main]  # Change to your main branch if different
+    branches: [main]
 
 jobs:
   deploy:
@@ -17,13 +17,15 @@ jobs:
           chmod +x mvnw
           ./mvnw clean package -DskipTests
 
-      - name: Upload JAR to EC2
+      - name: Upload JAR and Properties File to EC2
         uses: appleboy/scp-action@v0.1.3
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
-          source: "target/*.jar"
+          source: |
+            target/*.jar
+            external.properties
           target: "/home/ubuntu/apps/backend"
 
       - name: Run JAR on EC2 (Kill old, Start new)
@@ -42,7 +44,5 @@ jobs:
 
             echo "Starting new JAR in background..."
             cd /home/ubuntu/apps/backend
-            nohup java -jar *.jar > backend.log 2>&1 &
-
-            echo "Disowning the process..."
+            nohup java -jar *.jar --spring.config.import=optional:file:external.properties > backend.log 2>&1 &
             disown
