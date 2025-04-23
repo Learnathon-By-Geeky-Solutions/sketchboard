@@ -1,48 +1,29 @@
-name: Deploy Spring Boot Backend to EC2
+- name: Run JAR on EC2
+  uses: appleboy/ssh-action@v0.1.7
+  with:
+    host: ${{ secrets.EC2_HOST }}
+    username: ${{ secrets.EC2_USERNAME }}
+    key: ${{ secrets.EC2_KEY }}
+    script: |
+      echo "Switching to backend target directory..."
+      cd /home/ubuntu/apps/backend/target
 
-on:
-  push:
-    branches: [main]
+      echo "Copying .env file..."
+      cp ~/.env .env
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
+      echo "Checking for existing process on port 8080..."
+      PID=$(sudo lsof -t -i:8080)
+      if [ -n "$PID" ]; then
+        echo "Killing process $PID"
+        sudo kill $PID
+      else
+        echo "No process running on port 8080"
+      fi
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      echo "Running the JAR in background..."
+      nohup java -jar LostnFound-Docker.jar > backend.log 2>&1 &
 
-      - name: Build Spring Boot JAR
-        run: |
-          chmod +x mvnw
-          ./mvnw clean package -DskipTests
+      echo "Disowning the process..."
+      disown
 
-      - name: Upload JAR and Properties File to EC2
-        uses: appleboy/scp-action@v0.1.3
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_KEY }}
-          source: |
-            target/*.jar
-            external.properties
-          target: "/home/ubuntu/apps/backend"
-
-      - name: Run JAR on EC2 (Kill old, Start new)
-        uses: appleboy/ssh-action@v0.1.7
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_KEY }}
-          script: |
-            echo "Checking for existing process on port 8080..."
-            PID=$(sudo lsof -t -i:8080)
-            if [ -n "$PID" ]; then
-              echo "Killing process $PID on port 8080"
-              sudo kill $PID
-            fi
-
-            echo "Starting new JAR in background..."
-            cd /home/ubuntu/apps/backend
-            nohup java -jar *.jar --spring.config.import=optional:file:external.properties > backend.log 2>&1 &
-            disown
+      echo "Done!"
