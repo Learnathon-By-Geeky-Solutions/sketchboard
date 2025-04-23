@@ -34,10 +34,7 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           script: |
             echo "Switching to backend folder..."
-            cd /home/ubuntu/apps/backend
-
-            echo "Copying .env to target folder..."
-            cp ~/.env target/.env
+            cd /home/ubuntu/apps/backend/target
 
             echo "Checking for existing process on port 8080..."
             PID=$(sudo lsof -t -i:8080)
