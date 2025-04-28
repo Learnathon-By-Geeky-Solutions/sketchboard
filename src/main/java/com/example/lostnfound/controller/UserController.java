@@ -54,7 +54,7 @@ public class UserController {
             newUser.setDepartment(user.getDepartment());
             newUser.setAddress(user.getAddress());
             newUser.setRole(user.getRole());
-            newUser.setEmbedding(new float[512]);
+            newUser.setEmbedding(new float[1024]);
             System.out.println("New created user is: " + newUser);
             userService.register(newUser);
             return new ResponseEntity<>(modelMapper.map(newUser, UserDto.class), HttpStatus.CREATED);

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -24,10 +25,10 @@ public class ImageController {
     private final ImageService imageService;
     private final ModelMapper modelMapper;
 
-    public ImageController(ImageService imageService, ModelMapper modelMapper) {
+	public ImageController(ImageService imageService, ModelMapper modelMapper, ModelMapper modelMapper1) {
         this.imageService = imageService;
-        this.modelMapper = modelMapper;
-    }
+		this.modelMapper = modelMapper1;
+	}
 
     @GetMapping
     @Operation(summary = "Get all images", description = "Get a list of all images")
@@ -89,9 +90,12 @@ public class ImageController {
     @Operation(summary = "Search images", description = "Search for images based on a query")
     public ResponseEntity<?> searchImages(@RequestParam("file") MultipartFile file){
         try {
+//            System.out.println("Searching for similar images...");
             Image savedImage = imageService.saveImage(file);
             float [] queryEmbedding = savedImage.getEmbedding();
+            System.out.println("Query embedding: " + Arrays.toString(queryEmbedding));
             imageService.deleteImage(savedImage.getId());
+
             List<Image> images = imageService.findTopKSimilarImages(queryEmbedding, 10L);
             List<PostDto> posts = new java.util.ArrayList<>(List.of());
             for (Image image : images) {

@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.hibernate.annotations.Array;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDateTime;
 
@@ -24,7 +25,7 @@ public class Image {
 
     @Column
     @JdbcTypeCode(SqlTypes.VECTOR)
-    @Array(length = 512) // dimensions
+    @Array(length = 1024) // dimensions
     private float[] embedding;
 
     @Column(nullable = false)
@@ -48,9 +49,5 @@ public class Image {
     @PrePersist
     protected void onCreate() {
         uploadedAt = LocalDateTime.now();
-    }
-
-    public String getImageUri() {
-        return "http://localhost:8080/images/" + id;
     }
 }
