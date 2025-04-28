@@ -15,125 +15,108 @@ import org.springframework.stereotype.Service;
 import com.example.lostnfound.model.Post;
 import com.example.lostnfound.repository.PostRepo;
 
-/**
- * Service class for managing posts in the application.
- * Provides methods for creating, retrieving, updating, deleting, and searching posts.
- * Also includes functionality for embedding generation, similarity search, and user interaction tracking.
- */
 @Service
 public class PostService {
+    private final PostRepo postRepo;
+    private final EmbeddingService embeddingService;
+    private final UserService userService;
+    private final ImageService imageService;
 
-    /**
-     * Constructor for PostService.
-     *
-     * @param postRepo          Repository for managing Post entities.
-     * @param embeddingService  Service for generating embeddings for posts.
-     * @param userService       Service for managing user-related operations.
-     * @param imageService      Service for managing image-related operations.
-     */
+    private Logger logger = Logger.getLogger(PostService.class.getName());
+
     PostService(PostRepo postRepo, EmbeddingService embeddingService, UserService userService, 
-                ImageService imageService) { }
+               ImageService imageService) {
+        this.postRepo = postRepo;
+        this.embeddingService = embeddingService;
+        this.userService = userService;
+        this.imageService = imageService;
+    }
 
-    /**
-     * Saves a new post to the repository after generating its embedding and associating it with a user.
-     *
-     * @param post The post to be saved.
-     * @throws IOException              If an I/O error occurs during embedding generation.
-     * @throws InterruptedException     If the embedding generation process is interrupted.
-     * @throws UserNotFoundException    If the user associated with the post is not found.
-     */
-    public void savePost(Post post) throws IOException, InterruptedException, UserNotFoundException { }
+    public void savePost(Post post) throws IOException, InterruptedException, UserNotFoundException {
+        float[] embedding = embeddingService.getEmbedding(post.infoForEmbedding());
+        logger.info("********EmbeddingSize: " + embedding.length);
+        post.setEmbedding(embedding);
+        User user = userService.findById(post.getUserId());
+        user.addInteraction(embedding,3);
+        post.setUserName(user.getName());
+        postRepo.save(post);
+    }
 
-    /**
-     * Retrieves all posts from the repository.
-     *
-     * @return A list of all posts.
-     */
-    public List<Post> getPosts() { }
+    public List<Post> getPosts() {
+        return postRepo.findAll();
+    }
 
-    /**
-     * Retrieves posts with pagination support.
-     *
-     * @param pageNo   The page number to retrieve.
-     * @param pageSize The number of posts per page.
-     * @return A paginated list of posts.
-     */
-    public Page<Post> getPostsWithPagination(int pageNo, int pageSize) { }
+    public Page<Post> getPostsWithPagination(int pageNo, int pageSize) {
+        return postRepo.findAll(PageRequest.of(offset, pageSize).withSort(Sort.by(id)));
+    }
 
-    /**
-     * Retrieves a specific post by its ID and updates the current user's interaction with it.
-     *
-     * @param id The ID of the post to retrieve.
-     * @return The retrieved post.
-     * @throws UserNotFoundException If the current user is not found.
-     */
-    public Post getPost(Long id) throws UserNotFoundException { }
+    public Post getPost(Long id) throws UserNotFoundException {
+        User currentUser = userService.getCurrentUser();
+        Post post = postRepo.findById(Math.toIntExact(id))
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+        currentUser.addInteraction(post.getEmbedding(), 1);
+        return post;
+    }
 
-    /**
-     * Deletes a post by its ID, including its associated image if present.
-     *
-     * @param id The ID of the post to delete.
-     */
-    public void deletePost(int id) { }
+    public void deletePost(int id) {
+        Post post = postRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+        
+        if (post.getImage() != null) {
+            imageService.deleteImage(post.getImage().getId());
+        }
+        
+        postRepo.deleteById(id);
+    }
 
-    /**
-     * Updates an existing post with new information.
-     *
-     * @param id   The ID of the post to update.
-     * @param post The updated post information.
-     */
-    public void updatePost(int id, Post post) { }
+    public void updatePost(int id, Post post) {
+        Post postToUpdate = postRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+    
+        updateImageIfChanged(post, postToUpdate);
+        updateFieldIfPresent(post.getTitle(), postToUpdate::setTitle);
+        updateFieldIfPresent(post.getDescription(), postToUpdate::setDescription);
+        updateFieldIfPresent(post.getLocation(), postToUpdate::setLocation);
+    
+        if (post.getDate() != null) {
+            postToUpdate.setDate(post.getDate());
+        }
+    
+        if (post.getTime() != null) {
+            postToUpdate.setTime(post.getTime());
+        }
+    
+        if (post.getCategory() != null) {
+            postToUpdate.setCategory(post.getCategory());
+        }
+    
+        if (post.getStatus() != null) {
+            postToUpdate.setStatus(post.getStatus());
+        }
+    
+        if (post.getRange() != 0) {
+            postToUpdate.setRange(post.getRange());
+        }
+    }
+    
 
-    /**
-     * Searches for posts based on a search term.
-     *
-     * @param searchTerm The term to search for.
-     * @return A list of posts matching the search term.
-     */
-    public List<Post> searchPosts(String searchTerm) { }
+    public List<Post> searchPosts(String searchTerm) {
+        return postRepo.searchPosts(searchTerm);
+    }
 
-    /**
-     * Calculates the cosine similarity between two embedding vectors.
-     *
-     * @param a The first embedding vector.
-     * @param b The second embedding vector.
-     * @return The cosine similarity between the two vectors.
-     */
-    private float cosineSimilarity(float[] a, float[] b) { }
+    private float cosineSimilarity(float[] a, float[] b) {
+        float dotProduct = 0;
+        float normA = 0;
+        float normB = 0;
+        for (int i = 0; i < a.length; i++) {
+            dotProduct += a[i] * b[i];
+            normA += a[i] * a[i];
+            normB += b[i] * b[i];
+        }
+        return dotProduct / (float) (Math.sqrt(normA) * Math.sqrt(normB));
+    }
 
-    /**
-     * Finds the top K posts most similar to a given embedding.
-     *
-     * @param embed The embedding to compare against.
-     * @param topK  The number of top similar posts to retrieve.
-     * @return A list of the top K similar posts.
-     */
-    public List<Post> findTopKSimilarPosts(float[] embed, Long topK) { }
-
-    /**
-     * Retrieves customized posts for the current user based on their embedding.
-     *
-     * @return A list of posts customized for the current user.
-     * @throws UserNotFoundException If the current user is not found.
-     */
-    public List<Post> getCustomizedPosts() throws UserNotFoundException { }
-
-    /**
-     * Updates the image of a post if it has changed.
-     *
-     * @param newPost      The new post containing the updated image.
-     * @param existingPost The existing post to update.
-     */
-    private void updateImageIfChanged(Post newPost, Post existingPost) { }
-
-    /**
-     * Updates a field of a post if the new value is present and non-empty.
-     *
-     * @param fieldValue The new value for the field.
-     * @param setter     The setter method to update the field.
-     */
-    private void updateFieldIfPresent(String fieldValue, Consumer<String> setter) { }
-}
+    public List<Post> findTopKSimilarPosts(float[] embed, Long topK) {
 
         Objects.requireNonNull(embed);
         List<Post> res = postRepo.findTopKSimilarPosts(embed, topK);
