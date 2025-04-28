@@ -5,7 +5,7 @@ import com.example.lostnfound.exception.ImageStorageException;
 import com.example.lostnfound.exception.StorageInitializationException;
 import com.example.lostnfound.model.Image;
 import com.example.lostnfound.repository.ImageRepository;
-import com.example.lostnfound.service.AI.Embedding.EmbeddingService;
+import com.example.lostnfound.service.ai.embedding.EmbeddingService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
