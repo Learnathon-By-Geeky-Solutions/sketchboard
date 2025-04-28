@@ -4,7 +4,6 @@ import com.example.lostnfound.model.SecureToken;
 import com.example.lostnfound.model.User;
 import com.example.lostnfound.repository.SecureTokenRepo;
 import org.apache.commons.codec.binary.Base64;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.keygen.BytesKeyGenerator;
 import org.springframework.security.crypto.keygen.KeyGenerators;
@@ -19,9 +18,11 @@ public class SecureTokenService {
 
     @Value("${app.token.validity}")
     private int tokenValidityInSecond;
+    private final SecureTokenRepo secureTokenRepo;
 
-    @Autowired
-    private SecureTokenRepo secureTokenRepo;
+    public SecureTokenService(SecureTokenRepo secureTokenRepo) {
+        this.secureTokenRepo = secureTokenRepo;
+    }
 
     public SecureToken createToken(User user) {
         String tokenValue = new String(Base64.encodeBase64URLSafe(bytesKeyGenerator.generateKey()));

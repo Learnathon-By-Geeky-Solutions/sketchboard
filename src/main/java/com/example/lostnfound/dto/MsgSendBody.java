@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class msgSendBody {
+public class MsgSendBody {
     @Schema(description = "Id of the Message.", example = "1")
     private Long id;
 

@@ -59,37 +59,30 @@ public class User{
 
     //my msg list
     @OneToMany(mappedBy = "senderId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Message> sent_messages;
+    private List<Message> sentMessages;
 
     @OneToMany(mappedBy = "receiverId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Message> received_messages;
-
-    // @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
-    // private List<Post> posts;
-
-    // @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
-    // private List<Comment> comments;
+    private List<Message> receivedMessages;
 
     public void addInteraction(float[] embedding, float weight){
         /*
             The formula for updating the embedding is as follows:
             new_embedding = (embedding * weight) + (old_embedding * sumOfWeights) / (sumOfWeights + weight)
          */
-        System.out.println("New Embedding: " + Arrays.toString(embedding));
         float[] mulofnew = new float[embedding.length];
         for(int i = 0; i < embedding.length; i++){
-            mulofnew[i] = (float) (embedding[i] * weight);
+            mulofnew[i] = (embedding[i] * weight);
         }
 
         float[] mulofOld = new float[this.embedding.length];
         for(int i = 0; i < embedding.length; i++){
-            mulofOld[i] = (float) (this.embedding[i] * this.sumOfWeights);
+            mulofOld[i] = (this.embedding[i] * this.sumOfWeights);
         }
 
         this.embedding = mulofnew;
         this.sumOfWeights += weight;
         for(int i = 0; i < embedding.length; i++){
-            this.embedding[i] = (float) (mulofOld[i] + mulofnew[i]) / this.sumOfWeights;
+            this.embedding[i] = (mulofOld[i] + mulofnew[i]) / this.sumOfWeights;
         }
     }
 

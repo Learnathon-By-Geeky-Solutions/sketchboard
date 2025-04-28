@@ -1,4 +1,4 @@
-package com.example.lostnfound.service.AI.GeminiChat;
+package com.example.lostnfound.service.ai.GeminiChat;
 
 import com.example.lostnfound.model.Post;
 import lombok.extern.slf4j.Slf4j;

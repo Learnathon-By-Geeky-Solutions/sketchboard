@@ -32,7 +32,7 @@ public class ImageController {
 
     @GetMapping
     @Operation(summary = "Get all images", description = "Get a list of all images")
-    public ResponseEntity<?> getAllImages() {
+    public ResponseEntity<Object> getAllImages() {
         try {
             List<Image> images = imageService.getAllImages();
             return ResponseEntity.ok(images);
@@ -43,7 +43,7 @@ public class ImageController {
 
     @PostMapping
     @Operation(summary = "Upload an image", description = "Upload an image file and return the image details")
-    public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file){
+    public ResponseEntity<Object> uploadImage(@RequestParam("file") MultipartFile file){
         try {
             Image savedImage = imageService.saveImage(file);
             return ResponseEntity.ok(savedImage);
@@ -54,7 +54,7 @@ public class ImageController {
 
     @GetMapping("/{imageId}")
     @Operation(summary = "Get an image", description = "Get an image by its ID")
-    public ResponseEntity<?> getImage(@PathVariable Long imageId) {
+    public ResponseEntity<Object> getImage(@PathVariable Long imageId) {
         try {
             Resource resource = imageService.loadImage(imageId);
             String contentType = resource.getFile().toPath().getFileName().toString().toLowerCase();
@@ -77,7 +77,7 @@ public class ImageController {
 
     @DeleteMapping("/{imageId}")
     @Operation(summary = "Delete an image", description = "Delete an image by its ID")
-    public ResponseEntity<?> deleteImage(@PathVariable Long imageId) {
+    public ResponseEntity<Object> deleteImage(@PathVariable Long imageId) {
         try {
             imageService.deleteImage(imageId);
             return ResponseEntity.ok().build();

@@ -6,6 +6,7 @@ import com.example.lostnfound.service.user.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -25,20 +26,19 @@ public class EmailVerificationController {
     }
 
     @GetMapping("/verifyEmail")
-    public RedirectView verifyUser(@RequestParam String token, RedirectAttributes redirectAttributes) throws InvalidTokenException {
+    public RedirectView verifyUser(@RequestParam String token, RedirectAttributes redirectAttributes) {
         String RedirectUrl = baseUrl + "/login";
 
         if(StringUtils.isEmpty(token)) {
             redirectAttributes.addFlashAttribute("tokenError", "Invalid token - token is empty");
-            //redirect to login page
+            //redirect to error page
             return new RedirectView("https://i.ibb.co.com/TDsrxVqr/9s8pju.jpg");
         }
         try {
             userService.verifyUser(token);
-        } catch (InvalidTokenException e) {
-            throw new InvalidTokenException("Token is invalid or expired");
-        } catch (UserNotFoundException e) {
-	        throw new RuntimeException(e);
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("tokenError", e.getMessage());
+            return new RedirectView("https://i.ibb.co.com/TDsrxVqr/9s8pju.jpg");
         }
 	    redirectAttributes.addFlashAttribute("message", "User successfully verified");
         return new RedirectView(RedirectUrl);

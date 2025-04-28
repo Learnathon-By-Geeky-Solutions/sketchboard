@@ -24,7 +24,7 @@ public class CommentService {
     public List<CommentDto> getAllCommentDtos() {
         return commentRepo.findAll().stream()
                 .map(comment -> new CommentDto(comment.getId(), comment.getContent(), comment.getUser().getUserId(), comment.getPost().getId() , comment.getCreatedAt()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public CommentDto getCommentDtoById(Long id) {
