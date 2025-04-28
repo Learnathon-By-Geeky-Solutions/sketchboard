@@ -1,4 +1,4 @@
-package com.example.lostnfound.service.AI.Embedding;
+package com.example.lostnfound.service.ai.embedding;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.genai.Client;
 import lombok.Data;
