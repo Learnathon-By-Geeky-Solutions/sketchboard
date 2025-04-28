@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository
-public interface PostRepo extends JpaRepository<Post, Integer>{
+public interface PostRepo extends JpaRepository<Post, Long>{
     @Query(value = "SELECT * FROM post " +
                "WHERE (title || ' ' || description || ' ' || location || ' ' || category || ' ' || status) " +
                "ILIKE CONCAT('%', :searchTerm, '%')", nativeQuery = true)
@@ -22,4 +22,4 @@ public interface PostRepo extends JpaRepository<Post, Integer>{
     @Query(value = "SELECT * FROM post ORDER BY embedding <=> CAST(:queryEmbedding AS vector) LIMIT :topK", nativeQuery = true)
     List<Post> findTopKSimilarPosts(@Param("queryEmbedding") float[] queryEmbedding, @Param("topK") Long topK);
 
-}  
+}

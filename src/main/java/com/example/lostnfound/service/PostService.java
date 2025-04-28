@@ -10,6 +10,9 @@ import com.example.lostnfound.exception.UserNotFoundException;
 import com.example.lostnfound.model.User;
 import com.example.lostnfound.service.ai.embedding.EmbeddingService;
 import com.example.lostnfound.service.user.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.example.lostnfound.model.Post;
@@ -47,12 +50,12 @@ public class PostService {
     }
 
     public Page<Post> getPostsWithPagination(int pageNo, int pageSize) {
-        return postRepo.findAll(PageRequest.of(offset, pageSize).withSort(Sort.by(id)));
+        return postRepo.findAll(PageRequest.of(pageNo, pageSize).withSort(Sort.by("id")));
     }
 
     public Post getPost(Long id) throws UserNotFoundException {
         User currentUser = userService.getCurrentUser();
-        Post post = postRepo.findById(Math.toIntExact(id))
+        Post post = postRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
         currentUser.addInteraction(post.getEmbedding(), 1);
         return post;
