@@ -93,7 +93,7 @@ public class EmbeddingService {
     }
 
     public float[] getEmbeddingClipLocal(String input, int isImage) throws IOException, InterruptedException {
-        String url = "http://0.0.0.0:3000/encode";
+        String url = "http://slave2:3000/encode";
 
         String reqBody = "";
         if(isImage == 1){
