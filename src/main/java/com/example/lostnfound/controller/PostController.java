@@ -85,6 +85,25 @@ public class PostController {
         }
     }
 
+    @GetMapping("posts/{page}/{ofset}")
+    @Operation(summary = "Get paginated posts", description = "Retrieves paginated posts")
+    public ResponseEntity<Object> getPosts(@PathVariable("page") int page, @PathVariable("ofset") int ofset) {
+        try {
+            Page<Post> posts = postService.getPostsWithPagination(page, ofset);
+            Page<PostDto> postDtos = new ArrayList<>();
+            for (Post post : posts) {
+                PostDto dto = modelMapper.map(post, PostDto.class);
+                if (post.getImage() != null) {
+                    dto.setImageId(post.getImage().getId());
+                }
+                postDtos.add(dto);
+            }
+            return new ResponseEntity<>(postDtos, HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
     @GetMapping("/posts/{id}")
     @Operation(summary = "Get post by id", description = "Retrieves post by id")
     public ResponseEntity<Object> getPost(@PathVariable("id") Long id) {
