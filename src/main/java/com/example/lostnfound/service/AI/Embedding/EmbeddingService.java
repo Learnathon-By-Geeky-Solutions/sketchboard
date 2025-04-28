@@ -92,8 +92,11 @@ public class EmbeddingService {
         }
     }
 
+    @Value("${ai.baseUrl}")
+    String aiLabUrl;
+
     public float[] getEmbeddingClipLocal(String input, int isImage) throws IOException, InterruptedException {
-        String url = "http://slave2:3000/encode";
+        String url = aiLabUrl + "/encode";
 
         String reqBody = "";
         if(isImage == 1){
@@ -117,7 +120,7 @@ public class EmbeddingService {
         }
         System.out.println("Request body: " + reqBody);
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
+                .uri(URI.create(String.valueOf(url)))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(reqBody))
                 .build();

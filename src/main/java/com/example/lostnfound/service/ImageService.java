@@ -15,6 +15,7 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -39,6 +40,12 @@ public class ImageService {
         }
     }
 
+    @Value("${app.baseUrl}")
+    private String baseUrl;
+    public String getImageUri(Long id) {
+        return baseUrl + "/images/" + id;
+    }
+
     public Image saveImage(MultipartFile file) throws IOException, InterruptedException {
         String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
         String uniqueFileName = System.currentTimeMillis() + "_" + fileName;
@@ -52,7 +59,8 @@ public class ImageService {
         image.setFileSize(file.getSize());
         image.setFilePath(targetLocation.toString());
         imageRepository.save(image);
-        image.setEmbedding(embeddingService.getEmbeddingImage(image.getImageUri()));
+        System.out.println("Image uri: " + getImageUri(image.getId()));
+        image.setEmbedding(embeddingService.getEmbeddingImage(getImageUri(image.getId())));
         imageRepository.save(image);
         return image;
     }
@@ -92,7 +100,24 @@ public class ImageService {
         return imageRepository.findAll();
 	}
 
+    float similarityScore(float[] embedding1, float[] embedding2) {
+        float score = 0;
+        for (int i = 0; i < embedding1.length; i++) {
+            score += (float) Math.pow(embedding1[i] - embedding2[i], 2);
+        }
+        return (float) Math.sqrt(score);
+    }
+
     public List<Image> findTopKSimilarImages(float[] queryEmbedding, Long topK) {
-        return imageRepository.findTopKSimilarPosts(queryEmbedding, topK);
+        System.out.println("Finding top K similar images...");
+        System.out.println("My embedding: " + Arrays.toString(queryEmbedding));
+        List<Image> temp = imageRepository.findTopKSimilarPosts(queryEmbedding, topK);
+        for(Image image : temp){
+            System.out.println("Image: " + image.getFileName());
+            //print first 10 elements of the embedding
+            System.out.println("Embedding: " + Arrays.toString(Arrays.copyOf(image.getEmbedding(), 10)));
+            System.out.println("Similarity score: " + similarityScore(queryEmbedding, image.getEmbedding()));
+        }
+        return temp;
     }
 }

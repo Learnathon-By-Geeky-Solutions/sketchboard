@@ -3,17 +3,21 @@ package com.example.lostnfound.controller;
 import com.example.lostnfound.exception.InvalidTokenException;
 import com.example.lostnfound.exception.UserNotFoundException;
 import com.example.lostnfound.service.user.UserService;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
-import org.thymeleaf.util.StringUtils;
+import org.springframework.util.StringUtils;
 
 @RestController
 public class EmailVerificationController {
 
-    private static final String RedirectUrl = "http://lostnfoundbd.duckdns.org/login";
+    @Value("${app.frontend.url}")
+    String baseUrl;
+
     private final UserService userService;
 
     public EmailVerificationController(UserService userService) {
@@ -22,10 +26,12 @@ public class EmailVerificationController {
 
     @GetMapping("/verifyEmail")
     public RedirectView verifyUser(@RequestParam String token, RedirectAttributes redirectAttributes) throws InvalidTokenException {
+        String RedirectUrl = baseUrl + "/login";
+
         if(StringUtils.isEmpty(token)) {
             redirectAttributes.addFlashAttribute("tokenError", "Invalid token - token is empty");
             //redirect to login page
-            return new RedirectView(RedirectUrl);
+            return new RedirectView("https://i.ibb.co.com/TDsrxVqr/9s8pju.jpg");
         }
         try {
             userService.verifyUser(token);

@@ -61,7 +61,7 @@ public class DataLoader implements CommandLineRunner {
             user.setAddress(faker.address().fullAddress());
             user.setRole(Role.values()[faker.number().numberBetween(0, Role.values().length)]);
             user.setDepartment(faker.company().profession());
-            user.setEmbedding(new float[512]);
+            user.setEmbedding(new float[1024]);
 
 
             try {
