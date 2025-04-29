@@ -1,6 +1,6 @@
 # Sketchboard
 
-## 📋 Table of Contents
+
 ## 📋 Table of Contents
 
 - [Team Members](#team-members)
@@ -34,7 +34,7 @@
 Sketchboard is the team name for our project, Lost and Found. This project aims to create a platform where users can report lost items and search for found items. It helps in connecting people who have lost their belongings with those who have found them, making the process of recovering lost items more efficient and organized.
 
 ## Live Demo
-<a href="https://lostnfoundbd.duckdns.org/" title="Live Demo">
+<a href="http://lostnfoundbd.duckdns.org/" title="Live Demo">
   <img src="https://imgs.search.brave.com/cBG_utGw1E4d3AK61O-BD3O9TWSP1dM5ZRl6Mhal7iE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/cHJvZC53ZWJzaXRl/LWZpbGVzLmNvbS81/ZTBhNWQ5ZDc0MzYw/OGQwZjNlYTY3NTMv/NjVmYzQ1YzVmMWZh/MjE2MmZhNzE1Yjkx/X19PcGVuJTIwTGlu/a18uc3Zn" width="24" /> Visit
 </a>
 
