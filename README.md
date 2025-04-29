@@ -1,6 +1,6 @@
 # Sketchboard
 
-## 📋 Table of Contents
+
 ## 📋 Table of Contents
 
 - [Team Members](#team-members)
