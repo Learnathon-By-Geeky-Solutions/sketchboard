@@ -29,7 +29,7 @@ public class User{
 
     @Column
     @JdbcTypeCode(SqlTypes.VECTOR)
-    @Array(length = 3072) // dimensions
+    @Array(length = 1024) // dimensions
     private float[] embedding;
 
     @Column(name = "name", nullable = false)
@@ -52,8 +52,7 @@ public class User{
     private Role role;
 
     // for Email Verification
-    private boolean accountVerified;
-    private boolean loginDisabled;
+    private boolean accountVerified = true;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<SecureToken> token;

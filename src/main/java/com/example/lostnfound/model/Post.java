@@ -29,7 +29,7 @@ public class Post {
 
     @Column
     @JdbcTypeCode(SqlTypes.VECTOR)
-    @Array(length = 3072) // dimensions
+    @Array(length = 1024) // dimensions
     private float[] embedding;
 
     @Column(name = "title",nullable = false, columnDefinition = "varchar(255)")
@@ -86,16 +86,16 @@ public class Post {
     @Column(name = "user_name", nullable = false)
     private String userName;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "image_id")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "image_id", referencedColumnName = "id")
     private Image image;
 
     public String infoForEmbedding(){
-        String title5x = title + " " + title + " " + title + " " + title + " " + title;
-        StringBuilder category10x = new StringBuilder();
-        for (int i = 0; i < 10; i++) {
-            category10x.append(category).append(" ");
+        String title5x = title + " " + title + " " + title;
+        StringBuilder category2x = new StringBuilder();
+        for (int i = 0; i < 2; i++) {
+            category2x.append(category).append(" ");
         }
-        return title5x + " " + description + " " + title5x + " " + location + " " + category10x;
+        return title5x + " " + location + " " + category2x;
     }
 }

@@ -73,6 +73,7 @@ public class PostService {
     }
 
     public void updatePost(Long id, Post post) {
+
         Post postToUpdate = postRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
     

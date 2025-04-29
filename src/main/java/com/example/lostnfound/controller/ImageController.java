@@ -1,9 +1,12 @@
 package com.example.lostnfound.controller;
 
+import com.example.lostnfound.dto.PostDto;
 import com.example.lostnfound.model.Image;
+import com.example.lostnfound.model.Post;
 import com.example.lostnfound.service.ImageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.modelmapper.ModelMapper;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -19,10 +23,12 @@ import java.util.List;
 @Tag(name = "Image APIs", description = "REST APIs for image operations")
 public class ImageController {
     private final ImageService imageService;
+    private final ModelMapper modelMapper;
 
-    public ImageController(ImageService imageService) {
+	public ImageController(ImageService imageService, ModelMapper modelMapper, ModelMapper modelMapper1) {
         this.imageService = imageService;
-    }
+		this.modelMapper = modelMapper1;
+	}
 
     @GetMapping
     @Operation(summary = "Get all images", description = "Get a list of all images")
@@ -41,7 +47,7 @@ public class ImageController {
         try {
             Image savedImage = imageService.saveImage(file);
             return ResponseEntity.ok(savedImage);
-        } catch (IOException e) {
+        } catch (Exception e) {
             return ResponseEntity.status(500).body("Error uploading image: " + e.getMessage());
         }
     }
@@ -64,7 +70,7 @@ public class ImageController {
                     .contentType(MediaType.parseMediaType(mimeType))
                     .header(HttpHeaders.CONTENT_DISPOSITION, "inline")
                     .body(resource);
-        } catch (IOException e) {
+        } catch (Exception e) {
             return ResponseEntity.status(500).body("Error retrieving image: " + e.getMessage());
         }
     }
@@ -77,6 +83,29 @@ public class ImageController {
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error deleting image: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/search")
+    @Operation(summary = "Search images", description = "Search for images based on a query")
+    public ResponseEntity<?> searchImages(@RequestParam("file") MultipartFile file){
+        try {
+//            System.out.println("Searching for similar images...");
+            Image savedImage = imageService.saveImage(file);
+            float [] queryEmbedding = savedImage.getEmbedding();
+            System.out.println("Query embedding: " + Arrays.toString(queryEmbedding));
+            imageService.deleteImage(savedImage.getId());
+
+            List<Image> images = imageService.findTopKSimilarImages(queryEmbedding, 10L);
+            List<PostDto> posts = new java.util.ArrayList<>(List.of());
+            for (Image image : images) {
+                if(image.getPost() != null){
+                    posts.add(modelMapper.map(image.getPost(), PostDto.class));
+                }
+            }
+            return ResponseEntity.ok(posts);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error searching images: " + e.getMessage());
         }
     }
 }
