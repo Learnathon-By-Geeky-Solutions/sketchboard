@@ -25,7 +25,6 @@ public class UserAccountService {
     private final SecureTokenService secureTokenService;
     private final EmailService emailService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private Logger logger = Logger.getLogger(UserAccountService.class.getName());
 
     public UserAccountService(UserService userService, SecureTokenService secureTokenService, EmailService emailService, UserRepo userRepo, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userService = userService;
@@ -35,7 +34,7 @@ public class UserAccountService {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
-    public void forgotPassword(String email) throws UnknownIdentifierException, UserNotFoundException {
+    public void forgotPassword(String email) throws UserNotFoundException {
         User user = userService.findByEmail(email);
         sendResetPasswordEmail(user);
     }
@@ -49,13 +48,12 @@ public class UserAccountService {
         if (user.isEmpty()) {
             throw new UnknownIdentifierException("User not found for this token.");
         }
-        logger.info("User found for token: " + user.get().getEmail());
         secureTokenService.removeToken(secureToken); // Remove token after use
         user.get().setPassword(bCryptPasswordEncoder.encode(password));
         userRepo.save(user.get());
     }
 
-    protected void sendResetPasswordEmail(User user) throws UnknownIdentifierException {
+    protected void sendResetPasswordEmail(User user) {
         SecureToken secureToken = secureTokenService.createToken(user);
     
         // Optional: Only set user if not already set in createToken

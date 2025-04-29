@@ -39,7 +39,7 @@ public class PasswordController {
             }
             userAccountService.forgotPassword(email);
             return ResponseEntity.status(HttpStatus.OK).body("Reset email sent to " + email);
-        } catch (UnknownIdentifierException | UserNotFoundException e) {
+        } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }

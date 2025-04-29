@@ -20,6 +20,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @Service
 public class ImageService {
@@ -49,14 +50,19 @@ public class ImageService {
     }
 
     public Image saveImage(MultipartFile file) throws IOException, InterruptedException {
-        String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
-        String uniqueFileName = System.currentTimeMillis() + "_" + fileName;
-        Path targetLocation = uploadPath.resolve(uniqueFileName);
+        String originalName = Objects.requireNonNull(file.getOriginalFilename());
+        String extension = "";
+        int dotIndex = originalName.lastIndexOf('.');
+        if (dotIndex >= 0) {
+            extension = originalName.substring(dotIndex);
+        }
+        String uniqueFileName = System.currentTimeMillis() + "_" + UUID.randomUUID() + extension;
 
+        Path targetLocation = uploadPath.resolve(uniqueFileName);
         Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
         Image image = new Image();
-        image.setFileName(fileName);
+        image.setFileName(uniqueFileName);
         image.setContentType(file.getContentType());
         image.setFileSize(file.getSize());
         image.setFilePath(targetLocation.toString());

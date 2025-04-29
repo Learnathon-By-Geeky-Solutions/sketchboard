@@ -25,7 +25,6 @@ import com.example.lostnfound.dto.UserDto;
 import com.example.lostnfound.exception.PostNotFoundException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +53,7 @@ public class UserService {
         userRepo.save(user);
     }
 
-    public void register(User user) throws Exception {
+    public void register(User user) throws EmailSendException, UserNotFoundException, MessagingException {
         if(userRepo.findByEmail(user.getEmail()) != null) {
             throw new UserNotFoundException("User already exists with email: " + user.getEmail() + "\n");
         }
@@ -128,7 +127,6 @@ public class UserService {
         try {
             emailService.sendEmail(context);
         } catch (MessagingException e) {
-            logger.error("Failed to send registration email", e);
             throw new EmailSendException("Could not send email. Please try again later.", e);
         }
         
