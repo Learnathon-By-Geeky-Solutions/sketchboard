@@ -1,4 +1,4 @@
-package com.example.lostnfound.service.ai.GeminiChat;
+package com.example.lostnfound.service.ai.geminichat;
 
 import com.example.lostnfound.exception.GeminiInitializationException;
 import com.google.genai.Client;

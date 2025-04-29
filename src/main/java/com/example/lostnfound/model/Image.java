@@ -8,7 +8,6 @@ import lombok.Setter;
 import org.hibernate.annotations.Array;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDateTime;
 

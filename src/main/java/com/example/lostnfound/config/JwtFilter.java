@@ -2,8 +2,6 @@ package com.example.lostnfound.config;
 
 import java.io.IOException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,7 +11,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import com.example.lostnfound.service.user.JWTService;
 import com.example.lostnfound.service.user.MyUserService;
-import com.example.lostnfound.service.user.UserService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -26,7 +23,6 @@ import javax.annotation.Nonnull;
 public class JwtFilter extends OncePerRequestFilter {
     private final JWTService jwtService;
     private final ApplicationContext context;
-    Logger logger = LoggerFactory.getLogger(UserService.class);
     public JwtFilter(JWTService jwtService, ApplicationContext context) {
         this.jwtService = jwtService;
         this.context = context;
@@ -40,7 +36,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
-            logger.info("Extracted token: {}", token);
             email = jwtService.extractEmail(token);
         }
 

@@ -1,10 +1,8 @@
 package com.example.lostnfound.controller;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import com.example.lostnfound.exception.UserNotFoundException;
 import com.example.lostnfound.model.Image;
@@ -36,7 +34,7 @@ public class PostController {
     private final ObjectMapper objectMapper;
     private final ImageRepository imageRepository;
 
-    PostController(PostService postService, UserService userService, ImageService imageService, ObjectMapper objectMapper, ImageRepository imageRepository, ImageRepository imageRepository1) {
+    PostController(PostService postService, UserService userService, ImageService imageService, ObjectMapper objectMapper, ImageRepository imageRepository1) {
         this.postService = postService;
         this.userService = userService;
         this.imageService = imageService;
@@ -47,8 +45,8 @@ public class PostController {
 
     @PostMapping(value = "/posts", consumes = {"multipart/form-data"})
     @Operation(summary = "Create a post", description = "Creates a new post with optional image")
-    public ResponseEntity<Object> handlePost(@RequestParam(value = "postDto", required = true) String postDtoJson,
-                                      @RequestParam(value = "image", required = false) MultipartFile image) throws IOException, InterruptedException {
+    public ResponseEntity<Object> handlePost(@RequestParam(value = "postDto") String postDtoJson,
+                                      @RequestParam(value = "image", required = false) MultipartFile image) {
         try {
             PostDto postDto = objectMapper.readValue(postDtoJson, PostDto.class);
 
@@ -68,6 +66,9 @@ public class PostController {
                 responseDto.setImageId(newPost.getImage().getId());
             }
             return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+        }catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Process was interrupted");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
@@ -104,7 +105,7 @@ public class PostController {
                     dto.setImageId(post.getImage().getId());
                 }
                 return dto;
-            }).collect(Collectors.toList());
+            }).toList();
 
             // Optionally wrap in a Page object if needed
             Page<PostDto> dtoPage = new PageImpl<>(postDtos, posts.getPageable(), posts.getTotalElements());
@@ -165,6 +166,9 @@ public class PostController {
                 responseDto.setImageId(updatedPost.getImage().getId());
             }
             return new ResponseEntity<>(responseDto, HttpStatus.OK);
+        }catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Process was interrupted");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }

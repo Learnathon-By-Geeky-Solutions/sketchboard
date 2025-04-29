@@ -17,35 +17,35 @@ public class PostDto {
     private Long id;
 
     @NotEmpty
-    @Schema(description = "Title of the Post.", example = "Lost Phone", required = true)
+    @Schema(description = "Title of the Post.", example = "Lost Phone")
     private String title;
 
     @NotEmpty
-    @Schema(description = "Description of the Post.", example = "I lost my phone in the library", required = true)
+    @Schema(description = "Description of the Post.", example = "I lost my phone in the library")
     private String description;
 
     @NotEmpty
-    @Schema(description = "Location of the Post.", example = "Library", required = true)
+    @Schema(description = "Location of the Post.", example = "Library")
     private String location;
 
     @NotEmpty
-    @Schema(description = "Date of the Post.", example = "2021-12-31", required = true)
+    @Schema(description = "Date of the Post.", example = "2021-12-31")
     private LocalDate date;
 
     @NotEmpty
-    @Schema(description = "Time of the Post.", example = "12:00", required = true)
+    @Schema(description = "Time of the Post.", example = "12:00")
     private LocalTime time;
 
     @NotEmpty
-    @Schema(description = "Category of the Post.", example = "ELECTRONICS", required = true)
+    @Schema(description = "Category of the Post.", example = "ELECTRONICS")
     private Category category;
 
     @NotEmpty
-    @Schema(description = "Status of the Post.", example = "LOST", required = true)
+    @Schema(description = "Status of the Post.", example = "LOST")
     private Status status;
 
     @Min(1)
-    @Schema(description = "Range of the Post.", example = "10", required = true)
+    @Schema(description = "Range of the Post.", example = "10")
     private int range;
 
     @Schema(description = "User Id of the Post.", example = "1")

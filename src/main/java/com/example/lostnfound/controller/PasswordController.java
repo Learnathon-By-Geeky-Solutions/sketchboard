@@ -28,7 +28,7 @@ public class PasswordController {
 
     @PostMapping("/forgotPassword")
     @Operation(summary = "Forgot Password", description = "Send a reset password email to the user")
-    public ResponseEntity<Object> forgotPassword(@RequestParam String email) throws UnknownIdentifierException {
+    public ResponseEntity<Object> forgotPassword(@RequestParam String email) {
         if (email == null || email.isBlank() ||  !CodeUtils.EMAIL_PATTERN.matcher(email).matches()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid email format");
         }
@@ -46,7 +46,7 @@ public class PasswordController {
 
     @PostMapping("/reset-password")
     @Operation(summary = "Reset Password", description = "Reset the password using the token")
-    public ResponseEntity<Object> updatePassword(@RequestParam String token, @RequestParam String password) throws InvalidTokenException, UnknownIdentifierException {
+    public ResponseEntity<Object> updatePassword(@RequestParam String token, @RequestParam String password) throws UnknownIdentifierException {
         try {
             userAccountService.updatePassword(password, token);
             return ResponseEntity.status(HttpStatus.OK).body("Password updated successfully");

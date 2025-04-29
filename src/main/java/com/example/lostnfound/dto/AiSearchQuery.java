@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class AiSearchQuery {
     @NotEmpty
-    @Schema(description = "Query for AI Search.", example = "I lost my phone in the library", required = true)
+    @Schema(description = "Query for AI Search.", example = "I lost my phone in the library")
     String query;
 
     @Schema(description = "Limit of the AI Search.", example = "10")

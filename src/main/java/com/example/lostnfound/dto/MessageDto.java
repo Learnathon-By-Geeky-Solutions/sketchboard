@@ -11,14 +11,14 @@ public class MessageDto {
 	@Schema(description = "Id of the Message.", example = "1")
 	private Long id;
 
-	@Schema(description = "Sender Id of the Message.", example = "1", required = true)
+	@Schema(description = "Sender Id of the Message.", example = "1")
 	private Long senderId;
 	@Schema(description = "Sender Name of the Message.", example = "John Doe")
 	private String senderName;
 	@Schema(description = "Sender Email of the Message.", example = "johnDoe@gmail.com")
 	private String senderEmail;
 
-	@Schema(description = "Receiver Id of the Message.", example = "1", required = true)
+	@Schema(description = "Receiver Id of the Message.", example = "1")
 	private Long receiverId;
 	@Schema(description = "Receiver Name of the Message.", example = "Jane Doe")
 	private String receiverName;

@@ -4,8 +4,8 @@ import com.example.lostnfound.dto.PostDto;
 import com.example.lostnfound.dto.AiSearchQuery;
 import com.example.lostnfound.model.Post;
 import com.example.lostnfound.service.PostService;
-import com.example.lostnfound.service.ai.GeminiChat.GeminiResponse;
-import com.example.lostnfound.service.ai.GeminiChat.QueryExecutor;
+import com.example.lostnfound.service.ai.geminichat.GeminiResponse;
+import com.example.lostnfound.service.ai.geminichat.QueryExecutor;
 import com.example.lostnfound.service.ai.embedding.EmbeddingService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,8 +15,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @RestController
 @Tag(name = "AI Search APIs", description = "REST APIs related to AI search for searching posts using AI.")
@@ -41,10 +43,14 @@ public class AISearchController {
                 try {
                         String response = geminiResponse.getResponse(query);
                         ResponseEntity<List<Post>> result = queryExecutor.executeAISearch(response);
-                        List<PostDto> postDtos = result.getBody().stream()
-                                .map(post -> modelMapper.map(post, PostDto.class))
-                                .toList();
-                        return new ResponseEntity<>(postDtos, result.getStatusCode());
+                        List<PostDto> postDtos = Optional.ofNullable(result)
+                                .map(ResponseEntity::getBody)
+                                .map(body -> body.stream()
+                                        .map(post -> modelMapper.map(post, PostDto.class))
+                                        .toList())
+                                .orElse(Collections.emptyList());
+                    assert result != null;
+                    return new ResponseEntity<>(postDtos, result.getStatusCode());
                 } catch (Exception e) {
                         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
                 }
@@ -56,6 +62,9 @@ public class AISearchController {
                 try {
                         float[] embedding = embeddingService.getEmbedding(input);
                         return new ResponseEntity<>(embedding, HttpStatus.OK);
+                }catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Process was interrupted");
                 } catch (Exception e) {
                         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
                 }
@@ -71,6 +80,9 @@ public class AISearchController {
                                 .map(post -> modelMapper.map(post, PostDto.class))
                                 .toList();
                         return new ResponseEntity<>(postDtos, HttpStatus.OK);
+                }catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Process was interrupted");
                 } catch (Exception e) {
                         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
                 }

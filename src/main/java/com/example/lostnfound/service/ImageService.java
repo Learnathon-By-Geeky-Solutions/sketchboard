@@ -18,7 +18,6 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -62,7 +61,6 @@ public class ImageService {
         image.setFileSize(file.getSize());
         image.setFilePath(targetLocation.toString());
         imageRepository.save(image);
-        System.out.println("Image uri: " + getImageUri(image.getId()));
         image.setEmbedding(embeddingService.getEmbeddingImage(getImageUri(image.getId())));
         imageRepository.save(image);
         return image;
@@ -110,15 +108,6 @@ public class ImageService {
     }
 
     public List<Image> findTopKSimilarImages(float[] queryEmbedding, Long topK) {
-        System.out.println("Finding top K similar images...");
-        System.out.println("My embedding: " + Arrays.toString(queryEmbedding));
-        List<Image> temp = imageRepository.findTopKSimilarPosts(queryEmbedding, topK);
-        for(Image image : temp){
-            System.out.println("Image: " + image.getFileName());
-            //print first 10 elements of the embedding
-            System.out.println("Embedding: " + Arrays.toString(Arrays.copyOf(image.getEmbedding(), 10)));
-            System.out.println("Similarity score: " + similarityScore(queryEmbedding, image.getEmbedding()));
-        }
-        return temp;
+	    return imageRepository.findTopKSimilarPosts(queryEmbedding, topK);
     }
 }

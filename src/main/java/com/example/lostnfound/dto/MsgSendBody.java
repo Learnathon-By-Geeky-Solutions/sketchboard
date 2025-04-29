@@ -11,10 +11,10 @@ public class MsgSendBody {
     private Long id;
 
     @NotEmpty
-    @Schema(description = "Sender Id of the Message.", example = "1", required = true)
+    @Schema(description = "Sender Id of the Message.", example = "1")
     private Long receiverId;
 
     @NotNull
-    @Schema(description = "Content Id of the Message.", example = "is this available", required = true)
+    @Schema(description = "Content Id of the Message.", example = "is this available")
     String content;
 }

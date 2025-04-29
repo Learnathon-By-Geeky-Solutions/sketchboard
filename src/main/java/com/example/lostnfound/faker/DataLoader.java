@@ -6,7 +6,7 @@ import com.example.lostnfound.model.Post;
 import com.example.lostnfound.repository.PostRepo;
 import com.example.lostnfound.repository.UserRepo;
 import com.example.lostnfound.service.PostService;
-import com.example.lostnfound.service.ai.GeminiChat.GeminiResponse;
+import com.example.lostnfound.service.ai.geminichat.GeminiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
 import org.springframework.boot.CommandLineRunner;
@@ -28,7 +28,6 @@ public class DataLoader implements CommandLineRunner {
     private final GeminiResponse myGemini;
     private final ObjectMapper objectMapper;
     private final PostService postService;
-    private Logger logger = LoggerFactory.getLogger(DataLoader.class);
 
     DataLoader(PostRepo postRepository, UserRepo userRepo, GeminiResponse myGemini, ObjectMapper objectMapper, PostService postService) {
         this.postRepository = postRepository;
@@ -94,7 +93,7 @@ public class DataLoader implements CommandLineRunner {
                     }
                     
                     Give Random instance example in DICTIONARY format. Make the description realistic and very descriptive.
-                    Have the location from Bangladesh. 
+                    Have the location from Bangladesh.
                     
                     Strict RULE: NO EXTRA TEXT. MUST USE DOUBLE QUOTES. NO SINGLE QUOTES.
                     
@@ -120,7 +119,9 @@ public class DataLoader implements CommandLineRunner {
             response = rb.toString();
             Post post = objectMapper.readValue(response, Post.class);
             post.setUserId(faker.number().numberBetween(1, userRepo.count() + 1));
-            post.setUserName(userRepo.findById(post.getUserId()).get().getName());
+            post.setUserName(userRepo.findById(post.getUserId())
+                    .map(User::getName)
+                    .orElse("Unknown User"));
             try {
                 postService.savePost(post);
                 logger.info("Generated post {}/{}", i + 1, extraPostNeed);
@@ -128,7 +129,6 @@ public class DataLoader implements CommandLineRunner {
                 Thread.sleep(5000);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                logger.error("Thread was interrupted, Failed to complete operation");
             } catch (Exception e) {
                 logger.error("Failed to save post  {}: {}", i + 1, e.getMessage());
             }

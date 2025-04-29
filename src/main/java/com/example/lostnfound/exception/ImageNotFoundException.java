@@ -5,7 +5,4 @@ public class ImageNotFoundException extends RuntimeException {
         super(message);
     }
 
-    public ImageNotFoundException(String message, Throwable cause) {
-        super(message, cause);
-    }
 }

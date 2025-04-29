@@ -16,7 +16,8 @@ import java.net.http.HttpResponse;
 @Data
 @Slf4j
 public class EmbeddingService {
-
+    private static final String CONTENT_TYPE = "Content-Type";
+    private static final String APPLICATION_JSON = "application/json";
     // Make http request
     @Value("${HF_TOKEN}")
     private String huggingfaceToken;
@@ -24,71 +25,51 @@ public class EmbeddingService {
 
     public float[] getEmbeddingHuggingFace(String input) throws IOException, InterruptedException {
         String url = "https://api-inference.huggingface.co/pipeline/feature-extraction/sentence-transformers/all-MiniLM-L6-v2";
-        System.out.println("Token: " + huggingfaceToken);
 
         //this regex removes all special characters except for spaces
-        String reqBody = "{\"inputs\": \"" + input + "\"}";
-        System.out.println("Request body: " + reqBody);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .header("Authorization", "Bearer " + huggingfaceToken)
-                .headers("Content-Type", "application/json")
+                .headers(CONTENT_TYPE, APPLICATION_JSON)
                 .POST(HttpRequest.BodyPublishers.ofString("(\"{\\\"inputs\\\": \\\"\"" + input + "\"\\\"}\")"))
                 .build();
 
         // Get response
-        HttpClient httpClient = HttpClient.newHttpClient();
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        try {
-            return objectMapper.readValue(response.body(), float[].class);
-        } catch (Exception e) {
-            System.out.println("Error + " + e.getMessage());
-            System.out.println("Response: " + response.body());
-        }
-        return null;
+	    try (HttpClient httpClient = HttpClient.newHttpClient()) {
+		    HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+		    return objectMapper.readValue(response.body(), float[].class);
+	    }
     }
 
     private Client client;
     @Value("${gemini.api.key}")
     private char[] geminiApiKey;
-    @Value("gemini-embedding-exp-03-07")
-    private String modelId;
+    private String modelId = "gemini-embedding-exp-03-07";
 
-    /*
-        curl "https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:embedContent?key=$GEMINI_API_KEY" \
--H 'Content-Type: application/json' \
--d '{"model": "models/gemini-embedding-exp-03-07",
-     "content": {
-     "parts":[{
-     "text": "What is the meaning of life?"}]}
-    }'
-     */
 
     public float[] getEmbeddingGemini(String input) {
         String url = "https://generativelanguage.googleapis.com/v1beta/models/" + modelId + ":embedContent?key=" + new String(geminiApiKey);
         String reqBody = "{\"model\": \"models/" + modelId + "\", \"content\": {\"parts\":[{\"text\": \"" + input + "\"}]}}";
-        System.out.println("Request body: " + reqBody);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
-                .header("Content-Type", "application/json")
+                .header(CONTENT_TYPE, APPLICATION_JSON)
                 .POST(HttpRequest.BodyPublishers.ofString(reqBody))
                 .build();
 
         HttpClient httpClient = HttpClient.newHttpClient();
         try {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            System.out.println("Response json structure: " + response.body());
             JsonNode root = objectMapper.readTree(response.body());
             JsonNode value= root.path("embedding").path("values");
             return objectMapper.treeToValue(value, float[].class);
         } catch (IOException e) {
-            log.error("Error: " + e.getMessage(), e);
-            return null;
+	        log.error("Error: {}", e.getMessage(), e);
+            return new float[0];
         } catch (InterruptedException e) {
-            log.error("Error: " + e.getMessage(), e);
+	        log.error("Error: {}", e.getMessage(), e);
             Thread.currentThread().interrupt(); // Re-interrupt the thread
-            return null;
+            return new float[0];
         }
     }
 
@@ -98,42 +79,22 @@ public class EmbeddingService {
     public float[] getEmbeddingClipLocal(String input, int isImage) throws IOException, InterruptedException {
         String url = aiLabUrl + "/encode";
 
-        String reqBody = "";
+        String reqBody;
         if(isImage == 1){
-            /* sample req body
-                [
-                    {
-                    "img_uri": "http://localhost:8080/images/3"
-                    }
-                ]
-             */
             reqBody = "[{\"img_uri\": \"" + input + "\"}]";
         }else{
-            /* sample req body
-                [
-                    {
-                    "text": "What is the meaning of life?"
-                    }
-                ]
-             */
             reqBody = "[{\"text\": \"" + input + "\"}]";
         }
-        System.out.println("Request body: " + reqBody);
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(String.valueOf(url)))
-                .header("Content-Type", "application/json")
+                .uri(URI.create(url))
+                .header(CONTENT_TYPE, APPLICATION_JSON)
                 .POST(HttpRequest.BodyPublishers.ofString(reqBody))
                 .build();
 
-        HttpClient httpClient = HttpClient.newHttpClient();
-        try{
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            System.out.println("Response json structure: " + response.body());
-            return objectMapper.readValue(response.body(), float[][].class)[0];
-        } catch (Exception e) {
-            System.out.println("Error + " + e.getMessage());
-            throw e;
-        }
+	    try (HttpClient httpClient = HttpClient.newHttpClient()) {
+		    HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+		    return objectMapper.readValue(response.body(), float[][].class)[0];
+	    }
     }
 
     public float[] getEmbedding(String input) throws IOException, InterruptedException {

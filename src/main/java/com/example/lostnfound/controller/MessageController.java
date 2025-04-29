@@ -3,13 +3,14 @@ package com.example.lostnfound.controller;
 import com.example.lostnfound.dto.MessageDto;
 import com.example.lostnfound.dto.MsgSendBody;
 import com.example.lostnfound.enums.MessageReadStatus;
+import com.example.lostnfound.exception.MessageReadErrorException;
+import com.example.lostnfound.exception.UserNotFoundException;
 import com.example.lostnfound.model.Message;
 import com.example.lostnfound.model.User;
 import com.example.lostnfound.service.MessageService;
 import com.example.lostnfound.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +28,7 @@ public class MessageController {
     private final UserService userService;
     private  final MessageService messageService;
 
-	public MessageController(UserService userService, MessageService messageService, ModelMapper modelMapper) {
+	public MessageController(UserService userService, MessageService messageService) {
         this.userService = userService;
         this.messageService = messageService;
 	}
@@ -41,7 +42,6 @@ public class MessageController {
             if (sender.getUserId().equals(receiver.getUserId())) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cannot send message to self");
             }
-            System.out.println("I am here");
             Message newMessage = new Message();
             newMessage.setSenderId(sender.getUserId());
             newMessage.setReceiverId(msgPostBody.getReceiverId());
@@ -90,7 +90,7 @@ public class MessageController {
                 try {
                     return msgToMsgDto(message);
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    throw new MessageReadErrorException(e.getMessage());
                 }
             }).toList();
             return new ResponseEntity<>(mylist, HttpStatus.OK);
@@ -101,14 +101,14 @@ public class MessageController {
 
     @GetMapping("/getReceivedMessages")
     @Operation(summary = "Get received messages", description = "Retrieves received messages for user")
-    public ResponseEntity<Object> getReceivedMessages() throws Exception {
-        User user = userService.getCurrentUser();
+    public ResponseEntity<Object> getReceivedMessages() {
         try{
+            User user = userService.getCurrentUser();
             List<MessageDto> mylist = user.getReceivedMessages().stream().map(message -> {
                 try {
                     return msgToMsgDto(message);
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    throw new MessageReadErrorException(e.getMessage());
                 }
             }).toList();       
             return new ResponseEntity<>(mylist, HttpStatus.OK);
@@ -117,7 +117,7 @@ public class MessageController {
         }
     }
 
-    private MessageDto msgToMsgDto(Message message) throws Exception {
+    private MessageDto msgToMsgDto(Message message) throws UserNotFoundException{
         MessageDto messageDto = new MessageDto();
         messageDto.setId(message.getId());
         messageDto.setContent(message.getContent());

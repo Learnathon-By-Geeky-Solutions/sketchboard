@@ -25,7 +25,6 @@ public class PostService {
     private final UserService userService;
     private final ImageService imageService;
 
-    private Logger logger = Logger.getLogger(PostService.class.getName());
 
     PostService(PostRepo postRepo, EmbeddingService embeddingService, UserService userService, 
                ImageService imageService) {
@@ -37,7 +36,6 @@ public class PostService {
 
     public void savePost(Post post) throws IOException, InterruptedException, UserNotFoundException {
         float[] embedding = embeddingService.getEmbedding(post.infoForEmbedding());
-        logger.info("********EmbeddingSize: " + embedding.length);
         post.setEmbedding(embedding);
         User user = userService.findById(post.getUserId());
         user.addInteraction(embedding,3);
@@ -56,14 +54,14 @@ public class PostService {
     public Post getPost(Long id) throws UserNotFoundException {
         User currentUser = userService.getCurrentUser();
         Post post = postRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .orElseThrow(() -> new RuntimeException("[Get] Post not found for id: " + id));
         currentUser.addInteraction(post.getEmbedding(), 1);
         return post;
     }
 
     public void deletePost(Long id) {
         Post post = postRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .orElseThrow(() -> new RuntimeException("[Delete] Post not found for id: " + id));
         
         if (post.getImage() != null) {
             imageService.deleteImage(post.getImage().getId());
@@ -108,26 +106,11 @@ public class PostService {
         return postRepo.searchPosts(searchTerm);
     }
 
-    private float cosineSimilarity(float[] a, float[] b) {
-        float dotProduct = 0;
-        float normA = 0;
-        float normB = 0;
-        for (int i = 0; i < a.length; i++) {
-            dotProduct += a[i] * b[i];
-            normA += a[i] * a[i];
-            normB += b[i] * b[i];
-        }
-        return dotProduct / (float) (Math.sqrt(normA) * Math.sqrt(normB));
-    }
 
     public List<Post> findTopKSimilarPosts(float[] embed, Long topK) {
 
         Objects.requireNonNull(embed);
-        List<Post> res = postRepo.findTopKSimilarPosts(embed, topK);
-        for(Post post : res) {
-            logger.info(post.getId() + " => " + cosineSimilarity(embed, post.getEmbedding()));
-        }
-        return res;
+	    return postRepo.findTopKSimilarPosts(embed, topK);
     }
 
     public List<Post> getCustomizedPosts() throws UserNotFoundException {

@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -31,18 +32,21 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
     @Bean
-    public SecurityFilterChain securityFilterChain (HttpSecurity http,JwtFilter jwtFilter) throws Exception {
-        return http
-        .cors().configurationSource(corsConfigurationSource())
-        .and()
-        .csrf(customizer -> customizer.disable())
-        .authorizeHttpRequests(request->request
-        .requestMatchers("/","/register","/login","/swagger-ui.html", "/swagger-ui/**", "/verifyEmail", "/forgotPassword", "/reset-password" , "/v3/api-docs/**", "/images/**").permitAll()
-        .anyRequest().authenticated())
-        .httpBasic(Customizer.withDefaults())
-        .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .addFilterBefore(jwtFilter,UsernamePasswordAuthenticationFilter.class)
-        .build();
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtFilter jwtFilter) throws Exception {
+        http
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .csrf(AbstractHttpConfigurer::disable)
+            .authorizeHttpRequests(authorize -> authorize
+                    .requestMatchers("/", "/register", "/login", "/swagger-ui.html", "/swagger-ui/**",
+                            "/verifyEmail", "/forgotPassword", "/reset-password",
+                            "/v3/api-docs/**", "/images/**").permitAll()
+                    .anyRequest().authenticated()
+            )
+            .httpBasic(Customizer.withDefaults())
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
     }
 
     @Bean

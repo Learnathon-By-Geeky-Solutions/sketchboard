@@ -6,8 +6,6 @@ import lombok.*;
 import org.hibernate.annotations.Array;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 

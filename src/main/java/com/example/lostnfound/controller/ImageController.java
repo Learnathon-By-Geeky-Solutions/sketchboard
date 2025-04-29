@@ -2,20 +2,18 @@ package com.example.lostnfound.controller;
 
 import com.example.lostnfound.dto.PostDto;
 import com.example.lostnfound.model.Image;
-import com.example.lostnfound.model.Post;
 import com.example.lostnfound.service.ImageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.modelmapper.ModelMapper;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -25,9 +23,9 @@ public class ImageController {
     private final ImageService imageService;
     private final ModelMapper modelMapper;
 
-	public ImageController(ImageService imageService, ModelMapper modelMapper, ModelMapper modelMapper1) {
+	public ImageController(ImageService imageService, ModelMapper modelMapper) {
         this.imageService = imageService;
-		this.modelMapper = modelMapper1;
+		this.modelMapper = modelMapper;
 	}
 
     @GetMapping
@@ -47,6 +45,9 @@ public class ImageController {
         try {
             Image savedImage = imageService.saveImage(file);
             return ResponseEntity.ok(savedImage);
+        }catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Process was interrupted");
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error uploading image: " + e.getMessage());
         }
@@ -88,12 +89,10 @@ public class ImageController {
 
     @PostMapping("/search")
     @Operation(summary = "Search images", description = "Search for images based on a query")
-    public ResponseEntity<?> searchImages(@RequestParam("file") MultipartFile file){
+    public ResponseEntity<Object> searchImages(@RequestParam("file") MultipartFile file){
         try {
-//            System.out.println("Searching for similar images...");
             Image savedImage = imageService.saveImage(file);
             float [] queryEmbedding = savedImage.getEmbedding();
-            System.out.println("Query embedding: " + Arrays.toString(queryEmbedding));
             imageService.deleteImage(savedImage.getId());
 
             List<Image> images = imageService.findTopKSimilarImages(queryEmbedding, 10L);
@@ -104,6 +103,9 @@ public class ImageController {
                 }
             }
             return ResponseEntity.ok(posts);
+        }catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Process was interrupted");
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error searching images: " + e.getMessage());
         }

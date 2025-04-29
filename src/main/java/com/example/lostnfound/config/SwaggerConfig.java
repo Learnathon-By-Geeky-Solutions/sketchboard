@@ -11,11 +11,11 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 
 @Configuration
 public class SwaggerConfig {
-    private String bearerAuth="BearerAuth";
-    private String basicAuth="BasicAuth";
-    @Bean
+	@Bean
     public OpenAPI customOpenAPI() {
-        return new OpenAPI()
+	    String bearerAuth = "BearerAuth";
+		String basicAuth = "BasicAuth";
+		return new OpenAPI()
             .info(new Info()
                 .title("LostNFound API Documentation")
                 .version("1.0")

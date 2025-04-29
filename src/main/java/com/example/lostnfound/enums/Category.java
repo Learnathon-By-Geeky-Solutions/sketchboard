@@ -8,7 +8,4 @@ public enum Category {
     CLOTHES,
     MOBILE;
 
-    public static Category[] getAllCategories() {
-        return Category.values();
-    }
 }

@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class CommentService {
@@ -28,8 +27,10 @@ public class CommentService {
     }
 
     public CommentDto getCommentDtoById(Long id) {
-        Optional<Comment> comment = Optional.ofNullable(commentRepo.findById(id).orElse(null));
-        return new CommentDto(comment.get().getId(), comment.get().getContent(), comment.get().getUser().getUserId(), comment.get().getPost().getId(), comment.get().getCreatedAt());
+        Optional<Comment> comment = commentRepo.findById(id);
+        return comment.map(c -> new CommentDto(c.getId(), c.getContent(), c.getUser().getUserId(), c.getPost().getId(), c.getCreatedAt()))
+                .orElseThrow(() -> new RuntimeException("Comment not found"));
+
     }
 
     public void deleteComment(Long id) {

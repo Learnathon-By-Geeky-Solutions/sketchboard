@@ -1,9 +1,7 @@
 package com.example.lostnfound.controller;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import com.example.lostnfound.service.user.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +14,6 @@ import com.example.lostnfound.dto.LoginDto;
 import com.example.lostnfound.dto.PasswordDto;
 import com.example.lostnfound.dto.PostDto;
 import com.example.lostnfound.dto.UserDto;
-import com.example.lostnfound.enums.Role;
 import com.example.lostnfound.exception.UserNotAuthenticatedException;
 import com.example.lostnfound.model.Post;
 import com.example.lostnfound.model.User;
@@ -45,7 +42,7 @@ public class UserController {
 
     @PostMapping("/register")
     @Operation(summary = "Register a new user", description = "Registers a new user")
-    public ResponseEntity<?> register(@RequestBody UserDto user) {
+    public ResponseEntity<Object> register(@RequestBody UserDto user) {
         try {
             User newUser = new User();
             newUser.setEmail(user.getEmail());
@@ -55,7 +52,6 @@ public class UserController {
             newUser.setAddress(user.getAddress());
             newUser.setRole(user.getRole());
             newUser.setEmbedding(new float[1024]);
-            System.out.println("New created user is: " + newUser);
             userService.register(newUser);
             return new ResponseEntity<>(modelMapper.map(newUser, UserDto.class), HttpStatus.CREATED);
         } catch (Exception e) {
@@ -65,7 +61,7 @@ public class UserController {
 
     @PostMapping("/login")
     @Operation(summary = "Login", description = "Logs in a user")
-    public ResponseEntity<?> login(@RequestBody LoginDto user) {
+    public ResponseEntity<Object> login(@RequestBody LoginDto user) {
         try {
             String mail = user.getEmail();
             String password = user.getPassword();
@@ -82,7 +78,7 @@ public class UserController {
 
     @Operation(summary = "Get user profile by id", description = "Retrieves user's profile by id")
     @GetMapping("/profile/{id}")
-    public ResponseEntity<?> getUser(@PathVariable("id") Long id) {
+    public ResponseEntity<Object> getUser(@PathVariable("id") Long id) {
         try {
             User user = userService.findById(id);
             if (user != null) {
@@ -95,13 +91,12 @@ public class UserController {
         }
     }
 
-    private ResponseEntity<?> getUserProfileResponseResponseEntity(User user) {
+    private ResponseEntity<Object> getUserProfileResponseResponseEntity(User user) {
         try {
             List<Post> posts = userService.findPostsByUserId(user.getUserId());
             List<PostDto> postDtos = posts.stream()
                     .map(post -> modelMapper.map(post, PostDto.class))
-                    .collect(Collectors.toList());
-            System.out.println("User embed " + Arrays.toString(user.getEmbedding()));
+                    .toList();
             UserProfileResponse response = new UserProfileResponse(modelMapper.map(user, UserDto.class), postDtos);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
@@ -111,7 +106,7 @@ public class UserController {
 
     @Operation(summary = "Get user profile", description = "Retrieves authenticated user's profile and posts")
     @GetMapping("/profile")
-    public ResponseEntity<?> profileUser() {
+    public ResponseEntity<Object> profileUser() {
         try {
             Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if (principal instanceof UserDetails userDetails) {
@@ -130,7 +125,7 @@ public class UserController {
 
     @PutMapping("/updateProfile")
     @Operation(summary = "Update user profile", description = "Updates user profile")
-    public ResponseEntity<?> updateProfile(@RequestBody UserDto user) {
+    public ResponseEntity<Object> updateProfile(@RequestBody UserDto user) {
         try {
 
             userService.update(user);
@@ -142,7 +137,7 @@ public class UserController {
 
     @Operation(summary = "Validate JWT token", description = "Validates JWT token")
     @GetMapping("/validate")
-    public ResponseEntity<?> validate() {
+    public ResponseEntity<Object> validate() {
         try{
             return new ResponseEntity<>("Token is valid", HttpStatus.OK);
         } catch (Exception e){
@@ -153,7 +148,7 @@ public class UserController {
 
     @GetMapping("/myId")
     @Operation(summary = "Get user id", description = "Retrieves user id")
-    public ResponseEntity<?> getMyId() {
+    public ResponseEntity<Object> getMyId() {
         try {
             User user = userService.getCurrentUser();
             return new ResponseEntity<>(user.getUserId(), HttpStatus.OK);
