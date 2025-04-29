@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.example.lostnfound.exception.UserNotFoundException;
 import com.example.lostnfound.model.Image;
@@ -14,6 +15,8 @@ import com.example.lostnfound.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -89,6 +92,30 @@ public class PostController {
         }
     }
 
+    @GetMapping("posts/{page}/{offset}")
+    @Operation(summary = "Get paginated posts", description = "Retrieves paginated posts")
+    public ResponseEntity<Object> getPosts(@PathVariable("page") int page, @PathVariable("offset") int offset) {
+        try {
+            Page<Post> posts = postService.getPostsWithPagination(page, offset);
+
+            List<PostDto> postDtos = posts.getContent().stream().map(post -> {
+                PostDto dto = modelMapper.map(post, PostDto.class);
+                if (post.getImage() != null) {
+                    dto.setImageId(post.getImage().getId());
+                }
+                return dto;
+            }).collect(Collectors.toList());
+
+            // Optionally wrap in a Page object if needed
+            Page<PostDto> dtoPage = new PageImpl<>(postDtos, posts.getPageable(), posts.getTotalElements());
+
+            return new ResponseEntity<>(dtoPage, HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+
     @GetMapping("/posts/{id}")
     @Operation(summary = "Get post by id", description = "Retrieves post by id")
     public ResponseEntity<Object> getPost(@PathVariable("id") Long id) {
@@ -106,7 +133,7 @@ public class PostController {
 
     @DeleteMapping("/posts/{id}")
     @Operation(summary = "Delete post by id", description = "Deletes post by id")
-    public ResponseEntity<Object> deletePost(@PathVariable("id") int id) {
+    public ResponseEntity<Object> deletePost(@PathVariable("id") Long id) {
         try {
             postService.deletePost(id);
             return new ResponseEntity<>("Post deleted successfully", HttpStatus.OK);
@@ -117,7 +144,7 @@ public class PostController {
 
     @PutMapping("/posts/{id}")
     @Operation(summary = "Update post by id", description = "Updates post by id")
-    public ResponseEntity<Object> updatePost(@PathVariable("id") int id, 
+    public ResponseEntity<Object> updatePost(@PathVariable("id") Long id,
                                       @RequestParam(value = "postDto") String postDtoJson,
                                       @RequestParam(value = "image", required = false) MultipartFile image) {
         try {
