@@ -97,7 +97,7 @@ The database will be created and configured automatically during application sta
  ![dfd0](Docs/dfd0.jpg)
 
  ### Level1 DFD:
- ![dfd1](Docs/dfd1.jpg)
+ ![dfd1](Docs/dfd1.png)
  
 ##  Database Design
 
