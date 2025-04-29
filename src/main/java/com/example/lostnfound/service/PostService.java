@@ -61,7 +61,7 @@ public class PostService {
         return post;
     }
 
-    public void deletePost(int id) {
+    public void deletePost(Long id) {
         Post post = postRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
         
@@ -72,7 +72,7 @@ public class PostService {
         postRepo.deleteById(id);
     }
 
-    public void updatePost(int id, Post post) {
+    public void updatePost(Long id, Post post) {
         Post postToUpdate = postRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
     
