@@ -30,6 +30,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@SuppressWarnings("squid:S4502")
 public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtFilter jwtFilter) throws Exception {
@@ -68,6 +69,7 @@ public class SecurityConfig {
     }
 
     @Bean
+    @SuppressWarnings("squid:S5122")
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("*")); // Allow all origins

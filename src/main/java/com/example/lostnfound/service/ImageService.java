@@ -50,16 +50,28 @@ public class ImageService {
     }
 
     public Image saveImage(MultipartFile file) throws IOException, InterruptedException {
-        String originalName = Objects.requireNonNull(file.getOriginalFilename());
+        String originalName = Objects.requireNonNull(file.getOriginalFilename(), "File must have a name");
+
         String extension = "";
         int dotIndex = originalName.lastIndexOf('.');
         if (dotIndex >= 0) {
-            extension = originalName.substring(dotIndex);
+            extension = originalName.substring(dotIndex).toLowerCase();
         }
-        String uniqueFileName = System.currentTimeMillis() + "_" + UUID.randomUUID() + extension;
 
-        Path targetLocation = uploadPath.resolve(uniqueFileName);
+        List<String> allowedExtensions = List.of(".png", ".jpg", ".jpeg", ".gif");
+        if (!allowedExtensions.contains(extension)) {
+            throw new IllegalArgumentException("File extension not allowed");
+        }
+
+        String uniqueFileName = System.currentTimeMillis() + "_" + UUID.randomUUID() + extension;
+        Path targetLocation = uploadPath.resolve(uniqueFileName).normalize();
+
+        if (!targetLocation.startsWith(uploadPath)) {
+            throw new SecurityException("Invalid file path");
+        }
+
         Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+
 
         Image image = new Image();
         image.setFileName(uniqueFileName);
