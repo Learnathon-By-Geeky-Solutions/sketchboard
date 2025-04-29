@@ -94,7 +94,7 @@ The database will be created and configured automatically during application sta
 ## Data Flow Diagram
 
  ### Level0 DFD:
- ![dfd0](Docs/dfd0.jpg)
+ ![dfd0](Docs/dfd0.png)
 
  ### Level1 DFD:
  ![dfd1](Docs/dfd1.png)
