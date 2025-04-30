@@ -1,8 +1,6 @@
 package com.example.lostnfound.service;
 
 import com.example.lostnfound.exception.ImageNotFoundException;
-import com.example.lostnfound.exception.ImageStorageException;
-import com.example.lostnfound.exception.StorageInitializationException;
 import com.example.lostnfound.model.Image;
 import com.example.lostnfound.repository.ImageRepository;
 import com.example.lostnfound.service.ai.embedding.EmbeddingService;
@@ -18,13 +16,11 @@ import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -46,17 +42,11 @@ class ImageServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-
-        // Setup a dummy upload directory (no actual file system interaction)
         uploadDir = Path.of("dummyDir");
-
-        // Mock static Files methods
         filesMock = Mockito.mockStatic(Files.class);
         filesMock.when(() -> Files.createDirectories(any(Path.class))).thenReturn(uploadDir);
         filesMock.when(() -> Files.copy(any(InputStream.class), any(Path.class), any(StandardCopyOption.class))).thenReturn(0L);
         filesMock.when(() -> Files.deleteIfExists(any(Path.class))).thenReturn(true);
-
-        // Initialize service with mocked dependencies
         imageService = new ImageService(imageRepository, uploadDir.toString(), embeddingService);
     }
 
@@ -77,11 +67,7 @@ class ImageServiceTest {
             return img;
         });
         when(embeddingService.getEmbeddingImage(anyString())).thenReturn(new float[]{0.1f, 0.2f, 0.3f});
-
-        // When
         Image result = imageService.saveImage(file);
-
-        // Then
         assertNotNull(result);
         assertTrue(result.getFileName().matches("\\d+_[a-f0-9\\-]+\\.jpg"));
         verify(imageRepository, times(2)).save(any(Image.class));
@@ -95,20 +81,15 @@ class ImageServiceTest {
 
     @Test
     void testLoadImage_Success() throws IOException {
-        // Given
         Image img = new Image();
         img.setId(1L);
         img.setFileName("test.jpg");
         img.setFilePath(uploadDir.resolve("test.jpg").toString());
         when(imageRepository.findById(1L)).thenReturn(Optional.of(img));
-
-        // Mock UrlResource construction to avoid real file system
         try (MockedConstruction<UrlResource> mocked = mockConstruction(UrlResource.class, (mock, ctx) -> {
             when(mock.exists()).thenReturn(true);
         })) {
-            // When
             Resource resource = imageService.loadImage(1L);
-            // Then
             assertNotNull(resource);
             assertTrue(resource.exists());
         }
@@ -127,8 +108,6 @@ class ImageServiceTest {
         img.setFileName("nofile.jpg");
         img.setFilePath(uploadDir.resolve("nofile.jpg").toString());
         when(imageRepository.findById(2L)).thenReturn(Optional.of(img));
-
-        // Mock UrlResource to indicate non-existence
         try (MockedConstruction<UrlResource> mocked = mockConstruction(UrlResource.class, (mock, ctx) -> {
             when(mock.exists()).thenReturn(false);
         })) {
@@ -138,16 +117,11 @@ class ImageServiceTest {
 
     @Test
     void testDeleteImage_Success() {
-        // Given
         Image img = new Image();
         img.setId(1L);
         img.setFilePath(uploadDir.resolve("toDelete.jpg").toString());
         when(imageRepository.findById(1L)).thenReturn(Optional.of(img));
-
-        // When
         imageService.deleteImage(1L);
-
-        // Then
         verify(imageRepository, times(1)).delete(img);
         filesMock.verify(() -> Files.deleteIfExists(any(Path.class)));
     }
