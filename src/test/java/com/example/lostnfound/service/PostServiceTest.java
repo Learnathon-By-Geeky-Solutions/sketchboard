@@ -1,6 +1,8 @@
 package com.example.lostnfound.service;
 
+
 import com.example.lostnfound.exception.PostNotFoundException;
+
 import com.example.lostnfound.exception.UserNotFoundException;
 import com.example.lostnfound.model.Image;
 import com.example.lostnfound.model.Post;
@@ -74,7 +76,9 @@ class PostServiceTest {
     }
 
     @Test
+
     void testGetPost_Success() throws UserNotFoundException, PostNotFoundException {
+
         when(postRepo.findById(1L)).thenReturn(Optional.of(post));
         when(userService.getCurrentUser()).thenReturn(user);
 
@@ -104,6 +108,7 @@ class PostServiceTest {
 
     @Test
     void testDeletePost_Success() throws PostNotFoundException {
+
         when(postRepo.findById(1L)).thenReturn(Optional.of(post));
 
         postService.deletePost(1L);
@@ -115,11 +120,13 @@ class PostServiceTest {
     @Test
     void testDeletePost_NotFound() {
         when(postRepo.findById(1L)).thenReturn(Optional.empty());
+
         assertThrows(PostNotFoundException.class, () -> postService.deletePost(1L));
     }
 
     @Test
     void testUpdatePost_Success() throws PostNotFoundException {
+
         Post updated = new Post();
         updated.setTitle("New Title");
         updated.setDescription("New Desc");
@@ -149,4 +156,6 @@ class PostServiceTest {
         assertSame(post, result.get(0));
         verify(postRepo).findTopKSimilarPosts(any(float[].class), eq(Long.MAX_VALUE));
     }
+
 }
+

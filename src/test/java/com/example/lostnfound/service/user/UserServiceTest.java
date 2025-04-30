@@ -1,4 +1,5 @@
 package com.example.lostnfound.service.user;
+
 import com.example.lostnfound.exception.EmailSendException;
 import com.example.lostnfound.exception.InvalidTokenException;
 import com.example.lostnfound.exception.PostNotFoundException;
@@ -19,11 +20,13 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.util.ReflectionTestUtils;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -48,6 +51,7 @@ class UserServiceTest {
     private UserService userService;
 
     private User user;
+
     private SecureToken validToken;
     private SecureToken expiredToken;
     private Post post;
@@ -57,11 +61,13 @@ class UserServiceTest {
         // inject baseUrl for email context
         ReflectionTestUtils.setField(userService, "baseUrl", "http://localhost");
 
+
         user = new User();
         user.setUserId(1L);
         user.setEmail("test@example.com");
         user.setPassword("password");
         user.setAccountVerified(false);
+
 
         // valid token
         validToken = new SecureToken();
@@ -86,14 +92,12 @@ class UserServiceTest {
         when(userDetails.getUsername()).thenReturn(email);
     }
 
-    // Context1: save(User)
     @Test
     void testSaveUser() {
         userService.save(user);
         verify(userRepo).save(user);
     }
 
-    // Context1: verify(email, password)
     @Test
     void testVerify_Success() {
         when(userRepo.findByEmail(user.getEmail())).thenReturn(user);
@@ -128,8 +132,6 @@ class UserServiceTest {
         assertEquals("Login Failed", result);
         verify(jwtService, never()).generateToken(any());
     }
-
-    // Context1: findPostsByUserId
     @Test
     void testFindPostsByUserId_Found() throws PostNotFoundException {
         when(postRepo.findByUserId(user.getUserId())).thenReturn(List.of(post));
@@ -144,7 +146,6 @@ class UserServiceTest {
                 () -> userService.findPostsByUserId(user.getUserId()));
     }
 
-    // Context1: findById
     @Test
     void testFindById_Success() throws UserNotFoundException {
         when(userRepo.findById(1L)).thenReturn(Optional.of(user));
@@ -161,6 +162,7 @@ class UserServiceTest {
     // Context1: checkIfUserExist
     @Test
     void testCheckIfUserExist_Exists() {
+
         when(userRepo.findByEmail(user.getEmail())).thenReturn(user);
         assertTrue(userService.checkIfUserExist(user.getEmail()));
     }
@@ -248,5 +250,6 @@ class UserServiceTest {
     void testVerify_EmailPasswordNull() {
         String result = userService.verify(null, null);
         assertEquals("Login Failed", result);
+
     }
 }

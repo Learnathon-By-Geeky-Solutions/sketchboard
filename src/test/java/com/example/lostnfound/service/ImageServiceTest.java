@@ -1,7 +1,9 @@
 package com.example.lostnfound.service;
 
 import com.example.lostnfound.exception.ImageNotFoundException;
+
 import com.example.lostnfound.exception.ImageStorageException;
+
 import com.example.lostnfound.model.Image;
 import com.example.lostnfound.repository.ImageRepository;
 import com.example.lostnfound.service.ai.embedding.EmbeddingService;
@@ -17,7 +19,6 @@ import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -88,7 +89,9 @@ class ImageServiceTest {
         img.setFileName("test.jpg");
         img.setFilePath(uploadDir.resolve("test.jpg").toString());
         when(imageRepository.findById(1L)).thenReturn(Optional.of(img));
+
         try (MockedConstruction<UrlResource> mocked = mockConstruction(UrlResource.class, (mock, ctx) -> when(mock.exists()).thenReturn(true))) {
+
             Resource resource = imageService.loadImage(1L);
             assertNotNull(resource);
             assertTrue(resource.exists());
@@ -108,7 +111,9 @@ class ImageServiceTest {
         img.setFileName("nofile.jpg");
         img.setFilePath(uploadDir.resolve("nofile.jpg").toString());
         when(imageRepository.findById(2L)).thenReturn(Optional.of(img));
+
         try (MockedConstruction<UrlResource> mocked = mockConstruction(UrlResource.class, (mock, ctx) -> when(mock.exists()).thenReturn(false))) {
+
             assertThrows(ImageNotFoundException.class, () -> imageService.loadImage(2L));
         }
     }

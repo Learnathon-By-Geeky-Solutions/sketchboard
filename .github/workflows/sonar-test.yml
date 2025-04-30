@@ -1,0 +1,63 @@
+name: Sonar test coverage ci
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build-and-analyze:
+    name: Build, Test & SonarCloud
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # needed for branch analysis
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Cache local Maven repository
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-m2-
+            ${{ runner.os }}-
+
+      - name: Build & Test (with JaCoCo)
+        run: |
+          mvn clean verify \
+            jacoco:prepare-agent \
+            jacoco:report \
+            -Dspring.profiles.active=test \
+            -DskipTests=false \
+            -X
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: SonarCloud Analysis (Maven)
+        run: |
+          mvn sonar:sonar \
+            -Dsonar.projectKey=Learnathon-By-Geeky-Solutions_sketchboard \
+            -Dsonar.organization=learnathon-by-geeky-solutions \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.java.binaries=target/classes \
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
+            -Dsonar.branch.name=${{ github.head_ref || github.ref_name }} \
+            -Dsonar.pullrequest.key=${{ github.event.number }} \
+            -Dsonar.pullrequest.branch=${{ github.head_ref }} \
+            -Dsonar.pullrequest.base=${{ github.event.pull_request.base.ref }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

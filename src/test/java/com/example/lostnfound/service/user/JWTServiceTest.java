@@ -7,7 +7,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import java.lang.reflect.Field;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,6 +31,7 @@ class JWTServiceTest {
     @Test
     void generateToken_and_validateToken_forSameUser() {
         String email = "user@example.com";
+
         String token = jwtService.generateToken(email);
         assertNotNull(token);
         assertEquals(3, token.split("\\.").length);
@@ -43,6 +43,7 @@ class JWTServiceTest {
     void extractEmail_returnsCorrectSubject() {
         String email = "another@example.com";
         String token = jwtService.generateToken(email);
+
         String extracted = jwtService.extractEmail(token);
         assertEquals(email, extracted);
     }

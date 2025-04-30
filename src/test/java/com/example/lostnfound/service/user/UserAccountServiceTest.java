@@ -138,6 +138,7 @@ class UserAccountServiceTest {
         verify(secureTokenService).saveSecureToken(tokenWithoutUser);
         verify(emailService).sendEmail(any(ForgotPasswordEmailContext.class));
     }
+
     @Test
     void testSendResetPasswordEmail_TokenWithoutUser_EmailFailure() throws MessagingException {
         SecureToken tokenWithoutUser = new SecureToken();
@@ -151,4 +152,5 @@ class UserAccountServiceTest {
         assertThrows(EmailSendException.class, () -> userAccountService.sendResetPasswordEmail(user));
         verify(secureTokenService).saveSecureToken(tokenWithoutUser);
     }
+
 }
