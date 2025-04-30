@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class GeminiResponseTest {
 
     @InjectMocks
-    private GeminiResponse geminiResponse;  // Inject the mocked Client into GeminiResponse
+    private GeminiResponse geminiResponse;
 
     @BeforeEach
     void setUp() {
@@ -32,8 +32,7 @@ class GeminiResponseTest {
 
     @Test
     void testGetResponse_longQuery_returnsErrorMessage() {
-        // Simulate a long query that exceeds the max length
-        String longQuery = "a".repeat(501);  // 501 characters
+        String longQuery = "a".repeat(501);
         String response = geminiResponse.getResponse(longQuery);
         assertEquals("Query exceeds maximum length of 500 characters", response);
     }
