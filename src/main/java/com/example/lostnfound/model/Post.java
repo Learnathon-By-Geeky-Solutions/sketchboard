@@ -8,6 +8,7 @@ import java.util.List;
 import com.example.lostnfound.enums.Category;
 import com.example.lostnfound.enums.Status;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -88,6 +89,7 @@ public class Post {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id", referencedColumnName = "id")
+    @JsonManagedReference
     private Image image;
 
     public String infoForEmbedding(){

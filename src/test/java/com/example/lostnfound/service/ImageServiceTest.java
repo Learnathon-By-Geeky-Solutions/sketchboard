@@ -83,7 +83,7 @@ class ImageServiceTest {
     }
 
     @Test
-    void testLoadImage_Success() throws IOException {
+    void testLoadImage_Success() {
         Image img = new Image();
         img.setId(1L);
         img.setFileName("test.jpg");
