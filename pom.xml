@@ -197,47 +197,13 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.11</version>
                 <configuration>
+                    <includes>
+                        <!-- Only include service and mailing packages -->
+                        <include>**/service/**</include>
+                        <include>**/mailing/**</include>
+                    </includes>
                     <excludes>
-                        <!-- Application main class -->
-                        <exclude>**/LostnFoundApplication.*</exclude>
-                        
-                        <!-- Data Transfer Objects -->
-                        <exclude>**/dto/**</exclude>
-                        
-                        <!-- Domain Models -->
-                        <exclude>**/model/**</exclude>
-                        
-                        <!-- Enums -->
-                        <exclude>**/enums/**</exclude>
-                        
-                        <!-- Configuration Classes -->
-                        <exclude>**/config/**</exclude>
-                        
-                        <!-- Exception Classes -->
-                        <exclude>**/exception/**</exclude>
-                        
-                        <!-- Repository Interfaces -->
-                        <exclude>**/repository/**</exclude>
-                        
-                        <!-- Utility Classes -->
-                        <exclude>**/util/**</exclude>
-                        
-                        <!-- Constants and Properties -->
-                        <exclude>**/constants/**</exclude>
-                        
-                        <!-- Generated Sources -->
-                        <exclude>**/generated/**</exclude>
-                        <exclude>**/*MapperImpl.*</exclude>
-                        
-                        <!-- Common Java Exclusions -->
-                        <exclude>**/package-info.*</exclude>
-                        <exclude>**/*Builder.*</exclude>
-                        <exclude>**/*Faker.*</exclude>
-                        <exclude>**/*Application.*</exclude>
-                        <exclude>**/*Configuration.*</exclude>
-                        <exclude>**/*Properties.*</exclude>
-                        
-                        <!-- Test Related -->
+                        <!-- Exclude test files -->
                         <exclude>**/*Test.*</exclude>
                         <exclude>**/test/**/*</exclude>
                     </excludes>
