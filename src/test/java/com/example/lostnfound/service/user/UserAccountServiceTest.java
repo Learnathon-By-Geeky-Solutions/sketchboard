@@ -138,4 +138,19 @@ class UserAccountServiceTest {
         verify(secureTokenService).saveSecureToken(tokenWithoutUser);
         verify(emailService).sendEmail(any(ForgotPasswordEmailContext.class));
     }
+
+    @Test
+    void testSendResetPasswordEmail_TokenWithoutUser_EmailFailure() throws MessagingException {
+        SecureToken tokenWithoutUser = new SecureToken();
+        tokenWithoutUser.setToken("token123");
+        tokenWithoutUser.setExpiredAt(LocalDateTime.of(2099, 12, 31, 0, 0));
+        tokenWithoutUser.setUser(null);
+
+        when(secureTokenService.createToken(user)).thenReturn(tokenWithoutUser);
+        doThrow(MessagingException.class).when(emailService).sendEmail(any(ForgotPasswordEmailContext.class));
+
+        assertThrows(EmailSendException.class, () -> userAccountService.sendResetPasswordEmail(user));
+        verify(secureTokenService).saveSecureToken(tokenWithoutUser);
+    }
+
 }

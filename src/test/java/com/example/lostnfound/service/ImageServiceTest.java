@@ -1,6 +1,9 @@
 package com.example.lostnfound.service;
 
 import com.example.lostnfound.exception.ImageNotFoundException;
+
+import com.example.lostnfound.exception.ImageStorageException;
+
 import com.example.lostnfound.model.Image;
 import com.example.lostnfound.repository.ImageRepository;
 import com.example.lostnfound.service.ai.embedding.EmbeddingService;
@@ -86,9 +89,9 @@ class ImageServiceTest {
         img.setFileName("test.jpg");
         img.setFilePath(uploadDir.resolve("test.jpg").toString());
         when(imageRepository.findById(1L)).thenReturn(Optional.of(img));
-        try (MockedConstruction<UrlResource> mocked = mockConstruction(UrlResource.class, (mock, ctx) -> {
-            when(mock.exists()).thenReturn(true);
-        })) {
+
+        try (MockedConstruction<UrlResource> mocked = mockConstruction(UrlResource.class, (mock, ctx) -> when(mock.exists()).thenReturn(true))) {
+
             Resource resource = imageService.loadImage(1L);
             assertNotNull(resource);
             assertTrue(resource.exists());
@@ -108,12 +111,13 @@ class ImageServiceTest {
         img.setFileName("nofile.jpg");
         img.setFilePath(uploadDir.resolve("nofile.jpg").toString());
         when(imageRepository.findById(2L)).thenReturn(Optional.of(img));
-        try (MockedConstruction<UrlResource> mocked = mockConstruction(UrlResource.class, (mock, ctx) -> {
-            when(mock.exists()).thenReturn(false);
-        })) {
+
+        try (MockedConstruction<UrlResource> mocked = mockConstruction(UrlResource.class, (mock, ctx) -> when(mock.exists()).thenReturn(false))) {
+
             assertThrows(ImageNotFoundException.class, () -> imageService.loadImage(2L));
         }
     }
+
 
     @Test
     void testDeleteImage_Success() {
@@ -130,6 +134,19 @@ class ImageServiceTest {
     void testDeleteImage_NotFound() {
         when(imageRepository.findById(1L)).thenReturn(Optional.empty());
         assertThrows(ImageNotFoundException.class, () -> imageService.deleteImage(1L));
+    }
+
+    @Test
+    void testDeleteImage_IOException() {
+        Image img = new Image();
+        img.setId(2L);
+        img.setFilePath(uploadDir.resolve("toDelete.jpg").toString());
+        when(imageRepository.findById(2L)).thenReturn(Optional.of(img));
+
+        // Simulate IOException during file deletion
+        filesMock.when(() -> Files.deleteIfExists(any(Path.class))).thenThrow(IOException.class);
+
+        assertThrows(ImageStorageException.class, () -> imageService.deleteImage(2L));
     }
 
     @Test
@@ -150,5 +167,20 @@ class ImageServiceTest {
         var result = imageService.findTopKSimilarImages(query, 2L);
         assertEquals(2, result.size());
         assertSame(list, result);
+    }
+
+    @Test
+    void testGetAllImages() {
+        Image img1 = new Image();
+        img1.setId(1L);
+        Image img2 = new Image();
+        img2.setId(2L);
+        List<Image> images = List.of(img1, img2);
+        when(imageRepository.findAll()).thenReturn(images);
+
+        List<Image> result = imageService.getAllImages();
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertSame(images, result);
     }
 }

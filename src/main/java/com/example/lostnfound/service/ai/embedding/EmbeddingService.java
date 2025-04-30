@@ -1,5 +1,4 @@
 package com.example.lostnfound.service.ai.embedding;
-import com.google.genai.Client;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
