@@ -19,9 +19,9 @@ import java.io.IOException;
 public class GeminiResponse {
     private Client client;
     @Value("${gemini.api.key}")
-    private char[] geminiApiKey;
+    char[] geminiApiKey;
     @Value("${gemini.model.id}")
-    private String modelId;
+    String modelId;
 
     @PostConstruct
     private void initializeClient() throws GeminiInitializationException {
