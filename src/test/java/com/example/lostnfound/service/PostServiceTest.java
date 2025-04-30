@@ -1,5 +1,6 @@
 package com.example.lostnfound.service;
 
+import com.example.lostnfound.exception.PostNotFoundException;
 import com.example.lostnfound.exception.UserNotFoundException;
 import com.example.lostnfound.model.Image;
 import com.example.lostnfound.model.Post;
@@ -86,9 +87,22 @@ class PostServiceTest {
     @Test
     void testGetPost_NotFound() {
         when(postRepo.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(RuntimeException.class, () -> postService.getPost(1L));
+        var exception = assertThrows(PostNotFoundException.class, () -> postService.getPost(1L));
+         assertEquals("Post not found with id: 1", exception.getMessage());
     }
+    @Test
+    void testUpdatePost_PartialUpdate() {
+        Post updated = new Post();
+        updated.setTitle("New Title");
+        // Description not set
+        when(postRepo.findById(1L)).thenReturn(Optional.of(post));
 
+        postService.updatePost(1L, updated);
+
+        assertEquals("New Title", post.getTitle());
+        // Original description should be preserved
+        assertEquals("Lost my phone in the park", post.getDescription());
+    }
     @Test
     void testGetPostsWithPagination() {
         Page<Post> page = mock(Page.class);
@@ -114,7 +128,8 @@ class PostServiceTest {
     @Test
     void testDeletePost_NotFound() {
         when(postRepo.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(RuntimeException.class, () -> postService.deletePost(1L));
+        var exception = assertThrows(PostNotFoundException.class, () -> postService.deletePost(1L));
+        assertEquals("Post not found with id: 1", exception.getMessage());
     }
 
     @Test

@@ -2,6 +2,7 @@ package com.example.lostnfound.service.user;
 
 import com.example.lostnfound.dto.UserDto;
 import com.example.lostnfound.exception.InvalidTokenException;
+import com.example.lostnfound.exception.UserAlreadyExistsException;
 import com.example.lostnfound.exception.UserNotFoundException;
 import com.example.lostnfound.mailing.AccountVerificationEmailContext;
 import com.example.lostnfound.model.SecureToken;
@@ -60,6 +61,13 @@ class UserServiceTest {
         token.setExpiredAt(java.time.LocalDateTime.of(2099, 12, 31, 0, 0));
     }
 
+    private void setupSecurityContextWithUser(String email) {
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        when(authentication.getPrincipal()).thenReturn(userDetails);
+        when(userDetails.getUsername()).thenReturn(email);
+    }
+
     @Test
     void testRegister_NewUser_Success() throws MessagingException {
         when(userRepo.findByEmail(user.getEmail())).thenReturn(null);
@@ -76,8 +84,7 @@ class UserServiceTest {
     @Test
     void testRegister_ExistingUser_ThrowsException() {
         when(userRepo.findByEmail(user.getEmail())).thenReturn(user);
-
-        assertThrows(UserNotFoundException.class, () -> userService.register(user));
+        assertThrows(UserAlreadyExistsException.class, () -> userService.register(user));
     }
 
     @Test
@@ -91,6 +98,7 @@ class UserServiceTest {
         when(userRepo.findByEmail(user.getEmail())).thenReturn(null);
         assertThrows(UserNotFoundException.class, () -> userService.findByEmail(user.getEmail()));
     }
+
 
     @Test
     void testVerifyUser_Success() throws InvalidTokenException, UserNotFoundException {
@@ -106,9 +114,11 @@ class UserServiceTest {
 
     @Test
     void testVerifyUser_InvalidToken_ThrowsException() {
-        token.setExpiredAt(Timestamp.valueOf("2000-01-01 00:00:00").toLocalDateTime());
-        when(secureTokenService.findByToken("invalid-token")).thenReturn(token);
-
+        SecureToken expiredToken = new SecureToken();
+        expiredToken.setToken("invalid-token");
+        expiredToken.setUser(user);
+        expiredToken.setExpiredAt(Timestamp.valueOf("2000-01-01 00:00:00").toLocalDateTime());
+        when(secureTokenService.findByToken("invalid-token")).thenReturn(expiredToken);
         assertThrows(InvalidTokenException.class, () -> userService.verifyUser("invalid-token"));
     }
 
@@ -126,12 +136,7 @@ class UserServiceTest {
 
     @Test
     void testGetCurrentUser() throws UserNotFoundException {
-        // Mock the security context and authentication
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        SecurityContextHolder.setContext(securityContext);
-
-        when(authentication.getPrincipal()).thenReturn(userDetails);
-        when(userDetails.getUsername()).thenReturn(user.getEmail());
+        setupSecurityContextWithUser(user.getEmail());
         when(userRepo.findByEmail(user.getEmail())).thenReturn(user);
 
         User result = userService.getCurrentUser();
@@ -145,12 +150,8 @@ class UserServiceTest {
         dto.setEmail("new@example.com");
         dto.setDepartment("Dept");
         dto.setAddress("Address");
+        setupSecurityContextWithUser(user.getEmail());
 
-        // Mock the security context and authentication
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        SecurityContextHolder.setContext(securityContext);
-        when(authentication.getPrincipal()).thenReturn(userDetails);
-        when(userDetails.getUsername()).thenReturn(user.getEmail());
         when(userRepo.findByEmail(user.getEmail())).thenReturn(user);
 
         userService.update(dto);

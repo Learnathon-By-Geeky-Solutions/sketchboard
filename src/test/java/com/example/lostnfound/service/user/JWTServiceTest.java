@@ -8,6 +8,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.lang.reflect.Field;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -30,14 +32,9 @@ class JWTServiceTest {
     @Test
     void generateToken_and_validateToken_forSameUser() {
         String email = "user@example.com";
-
-
         String token = jwtService.generateToken(email);
         assertNotNull(token);
-
         assertEquals(3, token.split("\\.").length);
-
-
         when(userDetails.getUsername()).thenReturn(email);
         assertTrue(jwtService.validateToken(token, userDetails));
     }
@@ -46,17 +43,21 @@ class JWTServiceTest {
     void extractEmail_returnsCorrectSubject() {
         String email = "another@example.com";
         String token = jwtService.generateToken(email);
-
         String extracted = jwtService.extractEmail(token);
         assertEquals(email, extracted);
     }
 
     @Test
-    void validateToken_returnsFalse_forWrongUser() {
+    void validateToken_returnsFalse_forExpiredToken() throws Exception {
         String email = "user@example.com";
+        Field expirationField = JWTService.class.getDeclaredField("jwtExpiration");
+        expirationField.setAccessible(true);
+        long originalExpiration = (long) expirationField.get(jwtService);
+        expirationField.set(jwtService, 1L);
         String token = jwtService.generateToken(email);
-
-        when(userDetails.getUsername()).thenReturn("other@example.com");
+        expirationField.set(jwtService, originalExpiration);
+        Thread.sleep(5);
+        when(userDetails.getUsername()).thenReturn(email);
         assertFalse(jwtService.validateToken(token, userDetails));
     }
 
