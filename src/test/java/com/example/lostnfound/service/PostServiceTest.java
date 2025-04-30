@@ -157,5 +157,47 @@ class PostServiceTest {
         verify(postRepo).findTopKSimilarPosts(any(float[].class), eq(Long.MAX_VALUE));
     }
 
+    @Test
+    void testUpdatePost_PartialUpdate() throws PostNotFoundException {
+        Post existingPost = new Post();
+        existingPost.setId(1L);
+        existingPost.setTitle("Old Title");
+        existingPost.setDescription("Old Description");
+
+        Post updatedPost = new Post();
+        updatedPost.setTitle("New Title");
+        // description not set, should remain unchanged
+
+        when(postRepo.findById(1L)).thenReturn(Optional.of(existingPost));
+
+        postService.updatePost(1L, updatedPost);
+
+        assertEquals("New Title", existingPost.getTitle());
+        assertEquals("Old Description", existingPost.getDescription());
+    }
+
+    @Test
+    void testGetCustomizedPosts_UserWithoutEmbedding() throws UserNotFoundException {
+        User userWithoutEmbedding = new User();
+        userWithoutEmbedding.setUserId(2L);
+        userWithoutEmbedding.setEmbedding(null);
+
+        when(userService.getCurrentUser()).thenReturn(userWithoutEmbedding);
+        
+        assertThrows(IllegalStateException.class, () -> postService.getCustomizedPosts());
+    }
+
+    @Test
+    void testSearchPosts() {
+        String searchTerm = "lost phone";
+        List<Post> expectedPosts = List.of(post);
+        when(postRepo.searchPosts(searchTerm)).thenReturn(expectedPosts);
+
+        List<Post> results = postService.searchPosts(searchTerm);
+
+        assertEquals(expectedPosts, results);
+        verify(postRepo).searchPosts(searchTerm);
+    }
+
 }
 

@@ -27,6 +27,9 @@ public class ImageService {
     private final Path uploadPath;
     private final EmbeddingService embeddingService;
 
+    @Value("${app.baseUrl}")
+    private String baseUrl;
+
     public ImageService(ImageRepository imageRepository, @Value("${app.upload.dir}") String uploadDir, EmbeddingService embeddingService) {
         this.imageRepository = imageRepository;
         this.uploadPath = Path.of(uploadDir);
@@ -42,13 +45,15 @@ public class ImageService {
         }
     }
 
-    @Value("${app.baseUrl}")
-    private String baseUrl;
     public String getImageUri(Long id) {
         return baseUrl + "/images/" + id;
     }
 
     public Image saveImage(MultipartFile file) throws IOException, InterruptedException {
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("File must not be empty");
+        }
+
         String originalName = Objects.requireNonNull(file.getOriginalFilename(), "File must have a name");
 
         String extension = "";
@@ -117,6 +122,13 @@ public class ImageService {
 	}
 
     float similarityScore(float[] embedding1, float[] embedding2) {
+        Objects.requireNonNull(embedding1, "First embedding must not be null");
+        Objects.requireNonNull(embedding2, "Second embedding must not be null");
+
+        if (embedding1.length != embedding2.length) {
+            throw new IllegalArgumentException("Embeddings must have the same length");
+        }
+
         float score = 0;
         for (int i = 0; i < embedding1.length; i++) {
             score += (float) Math.pow(embedding1[i] - embedding2[i], 2);

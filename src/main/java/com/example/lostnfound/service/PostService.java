@@ -116,6 +116,9 @@ public class PostService {
 
     public List<Post> getCustomizedPosts() throws UserNotFoundException {
         User currentUser = userService.getCurrentUser();
+        if (currentUser.getEmbedding() == null) {
+            throw new IllegalStateException("User has no embedding data");
+        }
         return findTopKSimilarPosts(currentUser.getEmbedding(), Long.MAX_VALUE);
     }
 

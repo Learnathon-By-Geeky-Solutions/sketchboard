@@ -1,9 +1,7 @@
 package com.example.lostnfound.service;
 
 import com.example.lostnfound.exception.ImageNotFoundException;
-
 import com.example.lostnfound.exception.ImageStorageException;
-
 import com.example.lostnfound.model.Image;
 import com.example.lostnfound.repository.ImageRepository;
 import com.example.lostnfound.service.ai.embedding.EmbeddingService;
@@ -16,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -182,5 +181,44 @@ class ImageServiceTest {
         assertNotNull(result);
         assertEquals(2, result.size());
         assertSame(images, result);
+    }
+
+    @Test
+    void testSaveImage_EmptyFile() {
+        MockMultipartFile emptyFile = new MockMultipartFile("file", "", "image/jpeg", new byte[0]);
+        assertThrows(IllegalArgumentException.class, () -> imageService.saveImage(emptyFile));
+    }
+
+    @Test
+    void testSaveImage_NullFilename() {
+        MockMultipartFile nullNameFile = new MockMultipartFile("file", null, "image/jpeg", "test".getBytes());
+        assertThrows(IllegalArgumentException.class, () -> imageService.saveImage(nullNameFile));
+    }
+
+    @Test
+    void testGetImageUri() {
+        ReflectionTestUtils.setField(imageService, "baseUrl", "http://localhost:8080");
+        String uri = imageService.getImageUri(1L);
+        assertEquals("http://localhost:8080/images/1", uri);
+    }
+
+    @Test
+    void testSimilarityScore_ZeroDistance() {
+        float[] embedding1 = {1.0f, 2.0f, 3.0f};
+        float[] embedding2 = {1.0f, 2.0f, 3.0f};
+        assertEquals(0.0f, imageService.similarityScore(embedding1, embedding2), 0.0001f);
+    }
+
+    @Test
+    void testSimilarityScore_NullEmbeddings() {
+        assertThrows(NullPointerException.class, () -> imageService.similarityScore(null, new float[]{1.0f}));
+        assertThrows(NullPointerException.class, () -> imageService.similarityScore(new float[]{1.0f}, null));
+    }
+
+    @Test
+    void testSimilarityScore_DifferentLengths() {
+        float[] embedding1 = {1.0f, 2.0f};
+        float[] embedding2 = {1.0f, 2.0f, 3.0f};
+        assertThrows(IllegalArgumentException.class, () -> imageService.similarityScore(embedding1, embedding2));
     }
 }
