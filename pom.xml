@@ -203,28 +203,6 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.11</version>
-                <configuration>
-                    <includes>
-                        <!-- Only include service package -->
-                        <include>com/example/lostnfound/service/**/*</include>
-                    </includes>
-                    <excludes>
-                        <!-- Exclude everything else -->
-                        <exclude>com/example/lostnfound/config/**/*</exclude>
-                        <exclude>com/example/lostnfound/model/**/*</exclude>
-                        <exclude>com/example/lostnfound/repository/**/*</exclude>
-                        <exclude>com/example/lostnfound/controller/**/*</exclude>
-                        <exclude>com/example/lostnfound/dto/**/*</exclude>
-                        <exclude>com/example/lostnfound/enums/**/*</exclude>
-                        <exclude>com/example/lostnfound/exception/**/*</exclude>
-                        <exclude>com/example/lostnfound/faker/**/*</exclude>
-                        <exclude>com/example/lostnfound/util/**/*</exclude>
-                        <exclude>com/example/lostnfound/mailing/**/*</exclude>
-                        <exclude>com/example/lostnfound/LostnFoundApplication.class</exclude>
-                        <exclude>**/*Test.*</exclude>
-                        <exclude>**/test/**/*</exclude>
-                    </excludes>
-                </configuration>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
@@ -234,7 +212,7 @@
                     </execution>
                     <execution>
                         <id>report</id>
-                        <phase>prepare-package</phase>
+                        <phase>test</phase>
                         <goals>
                             <goal>report</goal>
                         </goals>
