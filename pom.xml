@@ -38,7 +38,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <google.genai.version>0.2.0</google.genai.version>
         <spring-ai.version>1.0.0-M6</spring-ai.version>
-        <sonar.coverage.exclusions>**/config/**,**/model/**,**/repository/**,**/controller/**,**/dto/**,**/enums/**,**/exception/**,**/faker/**,**/util/**,**/mailing/**,**/LostnFoundApplication.java</sonar.coverage.exclusions>
+        <sonar.coverage.exclusions>**/config/**,**/model/**,**/repository/**,**/controller/**,**/dto/**,**/enums/**,**/exception/**,**/faker/**,**/util/**,**/LostnFoundApplication.java</sonar.coverage.exclusions>
         <sonar.coverage.inclusions>**/service/**</sonar.coverage.inclusions>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
