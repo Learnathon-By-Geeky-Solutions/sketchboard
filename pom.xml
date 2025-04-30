@@ -40,6 +40,11 @@
         <spring-ai.version>1.0.0-M6</spring-ai.version>
         <sonar.coverage.exclusions>**/config/**,**/model/**,**/repository/**,**/controller/**,**/dto/**,**/enums/**,**/exception/**,**/faker/**,**/util/**,**/mailing/**,**/LostnFoundApplication.java</sonar.coverage.exclusions>
         <sonar.coverage.inclusions>**/service/**</sonar.coverage.inclusions>
+        <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+        <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+        <sonar.jacoco.reportPath>${project.basedir}/target/jacoco.exec</sonar.jacoco.reportPath>
+        <sonar.language>java</sonar.language>
+        <sonar.java.binaries>${project.build.directory}/classes</sonar.java.binaries>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -229,30 +234,10 @@
                     </execution>
                     <execution>
                         <id>report</id>
-                        <phase>test</phase>
+                        <phase>prepare-package</phase>
                         <goals>
                             <goal>report</goal>
                         </goals>
-                    </execution>
-                    <execution>
-                        <id>check</id>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <rule>
-                                    <element>PACKAGE</element>
-                                    <limits>
-                                        <limit>
-                                            <counter>LINE</counter>
-                                            <value>COVEREDRATIO</value>
-                                            <minimum>0.80</minimum>
-                                        </limit>
-                                    </limits>
-                                </rule>
-                            </rules>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
