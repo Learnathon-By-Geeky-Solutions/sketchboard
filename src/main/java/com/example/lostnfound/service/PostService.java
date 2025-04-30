@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.logging.Logger;
 import java.util.function.Consumer;
 
+import com.example.lostnfound.exception.PostNotFoundException;
 import com.example.lostnfound.exception.UserNotFoundException;
 import com.example.lostnfound.model.User;
 import com.example.lostnfound.service.ai.embedding.EmbeddingService;
@@ -26,7 +27,7 @@ public class PostService {
     private final ImageService imageService;
 
 
-    PostService(PostRepo postRepo, EmbeddingService embeddingService, UserService userService, 
+    PostService(PostRepo postRepo, EmbeddingService embeddingService, UserService userService,
                ImageService imageService) {
         this.postRepo = postRepo;
         this.embeddingService = embeddingService;
@@ -51,56 +52,56 @@ public class PostService {
         return postRepo.findAll(PageRequest.of(pageNo, pageSize).withSort(Sort.by("id")));
     }
 
-    public Post getPost(Long id) throws UserNotFoundException {
+    public Post getPost(Long id) throws UserNotFoundException, PostNotFoundException {
         User currentUser = userService.getCurrentUser();
         Post post = postRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("[Get] Post not found for id: " + id));
+                .orElseThrow(() -> new PostNotFoundException("[Get] Post not found for id: " + id));
         currentUser.addInteraction(post.getEmbedding(), 1);
         return post;
     }
 
-    public void deletePost(Long id) {
+    public void deletePost(Long id) throws PostNotFoundException {
         Post post = postRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("[Delete] Post not found for id: " + id));
-        
+                .orElseThrow(() -> new PostNotFoundException("[Delete] Post not found for id: " + id));
+
         if (post.getImage() != null) {
             imageService.deleteImage(post.getImage().getId());
         }
-        
+
         postRepo.deleteById(id);
     }
 
-    public void updatePost(Long id, Post post) {
+    public void updatePost(Long id, Post post) throws PostNotFoundException {
 
         Post postToUpdate = postRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
-    
+                .orElseThrow(() -> new PostNotFoundException("Post not found"));
+
         updateImageIfChanged(post, postToUpdate);
         updateFieldIfPresent(post.getTitle(), postToUpdate::setTitle);
         updateFieldIfPresent(post.getDescription(), postToUpdate::setDescription);
         updateFieldIfPresent(post.getLocation(), postToUpdate::setLocation);
-    
+
         if (post.getDate() != null) {
             postToUpdate.setDate(post.getDate());
         }
-    
+
         if (post.getTime() != null) {
             postToUpdate.setTime(post.getTime());
         }
-    
+
         if (post.getCategory() != null) {
             postToUpdate.setCategory(post.getCategory());
         }
-    
+
         if (post.getStatus() != null) {
             postToUpdate.setStatus(post.getStatus());
         }
-    
+
         if (post.getRange() != 0) {
             postToUpdate.setRange(post.getRange());
         }
     }
-    
+
 
     public List<Post> searchPosts(String searchTerm) {
         return postRepo.searchPosts(searchTerm);
@@ -122,20 +123,20 @@ public class PostService {
         if (newPost.getImage() != null &&
             !Objects.equals(newPost.getImage().getId(),
                 existingPost.getImage() != null ? existingPost.getImage().getId() : null)) {
-    
+
             if (existingPost.getImage() != null) {
                 imageService.deleteImage(existingPost.getImage().getId());
             }
-    
+
             existingPost.setImage(newPost.getImage());
         }
     }
-    
+
     private void updateFieldIfPresent(String fieldValue, Consumer<String> setter) {
         if (fieldValue != null && !fieldValue.trim().isEmpty()) {
             setter.accept(fieldValue);
         }
     }
-    
+
 
 }

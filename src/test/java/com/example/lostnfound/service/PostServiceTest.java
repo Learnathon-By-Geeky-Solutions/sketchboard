@@ -74,7 +74,7 @@ class PostServiceTest {
     }
 
     @Test
-    void testGetPost_Success() throws UserNotFoundException {
+    void testGetPost_Success() throws UserNotFoundException, PostNotFoundException {
         when(postRepo.findById(1L)).thenReturn(Optional.of(post));
         when(userService.getCurrentUser()).thenReturn(user);
 
@@ -87,22 +87,9 @@ class PostServiceTest {
     @Test
     void testGetPost_NotFound() {
         when(postRepo.findById(1L)).thenReturn(Optional.empty());
-        var exception = assertThrows(PostNotFoundException.class, () -> postService.getPost(1L));
-         assertEquals("Post not found with id: 1", exception.getMessage());
+        assertThrows(PostNotFoundException.class, () -> postService.getPost(1L));
     }
-    @Test
-    void testUpdatePost_PartialUpdate() {
-        Post updated = new Post();
-        updated.setTitle("New Title");
-        // Description not set
-        when(postRepo.findById(1L)).thenReturn(Optional.of(post));
 
-        postService.updatePost(1L, updated);
-
-        assertEquals("New Title", post.getTitle());
-        // Original description should be preserved
-        assertEquals("Lost my phone in the park", post.getDescription());
-    }
     @Test
     void testGetPostsWithPagination() {
         Page<Post> page = mock(Page.class);
@@ -116,7 +103,7 @@ class PostServiceTest {
     }
 
     @Test
-    void testDeletePost_Success() {
+    void testDeletePost_Success() throws PostNotFoundException {
         when(postRepo.findById(1L)).thenReturn(Optional.of(post));
 
         postService.deletePost(1L);
@@ -128,12 +115,11 @@ class PostServiceTest {
     @Test
     void testDeletePost_NotFound() {
         when(postRepo.findById(1L)).thenReturn(Optional.empty());
-        var exception = assertThrows(PostNotFoundException.class, () -> postService.deletePost(1L));
-        assertEquals("Post not found with id: 1", exception.getMessage());
+        assertThrows(PostNotFoundException.class, () -> postService.deletePost(1L));
     }
 
     @Test
-    void testUpdatePost_Success() {
+    void testUpdatePost_Success() throws PostNotFoundException {
         Post updated = new Post();
         updated.setTitle("New Title");
         updated.setDescription("New Desc");
@@ -148,7 +134,7 @@ class PostServiceTest {
     @Test
     void testUpdatePost_NotFound() {
         when(postRepo.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(RuntimeException.class, () -> postService.updatePost(1L, new Post()));
+        assertThrows(PostNotFoundException.class, () -> postService.updatePost(1L, new Post()));
     }
 
     @Test

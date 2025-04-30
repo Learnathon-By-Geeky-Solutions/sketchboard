@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -84,7 +83,7 @@ public class ImageService {
         return image;
     }
 
-    public Resource loadImage(Long imageId) throws IOException {
+    public Resource loadImage(Long imageId) throws ImageStorageException {
         Image image = imageRepository.findById(imageId)
                 .orElseThrow(() -> new ImageNotFoundException("Image not found with ID: " + imageId));
         try {

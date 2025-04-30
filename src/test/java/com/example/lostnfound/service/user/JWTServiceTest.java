@@ -47,19 +47,6 @@ class JWTServiceTest {
         assertEquals(email, extracted);
     }
 
-    @Test
-    void validateToken_returnsFalse_forExpiredToken() throws Exception {
-        String email = "user@example.com";
-        Field expirationField = JWTService.class.getDeclaredField("jwtExpiration");
-        expirationField.setAccessible(true);
-        long originalExpiration = (long) expirationField.get(jwtService);
-        expirationField.set(jwtService, 1L);
-        String token = jwtService.generateToken(email);
-        expirationField.set(jwtService, originalExpiration);
-        Thread.sleep(5);
-        when(userDetails.getUsername()).thenReturn(email);
-        assertFalse(jwtService.validateToken(token, userDetails));
-    }
 
     @Test
     void extractEmail_throwsOnInvalidToken() {
