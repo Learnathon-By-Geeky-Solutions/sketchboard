@@ -38,20 +38,8 @@
         <maven.compiler.target>17</maven.compiler.target>
         <google.genai.version>0.2.0</google.genai.version>
         <spring-ai.version>1.0.0-M6</spring-ai.version>
-        <!-- Sonar properties -->
-        <sonar.coverage.exclusions>
-            **/config/**/*,
-            **/model/**/*,
-            **/repository/**/*,
-            **/controller/**/*,
-            **/dto/**/*,
-            **/enums/**/*,
-            **/exception/**/*
-        </sonar.coverage.exclusions>
-        <sonar.coverage.inclusions>
-            **/service/**/*,
-            **/mailing/**/*
-        </sonar.coverage.inclusions>
+        <sonar.coverage.exclusions>**/config/**,**/model/**,**/repository/**,**/controller/**,**/dto/**,**/enums/**,**/exception/**,**/faker/**,**/util/**,**/mailing/**,**/LostnFoundApplication.java</sonar.coverage.exclusions>
+        <sonar.coverage.inclusions>**/service/**</sonar.coverage.inclusions>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -212,12 +200,22 @@
                 <version>0.8.11</version>
                 <configuration>
                     <includes>
-                        <!-- Only include main service and mailing packages -->
+                        <!-- Only include service package -->
                         <include>com/example/lostnfound/service/**/*</include>
-                        <include>com/example/lostnfound/mailing/**/*</include>
                     </includes>
                     <excludes>
-                        <!-- Exclude test files -->
+                        <!-- Exclude everything else -->
+                        <exclude>com/example/lostnfound/config/**/*</exclude>
+                        <exclude>com/example/lostnfound/model/**/*</exclude>
+                        <exclude>com/example/lostnfound/repository/**/*</exclude>
+                        <exclude>com/example/lostnfound/controller/**/*</exclude>
+                        <exclude>com/example/lostnfound/dto/**/*</exclude>
+                        <exclude>com/example/lostnfound/enums/**/*</exclude>
+                        <exclude>com/example/lostnfound/exception/**/*</exclude>
+                        <exclude>com/example/lostnfound/faker/**/*</exclude>
+                        <exclude>com/example/lostnfound/util/**/*</exclude>
+                        <exclude>com/example/lostnfound/mailing/**/*</exclude>
+                        <exclude>com/example/lostnfound/LostnFoundApplication.class</exclude>
                         <exclude>**/*Test.*</exclude>
                         <exclude>**/test/**/*</exclude>
                     </excludes>
