@@ -70,12 +70,12 @@ The database will be created and configured automatically during application sta
 ### Demo account for testing API endpoints
 - Bearer Token
    ```
-   eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJqb2huZG9lQGdtYWlsLmNvbSIsImlhdCI6MTc0MjUwNTc2NywiZXhwIjo5MjIzMzcyMDM2ODU0Nzc1fQ.dI4cK-rf-OPvOboWBmUi8HFdQuEaTJSyQlvzpzZrTobEzckxJTGeshsuBlJVxVkV
+   eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhc2lmdXJyYWhtYW5wYWJlbEBnbWFpbC5jb20iLCJpYXQiOjE3NDYwMzE1MjQsImV4cCI6OTIyMzM3MjAzNjg1NDc3NX0.nHsSPGb3_Xlkrz6PElJhalfMw7GwYnqnTbtgKQEoD4OFvbztOlDD1lDNNKbB7WaM
    ```
 - Or you can use login credentials
    ```bash
-   Email: johndoe@gmail.com
-   Password: password
+   Email: asifurrahmanpabel@gmail.com
+   Password: asif
    ```
 
 ## Team Members
