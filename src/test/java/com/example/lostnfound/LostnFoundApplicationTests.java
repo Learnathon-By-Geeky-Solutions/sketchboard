@@ -3,15 +3,16 @@ package com.example.lostnfound;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @SpringBootTest
-@Disabled()
 class LostnFoundApplicationTests {
 	
 	@Test
+	@Disabled("Disabled to avoid requiring DB connection for CI/CD")
 	void contextLoads() {
-		//There will be no test cases in this project till now
-
+		assertDoesNotThrow(() -> {
+			// If context loads successfully, this test will pass
+		});
 	}
-
 }
