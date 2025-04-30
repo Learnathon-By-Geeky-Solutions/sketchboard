@@ -42,7 +42,7 @@ class QueryExecutorTest {
 
         // Then verify the response and the behavior of the JdbcTemplate
         assertNotNull(response);
-        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(200, response.getStatusCode().value());
         assertEquals(1, response.getBody().size());
         assertEquals("Test Post", response.getBody().get(0).getTitle());
         verify(jdbcTemplate, times(1)).query(eq("SELECT * FROM post WHERE title = 'Test Post'"), any(BeanPropertyRowMapper.class));

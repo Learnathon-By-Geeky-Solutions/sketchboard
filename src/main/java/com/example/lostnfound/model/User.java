@@ -1,6 +1,7 @@
 package com.example.lostnfound.model;
 
 import com.example.lostnfound.enums.Role;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Array;
@@ -52,6 +53,7 @@ public class User{
     // for Email Verification
     private boolean accountVerified = true;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<SecureToken> token;
 
