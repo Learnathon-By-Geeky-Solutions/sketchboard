@@ -1,5 +1,6 @@
 package com.example.lostnfound.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -21,8 +22,9 @@ public class SecureToken {
     @Basic(optional = false)
     private LocalDateTime expiredAt;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
 
     public boolean isExpired() {

@@ -1,5 +1,6 @@
 package com.example.lostnfound.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -41,8 +42,8 @@ public class Image {
     @Column(nullable = false)
     private LocalDateTime uploadedAt;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "post_id", referencedColumnName = "id")
+    @OneToOne(mappedBy = "image")
+    @JsonBackReference
     private Post post;
 
     @PrePersist
